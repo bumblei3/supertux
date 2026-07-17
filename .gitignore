@@ -1,6 +1,9 @@
 # Build Files
 build/
 build.*/
+build-cov/
+build-san/
+build-gate/
 **/CMakeFiles/
 **/CMakeCache.txt
 ./supertux2
