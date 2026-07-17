@@ -352,9 +352,6 @@ Config::load()
     Viewport::force_full_viewport(max_viewport, true);
 
 #ifdef __EMSCRIPTEN__
-    // Forcibly set autofit to true.
-    // TODO: Remove the autofit parameter entirely - it should always be true.
-
     //config_video_mapping->get("fit_window", fit_window);
     fit_window = true;
 #endif
@@ -539,8 +536,6 @@ Config::save()
   }
 
 #ifdef __EMSCRIPTEN__
-  // Forcibly set autofit to true
-  // TODO: Remove the autofit parameter entirely - it should always be true
   writer.write("fit_window", true /* fit_window */);
 #endif
 

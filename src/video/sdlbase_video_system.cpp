@@ -152,8 +152,6 @@ SDLBaseVideoSystem::create_sdl_window(Uint32 flags)
   }
 
 #ifdef __EMSCRIPTEN__
-  // Forcibly set autofit to true
-  // TODO: Remove the autofit parameter entirely - it should always be true
   g_config->fit_window = true;
 
   if (g_config->fit_window)
