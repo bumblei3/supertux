@@ -84,6 +84,11 @@ make_unit_test(SizefTest SOURCE sizef_test.cpp
 make_unit_test(StringUtilTest SOURCE string_util_test.cpp
   GTEST EXTERNAL util/string_util.cpp)
 
+# Dependency-free coverage for string_util (st_assert harness, no gtest/SDL).
+# Covers the replace_all empty-needle infinite-loop fix.
+make_unit_test(StringUtilStTest SOURCE string_util_st_test.cpp
+  EXTERNAL util/string_util.cpp)
+
 # UidTest pulls in util/log.cpp, which transitively requires the full engine
 # (simplesquirrel via supertux/console.hpp). It is kept in the tree but not
 # wired into CTest until the test can link against the engine libraries.
