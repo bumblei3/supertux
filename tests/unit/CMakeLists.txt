@@ -72,10 +72,18 @@ make_unit_test(UIDTest SOURCE uid_test.cpp uid_test_stub.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL util/uid_generator.cpp)
 
-# NOTE: ReaderTest / ObjectOptionTest / FileSystemTest / IFileStreamTest /
-# DynamicScopedTest are intentionally NOT wired here: they require the full
-# engine stack (tinygettext, sexp-cpp, Squirrel, PhysFS) or are explicitly
-# marked DISABLED in the source. See commit history for the rationale.
+# Reader: parses the lisp-style config format. Pulls in reader_document/
+# reader_mapping/reader_collection plus the tinygettext and sexp-cpp libraries
+# (both already built as static libs). The engine logging/filesystem layer is
+# stubbed out by reader_test_stub.cpp to keep this a self-contained logic test.
+make_unit_test(ReaderTest SOURCE reader_test.cpp reader_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;${SUPERTUX_SOURCE_DIR}/build-sdl3/external/tinygettext/libtinygettext.a;${SUPERTUX_SOURCE_DIR}/build-sdl3/external/sexp-cpp/libsexp.a>"
+  EXTERNAL util/reader_document.cpp util/reader_mapping.cpp
+            util/reader_collection.cpp util/reader_iterator.cpp
+            util/reader_object.cpp util/gettext.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+            ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
 
 # SDL3 API / fullscreen regression tests. These pin the SDL2->SDL3 API
 # contract (SDL_SetWindowFullscreen returns bool; SDL_RectsEqual rename) and
