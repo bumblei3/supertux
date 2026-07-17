@@ -96,17 +96,42 @@ SDLBaseVideoSystem::create_sdl_window(Uint32 flags)
   Size size;
   if (g_config->use_fullscreen)
   {
-    // SDL3: do NOT request SDL_WINDOW_FULLSCREEN at creation time. Creating a
-    // window already in fullscreen with an explicit (and possibly
-    // non-enumerated) size such as a stale 640x480 config entry makes
-    // SDL_CreateWindow fail under Wayland/Xwayland, aborting startup. Instead
-    // create the window normally and switch it to (desktop) fullscreen in
-    // apply_video_mode() via SDL_SetWindowFullscreen(true), which is the
-    // supported SDL3 pattern and lets the compositor pick a valid mode.
+    // Set SDL_WINDOW_FULLSCREEN at creation time. Some Wayland compositors
+    // (notably Mutter/GNOME under Xwayland) do not reliably honor a later
+    // SDL_SetWindowFullscreen(true) call on a window that was created windowed,
+    // so the window never actually enters fullscreen even though SDL reports
+    // success. Requesting fullscreen at creation lets the compositor pick a
+    // valid mode up front.
+    //
+    // We always use the desktop size here, never a possibly stale config
+    // fullscreen_size (e.g. 640x480), so we never ask the compositor for a
+    // non-enumerated mode that it would reject and that previously aborted
+    // startup.
+    flags |= SDL_WINDOW_FULLSCREEN;
     if (m_desktop_size != Size(0, 0))
+    {
       size = m_desktop_size;
+    }
     else
-      size = g_config->window_size;
+    {
+      // m_desktop_size may still be (0,0) if the Wayland compositor has not
+      // published display info yet (it is queried asynchronously during
+      // construction). Re-query it now so we don't fall back to a fixed
+      // window_size, which would make SDL try to find a matching fullscreen
+      // mode instead of using the desktop mode.
+      SDL_DisplayID display = SDL_GetPrimaryDisplay();
+      if (display != 0)
+      {
+        const SDL_DisplayMode* mode = SDL_GetDesktopDisplayMode(display);
+        if (mode != nullptr)
+        {
+          size.width = mode->w;
+          size.height = mode->h;
+        }
+      }
+      if (size == Size(0, 0))
+        size = g_config->window_size;
+    }
   }
   else
   {
