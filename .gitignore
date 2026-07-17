@@ -5,6 +5,8 @@ build-cov/
 build-san/
 build-gate/
 build-verify/
+**/__pycache__/
+*.pyc
 **/CMakeFiles/
 **/CMakeCache.txt
 ./supertux2
