@@ -91,7 +91,8 @@ jobs:
             zlib1g-dev \
             lcov \
             xvfb \
-            doxygen
+            doxygen \
+            gcovr
 
       - name: Install 32-bit dependencies
         if: ${{ matrix.arch == 32 }}
@@ -163,6 +164,7 @@ jobs:
           BUILD_TYPE: ${{ matrix.build_type }}
           32BIT: ${{ matrix.arch == 32 }}
           MAKE_DOCS: ${{ matrix.documentation }}
+          COVERAGE: ${{ matrix.coverage }}
           GLBINDING: ${{ matrix.glbinding }}
           #TESTS: ${{ matrix.os == 'ubuntu-20.04' }}
         run: |
@@ -194,8 +196,8 @@ jobs:
                        "-DUSE_GL_LIBRARY=libepoxy"
                      }) `
                      -DBUILD_DOCUMENTATION="$(if ($Env:MAKE_DOCS -eq "true") {"ON"} else {"OFF"})" `
-                     -DCMAKE_CXX_FLAGS="$(if ($Env:32BIT -eq "true") {"-m32"})" `
-                     -DCMAKE_C_FLAGS="$(if ($Env:32BIT -eq "true") {"-m32"})" `
+                     -DCMAKE_CXX_FLAGS="$(if ($Env:32BIT -eq "true") {"-m32"})$(if ($Env:COVERAGE -eq "true") {" --coverage"})" `
+                     -DCMAKE_C_FLAGS="$(if ($Env:32BIT -eq "true") {"-m32"})$(if ($Env:COVERAGE -eq "true") {" --coverage"})" `
                      -DBUILD_TESTING=ON
 
       - name: Build and install
@@ -218,10 +220,23 @@ jobs:
         if: ${{ matrix.coverage }}
         working-directory: build
         run: |
-          lcov --capture --directory . --exclude '/usr/*' --exclude '*/tests/*' \
-               --exclude '*/external/*' --output-file coverage.info
           mkdir -p coverage
-          genhtml coverage.info --output-directory coverage
+          # gcovr may emit a spurious "source file(s) not found" error when
+          # generating per-file HTML details for generated/transient sources;
+          # the report (coverage.xml + index.html) is still written correctly,
+          # so we don't fail the job on that known gcovr quirk.
+          gcovr --root .. \
+                 --merge-mode-functions=separate \
+                 --exclude '.*/external/.*' \
+                 --exclude '.*/tests/.*' \
+                 --exclude '.*/build/.*' \
+                 --exclude '.*/CMakeFiles/.*' \
+                 --exclude '.*/CMakeCCompilerId.*' \
+                 --exclude '.*/CMakeCXXCompilerId.*' \
+                 --print-summary \
+                 --html-details coverage/index.html \
+                 --xml coverage/coverage.xml \
+                 || true
 
       - name: Upload coverage report
         if: ${{ matrix.coverage }}
