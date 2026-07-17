@@ -43,7 +43,15 @@ class SDL3ApiTest : public ::testing::Test
 protected:
   void SetUp() override
   {
-    SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
+    // Use the dummy driver by default (headless, no display needed). But if
+    // SDL_VIDEODRIVER is already set (e.g. the CI runs under xvfb with
+    // SDL_VIDEODRIVER=x11), honor it so the test exercises the real driver and
+    // can catch compositor-specific bugs.
+    const char* driver = SDL_getenv("SDL_VIDEODRIVER");
+    if (driver == nullptr || driver[0] == '\0')
+    {
+      SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
+    }
     ASSERT_TRUE(SDL_Init(SDL_INIT_VIDEO));
   }
 

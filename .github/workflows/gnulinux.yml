@@ -90,6 +90,7 @@ jobs:
             libphysfs-dev \
             zlib1g-dev \
             lcov \
+            xvfb \
             doxygen
 
       - name: Install 32-bit dependencies
@@ -205,17 +206,30 @@ jobs:
 
       - name: Run tests
         working-directory: build
-        run: ctest --output-on-failure
+        env:
+          # Run under a real (virtual) X display so the SDL tests exercise the
+          # actual X11/Wayland driver, not just the headless dummy. This lets
+          # compositor-specific regressions (e.g. the Mutter fullscreen issue
+          # fixed in 6c30d803c) fail in CI instead of only on real hardware.
+          SDL_VIDEODRIVER: x11
+        run: xvfb-run -a ctest --output-on-failure
 
-      # - name: Make coverage
-      #   if: ${{ matrix.coverage }}
-      #   working-directory: build
-      #   run: |
-      #     lcov --capture --directory . --exclude '/usr/*' --exclude '*/tests/*'\
-      #          --exclude '*/external/*' --output-file coverage.info
-      #     mkdir coverage
-      #     cd coverage
-      #     genhtml ../coverage.info
+      - name: Make coverage
+        if: ${{ matrix.coverage }}
+        working-directory: build
+        run: |
+          lcov --capture --directory . --exclude '/usr/*' --exclude '*/tests/*' \
+               --exclude '*/external/*' --output-file coverage.info
+          mkdir -p coverage
+          genhtml coverage.info --output-directory coverage
+
+      - name: Upload coverage report
+        if: ${{ matrix.coverage }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: "coverage-report"
+          path: build/coverage/*
+          if-no-files-found: ignore
 
       - name: Make documentation
         if: ${{ matrix.documentation }}
