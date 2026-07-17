@@ -5,9 +5,9 @@
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 #
-#  Fork-local CI: builds the game and runs the wired unit tests (CTest).
-#  Upstream's gnulinux.yml builds with BUILD_TESTING=OFF and does not run
-#  any tests, so this workflow is the regression safety net for the fork.
+#  Fork-local CI: builds the wired unit tests and runs them (CTest).
+#  Upstream's gnulinux.yml builds with BUILD_TESTING=OFF and never runs
+#  tests, so this workflow is the regression safety net for the fork.
 
 name: Fork CI - Build & Tests
 
@@ -16,13 +16,18 @@ on:
     branches: [master]
   workflow_dispatch: {}
 
+# Cancel superseded runs on the same ref to avoid wasted minutes.
+concurrency:
+  group: fork-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           submodules: recursive
 
       - name: Install build dependencies
@@ -31,6 +36,7 @@ jobs:
           sudo apt-get install -y \
             cmake \
             ninja-build \
+            ccache \
             build-essential \
             libgtest-dev \
             libogg-dev \
@@ -49,20 +55,36 @@ jobs:
             libphysfs-dev \
             zlib1g-dev
 
+      - name: Restore ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ccache
+          key: fork-ci-ccache-${{ github.sha }}
+          restore-keys: |
+            fork-ci-ccache-
+
       - name: Configure
         run: |
           cmake -B build -S . \
             -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DBUILD_TESTING=ON \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
-      - name: Build game and unit tests
+      - name: Build unit tests only
         run: |
-          cmake --build build -j"$(nproc)"
           cmake --build build --target tests -j"$(nproc)"
 
       - name: Run unit tests
         working-directory: build
         run: |
-          ctest --output-on-failure
+          ctest --output-on-failure --output-junit tests.xml
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctest-results
+          path: build/tests.xml
+          if-no-files-found: ignore
