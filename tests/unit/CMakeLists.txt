@@ -93,6 +93,11 @@ make_unit_test(StringUtilTest SOURCE string_util_test.cpp
 make_unit_test(VersionTest SOURCE version_test.cpp
   GTEST INCLUDES ${CMAKE_BINARY_DIR})
 
+# TileReplacementTest: regression coverage for the editor tile-replacement
+# degenerate/division-by-zero guard (issue #3810).
+make_unit_test(TileReplacementTest SOURCE tile_replacement_test.cpp
+  EXTERNAL editor/tile_replacement.hpp)
+
 message("ALL TESTS: ${all_test_targets}")
 
 add_custom_target(tests DEPENDS ${all_test_targets})
