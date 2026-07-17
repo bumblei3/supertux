@@ -23,7 +23,14 @@ concurrency:
 
 jobs:
   build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
     runs-on: ubuntu-latest
+    env:
+      CC: ${{ matrix.compiler == 'clang' && 'clang' || 'gcc' }}
+      CXX: ${{ matrix.compiler == 'clang' && 'clang++' || 'g++' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,6 +45,7 @@ jobs:
             ninja-build \
             ccache \
             build-essential \
+            clang \
             libgtest-dev \
             libogg-dev \
             libvorbis-dev \
@@ -59,9 +67,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.ccache
-          key: fork-ci-ccache-${{ github.sha }}
+          key: fork-ci-ccache-${{ matrix.compiler }}-${{ github.sha }}
           restore-keys: |
-            fork-ci-ccache-
+            fork-ci-ccache-${{ matrix.compiler }}-
 
       - name: Configure
         run: |
@@ -85,6 +93,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ctest-results
+          name: ctest-results-${{ matrix.compiler }}
           path: build/tests.xml
           if-no-files-found: ignore

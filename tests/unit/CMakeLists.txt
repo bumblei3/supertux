@@ -53,8 +53,12 @@ make_unit_test(DynamicScopedTest SOURCE dynamic_scoped_test.cpp
 # make_unit_test(FileSystemTest SOURCE file_system_test.cpp
 #   GTEST LIBRARIES SDL2 EXTERNAL util/file_system.cpp)
 #
+# IFileStreamTest: disabled — the test uses IFileStream::tellg() in ASSERT_EQ,
+# but the current IFileStream API no longer exposes a usable tellg() return
+# value (compile error "void value not ignored"). Needs a rewrite against the
+# current physfs API before it can be wired in.
 # make_unit_test(IFileStreamTest SOURCE ifile_stream_test.cpp
-#   GTEST EXTERNAL physfs/ifile_stream.cpp)
+#   GTEST EXTERNAL physfs/ifile_stream.cpp physfs/ifile_streambuf.cpp physfs/util.cpp)
 #
 # make_unit_test(ObjectOptionTest SOURCE object_option_test.cpp
 #   GTEST EXTERNAL editor/object_option.cpp supertux/game_object.cpp video/color.cpp)
