@@ -96,16 +96,17 @@ SDLBaseVideoSystem::create_sdl_window(Uint32 flags)
   Size size;
   if (g_config->use_fullscreen)
   {
-    flags |= SDL_WINDOW_FULLSCREEN;
-
-    if (g_config->fullscreen_size == Size(0, 0))
-    {
+    // SDL3: do NOT request SDL_WINDOW_FULLSCREEN at creation time. Creating a
+    // window already in fullscreen with an explicit (and possibly
+    // non-enumerated) size such as a stale 640x480 config entry makes
+    // SDL_CreateWindow fail under Wayland/Xwayland, aborting startup. Instead
+    // create the window normally and switch it to (desktop) fullscreen in
+    // apply_video_mode() via SDL_SetWindowFullscreen(true), which is the
+    // supported SDL3 pattern and lets the compositor pick a valid mode.
+    if (m_desktop_size != Size(0, 0))
       size = m_desktop_size;
-    }
     else
-    {
-      size = g_config->fullscreen_size;
-    }
+      size = g_config->window_size;
   }
   else
   {
@@ -209,33 +210,57 @@ SDLBaseVideoSystem::apply_video_mode()
     }
     else
     {
-      SDL_DisplayMode mode;
-      mode.format = SDL_PIXELFORMAT_XRGB8888;
-      mode.w = g_config->fullscreen_size.width;
-      mode.h = g_config->fullscreen_size.height;
-      mode.refresh_rate_numerator = g_config->fullscreen_refresh_rate_numerator;
-      mode.refresh_rate_denominator = g_config->fullscreen_refresh_rate_denominator;
-      mode.refresh_rate = g_config->fullscreen_refresh_rate;
-      mode.pixel_density = g_config->fullscreen_pixel_density;
+      // Resolve the configured fullscreen size to a mode the display actually
+      // supports. Building an SDL_DisplayMode by hand leaves its opaque
+      // 'internal' pointer uninitialized, and a mode the compositor does not
+      // enumerate (e.g. a stale 640x480 entry) makes SDL_SetWindowFullscreenMode
+      // fail and previously aborted startup. SDL_GetClosestFullscreenDisplayMode
+      // returns a valid, accepted mode near the requested size (or nullptr).
+      SDL_DisplayMode closest;
+      SDL_memset(&closest, 0, sizeof(closest));
+      const bool found = SDL_GetClosestFullscreenDisplayMode(
+        SDL_GetDisplayForWindow(m_sdl_window.get()),
+        g_config->fullscreen_size.width,
+        g_config->fullscreen_size.height,
+        static_cast<float>(g_config->fullscreen_refresh_rate),
+        false, &closest);
 
-      if (SDL_SetWindowFullscreenMode(m_sdl_window.get(), &mode) == false)
+      if (!found)
+      {
+        log_warning << "no fullscreen mode near "
+                    << g_config->fullscreen_size.width << "x"
+                    << g_config->fullscreen_size.height << ", "
+                    << "falling back to desktop fullscreen" << std::endl;
+        if (!SDL_SetWindowFullscreen(m_sdl_window.get(), true))
+        {
+          log_warning << "failed to switch to desktop fullscreen mode: "
+                      << SDL_GetError() << std::endl;
+        }
+      }
+      else if (SDL_SetWindowFullscreenMode(m_sdl_window.get(), &closest) == false)
       {
         log_warning << "failed to set fullscreen mode: "
-                    << mode.w << "x" << mode.h << "@" << mode.refresh_rate << ": "
+                    << closest.w << "x" << closest.h << "@" << closest.refresh_rate << ": "
                     << SDL_GetError() << std::endl;
+        log_info << "falling back to desktop fullscreen" << std::endl;
+        if (!SDL_SetWindowFullscreen(m_sdl_window.get(), true))
+        {
+          log_warning << "failed to switch to desktop fullscreen mode: "
+                      << SDL_GetError() << std::endl;
+        }
       }
       else
       {
         if (SDL_SetWindowFullscreen(m_sdl_window.get(), true) == false)
         {
           log_warning << "failed to switch to fullscreen mode: "
-                      << mode.w << "x" << mode.h << "@" << mode.refresh_rate << ": "
+                      << closest.w << "x" << closest.h << "@" << closest.refresh_rate << ": "
                       << SDL_GetError() << std::endl;
         }
         else
         {
           log_info << "switched to fullscreen mode: "
-                   << mode.w << "x" << mode.h << "@" << mode.refresh_rate << std::endl;
+                   << closest.w << "x" << closest.h << "@" << closest.refresh_rate << std::endl;
         }
       }
     }
