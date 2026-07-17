@@ -109,9 +109,61 @@ cd build && ctest --output-on-failure
 
 The fork also has a CI workflow (`.github/workflows/fork-tests.yml`) that
 builds and runs the tests with both gcc and clang on every push to `master`.
+It additionally runs two extra jobs:
+- **sanitizers**: a Debug build with AddressSanitizer + UndefinedBehaviorSanitizer.
+- **coverage**: a gcov build aggregated with `gcovr`, uploaded as an artifact
+  and checked against per-file minimums by `scripts/coverage_gate.py`.
 
-Currently enabled tests: MD5, AATriangle, Collision, Random, Rect, Rectf,
-Size, Sizef, StringUtil (gtest + st_assert), Version, TileReplacement,
-DynamicScoped. The remaining engine-dependent tests (FileSystem,
-IFileStream, ObjectOption, Reader, Uid) are kept in the tree but disabled
-until their transitive engine dependencies are linked.
+### Local gate (build_gate.sh)
+
+`scripts/build_gate.sh` mirrors the CI matrix locally so you can catch
+regressions before pushing. It builds and runs the unit tests three ways:
+plain Debug, ASan+UBSan, and a gcov coverage build.
+
+```sh
+./scripts/build_gate.sh            # all three gates
+./scripts/build_gate.sh --no-coverage
+```
+
+### Checking coverage locally
+
+The fork's unit tests are split across multiple binaries that share some
+sources, so a single `gcovr` run under-reports per-file coverage for
+those shared files (e.g. `src/util/string_util.cpp`). To measure one
+source file cleanly, build and run only the binary that owns it:
+
+```sh
+# configure once
+cmake -B build-cov -S . -DCMAKE_BUILD_TYPE=Debug \
+  -DBUILD_TESTING=ON -DCMAKE_CXX_FLAGS="--coverage -fno-omit-frame-pointer"
+cmake --build build-cov --target tests -j"$(nproc)"
+cd build-cov && ctest --output-on-failure -E 'test_sexp'
+
+# per-file line coverage (gcovr)
+gcovr --object-directory build-cov --root . --filter 'src/.*' --print-summary
+```
+
+The enforced minimums live in `scripts/coverage_gate.py`
+(`DEFAULT_THRESHOLDS`). Touch them when you deliberately change
+what is covered.
+
+Currently enabled tests: MD5, AATriangle, Collision, CollisionModule,
+Random, Rect, Rectf, Size, Sizef, StringUtil (gtest + st_assert),
+Version, TileReplacement, DynamicScoped. The remaining engine-dependent
+tests (FileSystem, IFileStream, ObjectOption, Reader, Uid) are kept in
+the tree but disabled until their transitive engine dependencies are linked.
+
+### Coverage status
+
+| Source | Lines | Gated at |
+|--------|-------|-----------|
+| `src/collision/collision.cpp` | 75% | >= 70% |
+| `src/math/aatriangle.cpp` | 100% | >= 95% |
+| `src/math/random.cpp` | 100% | >= 95% |
+| `src/math/size.cpp` | 100% | >= 95% |
+| `src/math/sizef.cpp` | 100% | >= 95% |
+| `src/util/string_util.cpp` | 100%* | >= 70% |
+
+\* `string_util.cpp` measures ~77% in the aggregated CI run because
+`StringUtilTest` and `StringUtilStTest` both compile it; the real
+per-file coverage (measured in isolation) is 100%.
