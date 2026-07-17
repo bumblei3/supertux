@@ -43,6 +43,14 @@ make_unit_test(CollisionTest SOURCE collision_test.cpp
   EXTERNAL math/rectf.cpp
   SDL2 DEFINITIONS GLM_ENABLE_EXPERIMENTAL)
 
+# CollisionModuleTest: regression coverage for the previously-untested
+# collision/ module (Constraints, set_rectangle_rectangle_constraints,
+# line_intersects_line, intersects_line, rectangle_aatriangle slope math).
+make_unit_test(CollisionModuleTest SOURCE collision_module_test.cpp
+  GTEST SDL2
+  EXTERNAL collision/collision.cpp math/rectf.cpp math/aatriangle.cpp
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL)
+
 make_unit_test(DynamicScopedTest SOURCE dynamic_scoped_test.cpp
   GTEST EXTERNAL util/dynamic_scoped_ref.hpp)
 
