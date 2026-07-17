@@ -102,8 +102,10 @@ make_unit_test(StringUtilStTest SOURCE string_util_st_test.cpp
   EXTERNAL util/string_util.cpp)
 
 # UidTest pulls in util/log.cpp, which transitively requires the full engine
-# (simplesquirrel via supertux/console.hpp). It is kept in the tree but not
-# wired into CTest until the test can link against the engine libraries.
+# (simplesquirrel via supertux/console.hpp). On Linux supertux2 is built as an
+# EXECUTABLE (only SHARED on Android), so it cannot be linked into a test. The
+# test stays in the tree but is not wired into CTest until the engine is split
+# into a linkable library or the test compiles the needed sources explicitly.
 # make_unit_test(UidTest SOURCE uid_test.cpp
 #   GTEST SDL2 EXTERNAL util/uid_generator.cpp util/log.cpp)
 

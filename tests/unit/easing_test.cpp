@@ -158,17 +158,19 @@ TEST(EasingTest, elastic)
   // out(0) = sin(-13pi/2)*2^0 + 1 = sin(-6.5pi)+1 = sin(-0.5pi)+1 = 0.
   expect_near(0.0, ElasticEaseOut(0.0), "out p=0");
   expect_near(1.0, ElasticEaseOut(1.0), "out p=1");
-  // FIXME: ElasticEaseOut exceeds 1.0 near p=0.5 (here ~1.022). The
-  // damped-sine formula sin(-13pi/2*(p+1))*2^(-10p)+1 can leave the
-  // [0,1] range, violating the easing invariant. Recorded here so the
-  // regression is visible; fix the phase/scale if [0,1] is required.
+  // Elastic (like Bounce/Back) deliberately overshoots: the damped-sine
+  // formula sin(-13pi/2*(p+1))*2^(-10p)+1 exceeds 1.0 near p=0.5. This is
+  // by design (a spring overshoots its target), not a bug: callers apply
+  // the result as an animation factor and the value lands exactly on 1.0
+  // at p=1.0. Assert the actual overshoot so a future regression that
+  // changes the phase/scale stays visible.
   const double eout = ElasticEaseOut(0.5);
-  expect_near(1.0220970869120796, eout, "out p=0.5 (BUG: >1.0)");
+  EXPECT_GT(eout, 1.0);
+  expect_near(1.0220970869120796, eout, "out p=0.5 (overshoot by design)");
   expect_near(0.0, ElasticEaseInOut(0.0), "inout p=0 (special)");
   expect_near(1.0, ElasticEaseInOut(1.0), "inout p=1 (special)");
-  const double einout = ElasticEaseInOut(0.5);
-  // InOut(0.5) is 0.5 (different formula branch than Out).
-  expect_near(0.5, einout, "inout p=0.5");
+  // InOut(0.5) uses a different branch and stays at 0.5.
+  expect_near(0.5, ElasticEaseInOut(0.5), "inout p=0.5");
 }
 
 TEST(EasingTest, back)
