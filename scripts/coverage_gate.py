@@ -26,14 +26,18 @@ import xml.etree.ElementTree as ET
 #   src/collision/collision.cpp   75%
 #   src/math/aatriangle.cpp       100%
 #   src/math/random.cpp           100%
+#   src/math/size.cpp            100%
+#   src/math/sizef.cpp           100%
 #   src/util/string_util.cpp       77%  (real 100%, under-reported by the
 #                                      multi-binary .gcda overlap)
-# Thresholds are set below these so a genuine drop is caught, but the
-# known under-reporting artifact never trips a false positive.
+# Thresholds are set below these so the gate catches real regressions
+# without false positives from that artifact.
 DEFAULT_THRESHOLDS = {
     "src/collision/collision.cpp": 70.0,
     "src/math/aatriangle.cpp": 95.0,
     "src/math/random.cpp": 95.0,
+    "src/math/size.cpp": 95.0,
+    "src/math/sizef.cpp": 95.0,
     "src/util/string_util.cpp": 70.0,
 }
 
