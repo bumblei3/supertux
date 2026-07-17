@@ -64,6 +64,19 @@ make_unit_test(VersionTest SOURCE version_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   INCLUDES ${CMAKE_BINARY_DIR})
 
+# UID generator: pure logic, single source file.
+# We don't link util/log.cpp (it pulls in the Squirrel-based console layer);
+# instead uid_test_stub.cpp provides the few logging symbols uid_generator.cpp
+# references, keeping this a self-contained logic test.
+make_unit_test(UIDTest SOURCE uid_test.cpp uid_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL util/uid_generator.cpp)
+
+# NOTE: ReaderTest / ObjectOptionTest / FileSystemTest / IFileStreamTest /
+# DynamicScopedTest are intentionally NOT wired here: they require the full
+# engine stack (tinygettext, sexp-cpp, Squirrel, PhysFS) or are explicitly
+# marked DISABLED in the source. See commit history for the rationale.
+
 # SDL3 API / fullscreen regression tests. These pin the SDL2->SDL3 API
 # contract (SDL_SetWindowFullscreen returns bool; SDL_RectsEqual rename) and
 # the fixed fullscreen startup path so a future SDL break fails here instead

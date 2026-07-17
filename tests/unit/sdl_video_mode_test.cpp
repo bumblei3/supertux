@@ -123,4 +123,34 @@ TEST_F(SDLVideoModeTest, ClosestFullscreenModeDoesNotAbort)
   SDL_DestroyWindow(window);
 }
 
+// Regression guard for compositors (Mutter/GNOME under Wayland/Xwayland) that
+// do not reliably honor a late SDL_SetWindowFullscreen(true) on a windowed-
+// created window: SDL may report success while the window never actually
+// enters fullscreen. We assert the SDL_WINDOW_FULLSCREEN flag is really set on
+// the window after the call, catching the "SDL says true but no fullscreen"
+// class of bug that previously left SuperTux starting without a visible
+// fullscreen window. Under the dummy driver the flag is set synchronously, so
+// this test pins the expected post-condition of the fixed code path.
+TEST_F(SDLVideoModeTest, FullscreenFlagIsActuallySet)
+{
+  SDL_DisplayID display = SDL_GetPrimaryDisplay();
+  ASSERT_NE(display, 0U);
+
+  const SDL_DisplayMode* desktop = SDL_GetDesktopDisplayMode(display);
+  ASSERT_NE(desktop, nullptr);
+
+  // Mirror the fixed create_sdl_window(): request SDL_WINDOW_FULLSCREEN at
+  // creation time, sized from the desktop mode.
+  SDL_Window* window = SDL_CreateWindow("tux-flag-check", desktop->w, desktop->h,
+                                         SDL_WINDOW_FULLSCREEN);
+  ASSERT_NE(window, nullptr) << "create_sdl_window() must create a fullscreen "
+                                "window from the desktop size";
+
+  const Uint32 flags = SDL_GetWindowFlags(window);
+  EXPECT_TRUE(flags & SDL_WINDOW_FULLSCREEN)
+    << "window must actually carry SDL_WINDOW_FULLSCREEN after creation";
+
+  SDL_DestroyWindow(window);
+}
+
 /* EOF */
