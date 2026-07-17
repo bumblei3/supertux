@@ -90,6 +90,9 @@ make_unit_test(SizeTest SOURCE size_test.cpp
 make_unit_test(SizefTest SOURCE sizef_test.cpp
   GTEST SDL2 EXTERNAL math/sizef.cpp)
 
+make_unit_test(EasingTest SOURCE easing_test.cpp
+  GTEST SDL2 EXTERNAL math/easing.cpp util/string_util.cpp)
+
 make_unit_test(StringUtilTest SOURCE string_util_test.cpp
   GTEST EXTERNAL util/string_util.cpp)
 
