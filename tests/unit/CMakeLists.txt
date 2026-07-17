@@ -1,6 +1,8 @@
 # Will eventually handle game tests here too
 include(CTest)
 
+find_package(SDL3 REQUIRED)
+
 function(make_unit_test test_name)
   cmake_parse_arguments(PARSE_ARGV 1 mtargs
     "NO_PREPEND_SRC" "" "SOURCE;EXTERNAL;LIBRARIES;DEFINITIONS;INCLUDES")
@@ -27,11 +29,11 @@ make_unit_test(MD5Test SOURCE md5_test.cpp
 
 make_unit_test(AATriangleTest SOURCE aatriangle_test.cpp
   EXTERNAL math/aatriangle.cpp
-  LIBRARIES SDL3 glm DEFINITIONS GLM_ENABLE_EXPERIMENTAL)
+  LIBRARIES SDL3::SDL3 glm DEFINITIONS GLM_ENABLE_EXPERIMENTAL)
 
 make_unit_test(CollisionTest SOURCE collision_test.cpp
   EXTERNAL math/rectf.cpp
-  LIBRARIES SDL3 glm DEFINITIONS GLM_ENABLE_EXPERIMENTAL)
+  LIBRARIES SDL3::SDL3 glm DEFINITIONS GLM_ENABLE_EXPERIMENTAL)
 
 message("ALL TESTS: ${all_test_targets}")
 

@@ -165,7 +165,7 @@ SDLBaseVideoSystem::apply_video_mode()
 
   if (!g_config->use_fullscreen)
   {
-    SDL_SetWindowFullscreen(m_sdl_window.get(), 0);
+    SDL_SetWindowFullscreen(m_sdl_window.get(), false);
 
 #if 0
     // After un-fullscreening, the window border likely gets hidden offscreen,
@@ -190,7 +190,14 @@ SDLBaseVideoSystem::apply_video_mode()
   {
     if (g_config->fullscreen_size == Size(0, 0))
     {
-      if (SDL_SetWindowFullscreen(m_sdl_window.get(), SDL_WINDOW_FULLSCREEN) != 0)
+      // SDL3: SDL_SetWindowFullscreen takes a bool and returns bool
+      // (true == success), unlike SDL2 which took an int flag and returned
+      // int with 0 == success. Passing SDL_WINDOW_FULLSCREEN as the argument
+      // (a flag bit, not a bool) and checking `!= 0` on the return value
+      // would both be wrong: the return check is inverted, logging a false
+      // "failed to switch to desktop fullscreen" warning on every successful
+      // switch. Use `true` and a negated check.
+      if (!SDL_SetWindowFullscreen(m_sdl_window.get(), true))
       {
         log_warning << "failed to switch to desktop fullscreen mode: "
                     << SDL_GetError() << std::endl;
