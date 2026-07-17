@@ -7,6 +7,8 @@ build-gate/
 build-verify/
 build-uid/
 build-eng/
+build-sdl3/
+build-sdl3-asan/
 **/__pycache__/
 *.pyc
 **/CMakeFiles/
