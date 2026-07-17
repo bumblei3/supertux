@@ -14,21 +14,25 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <iostream>
-#include <errno.h>
-#include <string.h>
-#include <cassert>
 #include <sstream>
+#include <string>
+
+#include <gtest/gtest.h>
 
 #include "addon/md5.hpp"
 
-int main(int argc, char** argv)
+TEST(MD5Test, empty)
 {
   std::istringstream empty("");
-  assert(std::string("d41d8cd98f00b204e9800998ecf8427e") == std::string(MD5(empty).hex_digest()));
+  EXPECT_EQ(std::string("d41d8cd98f00b204e9800998ecf8427e"),
+            std::string(MD5(empty).hex_digest()));
+}
 
+TEST(MD5Test, helloworld)
+{
   std::istringstream helloworld("HelloWorld");
-  assert(std::string("68e109f0f40ca72a15e05cc22786f8e6") == std::string(MD5(helloworld).hex_digest()));
+  EXPECT_EQ(std::string("68e109f0f40ca72a15e05cc22786f8e6"),
+            std::string(MD5(helloworld).hex_digest()));
 }
 
 /* EOF */

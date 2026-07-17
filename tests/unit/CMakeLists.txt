@@ -1,6 +1,7 @@
 # Will eventually handle game tests here too
 include(CTest)
 
+find_package(GTest REQUIRED)
 find_package(SDL3 REQUIRED)
 
 function(make_unit_test test_name)
@@ -24,8 +25,24 @@ function(make_unit_test test_name)
     COMMAND ${test_name})
 endfunction(make_unit_test)
 
+make_unit_test(RectTest SOURCE rect_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL math/rect.cpp)
+
 make_unit_test(MD5Test SOURCE md5_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL addon/md5.cpp)
+
+# SDL3 API / fullscreen regression tests. These pin the SDL2->SDL3 API
+# contract (SDL_SetWindowFullscreen returns bool; SDL_RectsEqual rename) and
+# the fixed fullscreen startup path so a future SDL break fails here instead
+# of only showing up as "SuperTux exits instantly on --fullscreen".
+make_unit_test(SDL3ApiTest SOURCE sdl3_api_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3)
+
+make_unit_test(SDLVideoModeTest SOURCE sdl_video_mode_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3)
 
 make_unit_test(AATriangleTest SOURCE aatriangle_test.cpp
   EXTERNAL math/aatriangle.cpp
