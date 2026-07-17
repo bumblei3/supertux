@@ -42,6 +42,11 @@ jobs:
           fetch-depth: 1
           submodules: recursive
 
+      # Apply fork-only SDL3 submodule patches (SDL_ttf port) so a fresh
+      # checkout reproduces the local build. See scripts/apply_submodule_patches.sh.
+      - name: Apply submodule patches
+        run: bash scripts/apply_submodule_patches.sh
+
       - name: Install build dependencies
         run: |
           sudo apt-get update
@@ -105,6 +110,11 @@ jobs:
           fetch-depth: 1
           submodules: recursive
 
+      # Apply fork-only SDL3 submodule patches (SDL_ttf port) so a fresh
+      # checkout reproduces the local build. See scripts/apply_submodule_patches.sh.
+      - name: Apply submodule patches
+        run: bash scripts/apply_submodule_patches.sh
+
       - name: Install build dependencies
         run: |
           sudo apt-get update
@@ -153,6 +163,11 @@ jobs:
         with:
           fetch-depth: 1
           submodules: recursive
+
+      # Apply fork-only SDL3 submodule patches (SDL_ttf port) so a fresh
+      # checkout reproduces the local build. See scripts/apply_submodule_patches.sh.
+      - name: Apply submodule patches
+        run: bash scripts/apply_submodule_patches.sh
 
       - name: Install build dependencies
         run: |

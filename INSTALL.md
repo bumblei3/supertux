@@ -96,6 +96,22 @@ following steps:
    (If you got this version of Supertux from an archive,
    submodules should already be included in the package.)
 
+   **Fork-only SDL3 submodule patches.** `external/SDL_ttf` is pinned to an
+   upstream commit that still uses the SDL2 API, but the fork's SDL3 port needs
+   the SDL3-converted SDL_ttf. That conversion is vendored (not pushed
+   anywhere, since upstream PRs are blocked) in `patches/submodules/` and applied
+   by `scripts/apply_submodule_patches.sh`. Run it after the submodule update:
+
+   ```bash
+   git submodule update --init --recursive
+   bash scripts/apply_submodule_patches.sh
+   ```
+
+   `external/tinygettext` needs no patch: the pinned commit already ships SDL3
+   support via `-DTINYGETTEXT_SDL_VERSION=3` (set in the top-level
+   `CMakeLists.txt`). The fork CI runs the same apply step automatically after
+   checkout.
+
 3. Create and change to a new, empty build directory by running `mkdir
    build` and then `cd build`.
 
