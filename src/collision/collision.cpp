@@ -128,11 +128,6 @@ bool rectangle_aatriangle(Constraints* constraints, const Rectf& rect,
   if (depth < 0)
     return false;
 
-#if 0
-  std::cout << "R: " << rect << " Tri: " << triangle << "\n";
-  std::cout << "Norm: " << normal << " Depth: " << depth << "\n";
-#endif
-
   Vector outvec = normal * (depth + 0.2f);
 
   const float RDELTA = 3;
