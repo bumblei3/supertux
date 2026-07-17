@@ -510,7 +510,7 @@ EditorOverlayWidget::replace()
   // helper (editor::should_skip_tile_replacement) so the regression logic is
   // covered by unit tests without requiring the editor/SDL to be spun up.
   // Fixes the division-by-zero crash with a zero-sized selection (issue #3810).
-  if (should_skip_tile_replacement(tiles_width, tiles_height, replace_tile, tiles->pos(0, 0)))
+  if (editor::should_skip_tile_replacement(tiles_width, tiles_height, replace_tile, tiles->pos(0, 0)))
     return;
 
   tilemap->save_state();
