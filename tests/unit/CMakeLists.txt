@@ -34,6 +34,36 @@ make_unit_test(MD5Test SOURCE md5_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL addon/md5.cpp)
 
+# Lightweight pure-logic unit tests. These only need their single source file
+# (no engine / tinygettext / SDL renderer linkage) and were previously left
+# unwired in the tree.
+make_unit_test(SizeTest SOURCE size_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL math/size.cpp)
+
+make_unit_test(SizefTest SOURCE sizef_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL math/sizef.cpp)
+
+make_unit_test(RectfTest SOURCE rectf_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL math/rectf.cpp)
+
+make_unit_test(RandomTest SOURCE random_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL math/random.cpp)
+
+make_unit_test(StringUtilTest SOURCE string_util_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL util/string_util.cpp)
+
+make_unit_test(VersionTest SOURCE version_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  INCLUDES ${CMAKE_BINARY_DIR})
+
 # SDL3 API / fullscreen regression tests. These pin the SDL2->SDL3 API
 # contract (SDL_SetWindowFullscreen returns bool; SDL_RectsEqual rename) and
 # the fixed fullscreen startup path so a future SDL break fails here instead
