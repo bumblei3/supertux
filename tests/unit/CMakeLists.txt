@@ -27,7 +27,7 @@ function(make_unit_test test_name)
   elseif (_libs)
     target_link_libraries(${test_name} PUBLIC ${_libs})
   endif()
-  set(all_test_targets "${all_test_targets};${test_name}")
+  set(all_test_targets "${all_test_targets};${test_name}" PARENT_SCOPE)
   add_test(NAME ${test_name}
     COMMAND $<TARGET_FILE:${test_name}>)
 endfunction(make_unit_test)
@@ -105,7 +105,8 @@ make_unit_test(TileReplacementTest SOURCE tile_replacement_test.cpp
 
 message("ALL TESTS: ${all_test_targets}")
 
-add_custom_target(tests DEPENDS ${all_test_targets})
+add_custom_target(tests)
+add_dependencies(tests ${all_test_targets})
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
-  DEPENDS ${all_test_targets}
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+add_dependencies(check ${all_test_targets})
