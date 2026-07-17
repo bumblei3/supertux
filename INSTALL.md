@@ -70,6 +70,18 @@ For ease of use, here are some installation lines for some Linux distributions:
   sudo pacman -S cmake base-devel libogg libvorbis openal sdl3 sdl3_image sdl3_ttf freetype2 libraqm curl openssl glew harfbuzz fribidi glm zlib fmt physfs
   ```
 
+**Graphics backend:** SuperTux uses **SDL3** (not SDL2) for windowing, input
+and rendering, with an SDL2-compatible shim (`external/SDL`). The package names
+above (`libsdl3-dev`, `sdl3`, `libsdl3-ttf-dev`, ...) reflect this.
+
+**Fullscreen on Wayland / Xwayland:** SuperTux requests fullscreen using the
+desktop display mode (`SDL_WINDOW_FULLSCREEN`) rather than an exclusive mode.
+On Wayland compositors (e.g. Mutter/GNOME under Xwayland) the fullscreen window
+is only mapped reliably when the `SDL_WINDOW_FULLSCREEN` flag is set at window
+creation time and sized from the desktop mode, so if fullscreen fails to appear,
+check that the compositor is honoring the fullscreen request (and that the
+configured `fullscreen_size` is not forcing an unsupported resolution).
+
 ### Linux/UNIX using CMake
 
 SuperTux uses CMake to generate a set of Makefiles for the build
