@@ -73,7 +73,7 @@ TEST(RectTest, SDL)
   // SDL
   const SDL_Rect sdl_rect_result = Rect(50, 50, 100, 100).to_sdl();
   const SDL_Rect sdl_rect_expected{50, 50, 50, 50};
-  ASSERT_TRUE(SDL_RectEquals(&sdl_rect_result, &sdl_rect_expected));
+  ASSERT_TRUE(SDL_RectsEqual(&sdl_rect_result, &sdl_rect_expected));
   ASSERT_EQ(Rect(SDL_Rect{50, 50, 50, 50}), Rect(50, 50, 100, 100));
 }
 

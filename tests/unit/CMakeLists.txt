@@ -2,7 +2,7 @@
 include(CTest)
 
 find_package(GTest REQUIRED)
-find_package(SDL2 REQUIRED)
+find_package(SDL3 REQUIRED)
 
 function(make_unit_test test_name)
   cmake_parse_arguments(PARSE_ARGV 1 mtargs
@@ -32,89 +32,109 @@ function(make_unit_test test_name)
     COMMAND $<TARGET_FILE:${test_name}>)
 endfunction(make_unit_test)
 
+make_unit_test(RectTest SOURCE rect_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL math/rect.cpp)
+
 make_unit_test(MD5Test SOURCE md5_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL addon/md5.cpp)
 
+# Lightweight pure-logic unit tests. These only need their single source file
+# (no engine / tinygettext / SDL renderer linkage) and were previously left
+# unwired in the tree.
+make_unit_test(SizeTest SOURCE size_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL math/size.cpp)
+
+make_unit_test(SizefTest SOURCE sizef_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL math/sizef.cpp)
+
+make_unit_test(RectfTest SOURCE rectf_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL math/rectf.cpp)
+
+make_unit_test(RandomTest SOURCE random_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL math/random.cpp)
+
+make_unit_test(StringUtilTest SOURCE string_util_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL util/string_util.cpp)
+
+make_unit_test(VersionTest SOURCE version_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  INCLUDES ${CMAKE_BINARY_DIR})
+
+# UID generator: pure logic, single source file.
+# We don't link util/log.cpp (it pulls in the Squirrel-based console layer);
+# instead uid_test_stub.cpp provides the few logging symbols uid_generator.cpp
+# references, keeping this a self-contained logic test.
+make_unit_test(UIDTest SOURCE uid_test.cpp uid_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL util/uid_generator.cpp)
+
+# Reader: parses the lisp-style config format. Pulls in reader_document/
+# reader_mapping/reader_collection plus the tinygettext and sexp-cpp libraries
+# (both already built as static libs). The engine logging/filesystem layer is
+# stubbed out by reader_test_stub.cpp to keep this a self-contained logic test.
+make_unit_test(ReaderTest SOURCE reader_test.cpp reader_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;${SUPERTUX_SOURCE_DIR}/build-sdl3/external/tinygettext/libtinygettext.a;${SUPERTUX_SOURCE_DIR}/build-sdl3/external/sexp-cpp/libsexp.a>"
+  EXTERNAL util/reader_document.cpp util/reader_mapping.cpp
+            util/reader_collection.cpp util/reader_iterator.cpp
+            util/reader_object.cpp util/gettext.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+            ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
+
+# SDL3 API / fullscreen regression tests. These pin the SDL2->SDL3 API
+# contract (SDL_SetWindowFullscreen returns bool; SDL_RectsEqual rename) and
+# the fixed fullscreen startup path so a future SDL break fails here instead
+# of only showing up as "SuperTux exits instantly on --fullscreen".
+make_unit_test(SDL3ApiTest SOURCE sdl3_api_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3)
+
+make_unit_test(SDLVideoModeTest SOURCE sdl_video_mode_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3)
+
 make_unit_test(AATriangleTest SOURCE aatriangle_test.cpp
-  GTEST SDL2
-  EXTERNAL math/aatriangle.cpp
-  DEFINITIONS GLM_ENABLE_EXPERIMENTAL)
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL math/aatriangle.cpp)
 
 make_unit_test(CollisionTest SOURCE collision_test.cpp
-  EXTERNAL math/rectf.cpp
-  SDL2 DEFINITIONS GLM_ENABLE_EXPERIMENTAL)
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL math/rectf.cpp)
 
 # CollisionModuleTest: regression coverage for the previously-untested
 # collision/ module (Constraints, set_rectangle_rectangle_constraints,
 # line_intersects_line, intersects_line, rectangle_aatriangle slope math).
 make_unit_test(CollisionModuleTest SOURCE collision_module_test.cpp
-  GTEST SDL2
-  EXTERNAL collision/collision.cpp math/rectf.cpp math/aatriangle.cpp
-  DEFINITIONS GLM_ENABLE_EXPERIMENTAL)
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL collision/collision.cpp math/rectf.cpp math/aatriangle.cpp)
 
-make_unit_test(DynamicScopedTest SOURCE dynamic_scoped_test.cpp
-  GTEST EXTERNAL util/dynamic_scoped_ref.hpp)
-
-# The following tests pull in large engine subsystems (tinygettext/gettext/SDL GUI
-# via util/file_system.cpp and editor/object_option.cpp). They are kept in the tree
-# but not yet wired into CTest until their transitive dependencies (tinygettext,
-# gettext, SDL renderer) are linked. Re-enable once those libs are available here.
-# make_unit_test(FileSystemTest SOURCE file_system_test.cpp
-#   GTEST LIBRARIES SDL2 EXTERNAL util/file_system.cpp)
-#
-# IFileStreamTest: disabled — the test uses IFileStream::tellg() in ASSERT_EQ,
-# but the current IFileStream API no longer exposes a usable tellg() return
-# value (compile error "void value not ignored"). Needs a rewrite against the
-# current physfs API before it can be wired in.
-# make_unit_test(IFileStreamTest SOURCE ifile_stream_test.cpp
-#   GTEST EXTERNAL physfs/ifile_stream.cpp physfs/ifile_streambuf.cpp physfs/util.cpp)
-#
-# make_unit_test(ObjectOptionTest SOURCE object_option_test.cpp
-#   GTEST EXTERNAL editor/object_option.cpp supertux/game_object.cpp video/color.cpp)
-#
-# make_unit_test(ReaderTest SOURCE reader_test.cpp
-#   GTEST EXTERNAL util/reader_document.cpp util/reader_mapping.cpp util/reader_collection.cpp util/reader_object.cpp physfs/ifile_stream.cpp util/file_system.cpp util/log.cpp)
-
-make_unit_test(RandomTest SOURCE random_test.cpp
-  GTEST EXTERNAL math/random.cpp)
-
-make_unit_test(RectTest SOURCE rect_test.cpp
-  GTEST SDL2 EXTERNAL math/rect.cpp)
-
-make_unit_test(RectfTest SOURCE rectf_test.cpp
-  GTEST SDL2 EXTERNAL math/rectf.cpp)
-
-make_unit_test(SizeTest SOURCE size_test.cpp
-  GTEST SDL2 EXTERNAL math/size.cpp)
-
-make_unit_test(SizefTest SOURCE sizef_test.cpp
-  GTEST SDL2 EXTERNAL math/sizef.cpp)
-
+# EasingTest: covers math/easing.cpp (the elastic easing overshoots by design).
 make_unit_test(EasingTest SOURCE easing_test.cpp
-  GTEST SDL2 EXTERNAL math/easing.cpp util/string_util.cpp)
-
-make_unit_test(StringUtilTest SOURCE string_util_test.cpp
-  GTEST EXTERNAL util/string_util.cpp)
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL math/easing.cpp util/string_util.cpp)
 
 # Dependency-free coverage for string_util (st_assert harness, no gtest/SDL).
 # Covers the replace_all empty-needle infinite-loop fix.
 make_unit_test(StringUtilStTest SOURCE string_util_st_test.cpp
   EXTERNAL util/string_util.cpp)
 
-# UidTest pulls in util/log.cpp, which transitively requires the full engine
-# (simplesquirrel via supertux/console.hpp). On Linux supertux2 is built as an
-# EXECUTABLE (only SHARED on Android), so it cannot be linked into a test. The
-# test stays in the tree but is not wired into CTest until the engine is split
-# into a linkable library or the test compiles the needed sources explicitly.
-# make_unit_test(UidTest SOURCE uid_test.cpp
-#   GTEST SDL2 EXTERNAL util/uid_generator.cpp util/log.cpp)
-
-make_unit_test(VersionTest SOURCE version_test.cpp
-  GTEST INCLUDES ${CMAKE_BINARY_DIR})
-
 # TileReplacementTest: regression coverage for the editor tile-replacement
 # degenerate/division-by-zero guard (issue #3810).
 make_unit_test(TileReplacementTest SOURCE tile_replacement_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
   EXTERNAL editor/tile_replacement.hpp)
 
 message("ALL TESTS: ${all_test_targets}")

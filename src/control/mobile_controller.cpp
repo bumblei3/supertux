@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include "SDL.h"
+#include <SDL3/SDL.h>
 
 #include "gui/menu_manager.hpp"
 #include "util/log.hpp"
@@ -64,43 +64,16 @@ MobileController::MobileController() :
   m_tex_debug(Surface::from_file("/images/engine/mobile/debug.png")),
   m_screen_width(),
   m_screen_height(),
-  m_mobile_controls_scale(),
-  m_haptic(nullptr, SDL_HapticClose),
-  m_haptic_timer(0)
+  m_mobile_controls_scale()
 {
-#ifdef __ANDROID__
-  SDL_InitSubSystem(SDL_INIT_HAPTIC | SDL_INIT_TIMER);
-  // ifdef'd just to be safe
-  m_haptic.reset(SDL_HapticOpen(0));
-  if (m_haptic)
-  {
-    if (!SDL_HapticRumbleSupported(m_haptic.get()))
-      m_haptic.reset();
-
-    if (m_haptic && SDL_HapticRumbleInit(m_haptic.get()) != 0)
-    {
-      log_warning << "Haptic device at index 0 couldn't be initialized: " << SDL_GetError() << std::endl;
-      m_haptic.reset();
-    }
-  }
-#endif
 }
 
 void
 MobileController::buzz()
 {
-  if (!m_haptic || !g_config->touch_haptic_feedback)
-    return;
-
-  if (m_haptic_timer == 0)
-    SDL_HapticRumblePlay(m_haptic.get(), 0.5f, 2000);
-
-  m_haptic_timer = SDL_AddTimer(30, [](Uint32 val, void* _data) -> Uint32 {
-    MobileController* data = static_cast<MobileController*>(_data);
-    SDL_HapticRumbleStop(data->m_haptic.get());
-    data->m_haptic_timer = 0;
-    return 0;
-  }, this);
+  // Haptic feedback is disabled under SDL3 (the SDL_Haptic init path was
+  // removed during the SDL2->SDL3 migration and no mobile haptic backend is
+  // wired up). Kept as a no-op so callers don't need to special-case it.
 }
 
 void
@@ -194,11 +167,11 @@ MobileController::update()
   m_input.reset();
 
   // Allow using on-screen controls with the mouse
-  int x, y;
+  float x, y;
   auto buttons = SDL_GetMouseState(&x, &y);
   if ((buttons & SDL_BUTTON_LMASK) != 0)
   {
-    activate_widget_at_pos(static_cast<float>(x), static_cast<float>(y));
+    activate_widget_at_pos(x, y);
   }
 
   for (auto& i : m_fingers)
@@ -242,7 +215,7 @@ bool
 MobileController::process_finger_down_event(const SDL_TouchFingerEvent& event)
 {
   Vector pos(event.x * float(m_screen_width), event.y * float(m_screen_height));
-  m_fingers[event.fingerId] = pos;
+  m_fingers[event.fingerID] = pos;
   return m_rect_jump.contains(pos) ||
     m_rect_action.contains(pos) ||
     m_rect_escape.contains(pos) ||
@@ -256,7 +229,7 @@ bool
 MobileController::process_finger_up_event(const SDL_TouchFingerEvent& event)
 {
   Vector pos(event.x * float(m_screen_width), event.y * float(m_screen_height));
-  m_fingers.erase(event.fingerId);
+  m_fingers.erase(event.fingerID);
   return m_rect_jump.contains(pos) ||
     m_rect_action.contains(pos) ||
     m_rect_escape.contains(pos) ||
@@ -270,7 +243,7 @@ bool
 MobileController::process_finger_motion_event(const SDL_TouchFingerEvent& event)
 {
   Vector pos(event.x * float(m_screen_width), event.y * float(m_screen_height));
-  m_fingers[event.fingerId] = pos;
+  m_fingers[event.fingerID] = pos;
   return m_rect_jump.contains(pos) ||
     m_rect_action.contains(pos) ||
     m_rect_escape.contains(pos) ||

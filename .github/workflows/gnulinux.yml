@@ -33,11 +33,11 @@ jobs:
         # TODO Working Linux 32-bit packaging
         # TODO CTest & coverage workflow implement
         arch: [32, 64]
-        os: [ubuntu-latest]
+        os: [ubuntu-26.04]
         compiler: [gcc, clang]
         build_type: [Debug, Release]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-26.04
             build_type: Release
             compiler: gcc
             arch: 64
@@ -76,8 +76,9 @@ jobs:
             libogg-dev \
             libvorbis-dev \
             libopenal-dev \
-            libsdl2-dev \
-            libsdl2-image-dev \
+            libsdl3-dev \
+            libsdl3-image-dev \
+            libsdl3-ttf-dev \
             libglib2.0-dev \
             libfreetype6-dev \
             libraqm-dev \
@@ -89,7 +90,9 @@ jobs:
             libphysfs-dev \
             zlib1g-dev \
             lcov \
-            doxygen
+            xvfb \
+            doxygen \
+            gcovr
 
       - name: Install 32-bit dependencies
         if: ${{ matrix.arch == 32 }}
@@ -114,8 +117,9 @@ jobs:
             libogg-dev:i386 \
             libvorbis-dev:i386 \
             libopenal-dev:i386 \
-            libsdl2-dev:i386 \
-            libsdl2-image-dev:i386 \
+            libsdl3-dev:i386 \
+            libsdl3-image-dev:i386 \
+            libsdl3-ttf-dev:i386 \
             libfreetype6-dev:i386 \
             libcurl4-openssl-dev:i386 \
             zlib1g-dev:i386 \
@@ -160,6 +164,7 @@ jobs:
           BUILD_TYPE: ${{ matrix.build_type }}
           32BIT: ${{ matrix.arch == 32 }}
           MAKE_DOCS: ${{ matrix.documentation }}
+          COVERAGE: ${{ matrix.coverage }}
           GLBINDING: ${{ matrix.glbinding }}
           #TESTS: ${{ matrix.os == 'ubuntu-20.04' }}
         run: |
@@ -191,9 +196,9 @@ jobs:
                        "-DUSE_GL_LIBRARY=libepoxy"
                      }) `
                      -DBUILD_DOCUMENTATION="$(if ($Env:MAKE_DOCS -eq "true") {"ON"} else {"OFF"})" `
-                     -DCMAKE_CXX_FLAGS="$(if ($Env:32BIT -eq "true") {"-m32"})" `
-                     -DCMAKE_C_FLAGS="$(if ($Env:32BIT -eq "true") {"-m32"})" `
-                     -DBUILD_TESTING=OFF
+                     -DCMAKE_CXX_FLAGS="$(if ($Env:32BIT -eq "true") {"-m32"})$(if ($Env:COVERAGE -eq "true") {" --coverage"})" `
+                     -DCMAKE_C_FLAGS="$(if ($Env:32BIT -eq "true") {"-m32"})$(if ($Env:COVERAGE -eq "true") {" --coverage"})" `
+                     -DBUILD_TESTING=ON
 
       - name: Build and install
         working-directory: build
@@ -201,20 +206,45 @@ jobs:
           make -j3 VERBOSE=1
           make install DESTDIR="/tmp/supertux" VERBOSE=1
 
-      # - name: Run tests
-      #   if: ${{ matrix.os == 'ubuntu-20.04' }}
-      #   working-directory: build
-      #   run: ./test_supertux2
+      - name: Run tests
+        working-directory: build
+        env:
+          # Run under a real (virtual) X display so the SDL tests exercise the
+          # actual X11/Wayland driver, not just the headless dummy. This lets
+          # compositor-specific regressions (e.g. the Mutter fullscreen issue
+          # fixed in 6c30d803c) fail in CI instead of only on real hardware.
+          SDL_VIDEODRIVER: x11
+        run: xvfb-run -a ctest --output-on-failure
 
-      # - name: Make coverage
-      #   if: ${{ matrix.coverage }}
-      #   working-directory: build
-      #   run: |
-      #     lcov --capture --directory . --exclude '/usr/*' --exclude '*/tests/*'\
-      #          --exclude '*/external/*' --output-file coverage.info
-      #     mkdir coverage
-      #     cd coverage
-      #     genhtml ../coverage.info
+      - name: Make coverage
+        if: ${{ matrix.coverage }}
+        working-directory: build
+        run: |
+          mkdir -p coverage
+          # gcovr may emit a spurious "source file(s) not found" error when
+          # generating per-file HTML details for generated/transient sources;
+          # the report (coverage.xml + index.html) is still written correctly,
+          # so we don't fail the job on that known gcovr quirk.
+          gcovr --root .. \
+                 --merge-mode-functions=separate \
+                 --exclude '.*/external/.*' \
+                 --exclude '.*/tests/.*' \
+                 --exclude '.*/build/.*' \
+                 --exclude '.*/CMakeFiles/.*' \
+                 --exclude '.*/CMakeCCompilerId.*' \
+                 --exclude '.*/CMakeCXXCompilerId.*' \
+                 --print-summary \
+                 --html-details coverage/index.html \
+                 --xml coverage/coverage.xml \
+                 || true
+
+      - name: Upload coverage report
+        if: ${{ matrix.coverage }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: "coverage-report"
+          path: build/coverage/*
+          if-no-files-found: ignore
 
       - name: Make documentation
         if: ${{ matrix.documentation }}
