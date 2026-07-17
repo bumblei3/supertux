@@ -36,7 +36,9 @@ make_unit_test(CollisionTest SOURCE collision_test.cpp
 message("ALL TESTS: ${all_test_targets}")
 
 add_custom_target(tests DEPENDS ${all_test_targets})
-add_custom_command(TARGET tests POST_BUILD COMMAND ctest -C $<CONFIGURATION> --output-on-failure)
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+  DEPENDS ${all_test_targets}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 make_unit_test(TileReplacementTest SOURCE tile_replacement_test.cpp
   EXTERNAL editor/tile_replacement.hpp)
