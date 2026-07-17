@@ -48,7 +48,7 @@ Sprite::Sprite(const Sprite& other) :
   m_frameidx(other.m_frameidx),
   m_animation_loops(other.m_animation_loops),
   m_last_ticks(g_game_time),
-  m_angle(0.0f), // FIXME: this can't be right
+  m_angle(other.m_angle), // FIXME was: 0.0f — copy the source angle, don't reset it
   m_alpha(1.0f),
   m_color(1.0f, 1.0f, 1.0f, 1.0f),
   m_blend(),

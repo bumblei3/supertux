@@ -64,47 +64,16 @@ MobileController::MobileController() :
   m_tex_debug(Surface::from_file("/images/engine/mobile/debug.png")),
   m_screen_width(),
   m_screen_height(),
-  m_mobile_controls_scale(),
-  m_haptic(nullptr),//, SDL_HapticClose),
-  m_haptic_timer(0)
+  m_mobile_controls_scale()
 {
-// FIXME: SDL3
-#if 0
-//#ifdef __ANDROID__
-  SDL_InitSubSystem(SDL_INIT_HAPTIC | SDL_INIT_TIMER);
-  // ifdef'd just to be safe
-  m_haptic.reset(SDL_HapticOpen(0));
-  if (m_haptic)
-  {
-    if (!SDL_HapticRumbleSupported(m_haptic.get()))
-      m_haptic.reset();
-
-    if (m_haptic && SDL_HapticRumbleInit(m_haptic.get()) != 0)
-    {
-      log_warning << "Haptic device at index 0 couldn't be initialized: " << SDL_GetError() << std::endl;
-      m_haptic.reset();
-    }
-  }
-#endif
 }
 
 void
 MobileController::buzz()
 {
-#if 0 // FIXME: SDL3
-  if (!m_haptic || !g_config->touch_haptic_feedback)
-    return;
-
-  if (m_haptic_timer == 0)
-    SDL_HapticRumblePlay(m_haptic.get(), 0.5f, 2000);
-
-  m_haptic_timer = SDL_AddTimer(30, [](Uint32 val, void* _data) -> Uint32 {
-    MobileController* data = static_cast<MobileController*>(_data);
-    SDL_HapticRumbleStop(data->m_haptic.get());
-    data->m_haptic_timer = 0;
-    return 0;
-  }, this);
-#endif
+  // Haptic feedback is disabled under SDL3 (the SDL_Haptic init path was
+  // removed during the SDL2->SDL3 migration and no mobile haptic backend is
+  // wired up). Kept as a no-op so callers don't need to special-case it.
 }
 
 void
