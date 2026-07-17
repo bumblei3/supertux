@@ -95,3 +95,23 @@ In case you need help, feel free to reach out using the following means:
 * **Social Media:** Mostly on [Twitter](https://twitter.com/supertux_team) at
   the moment.
 * **Discord:** Also, you can join our [Discord server](https://discord.com/invite/AcvtHWz) to get in touch with us.
+
+## Running the tests
+
+This fork wires a set of unit tests into CMake/CTest (upstream builds with
+`BUILD_TESTING=OFF` and does not run them). To build and run them locally:
+
+```sh
+cmake -B build -S . -DBUILD_TESTING=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+cmake --build build --target tests -j"$(nproc)"
+cd build && ctest --output-on-failure
+```
+
+The fork also has a CI workflow (`.github/workflows/fork-tests.yml`) that
+builds and runs the tests with both gcc and clang on every push to `master`.
+
+Currently enabled tests: MD5, AATriangle, Collision, Random, Rect, Rectf,
+Size, Sizef, StringUtil (gtest + st_assert), Version, TileReplacement,
+DynamicScoped. The remaining engine-dependent tests (FileSystem,
+IFileStream, ObjectOption, Reader, Uid) are kept in the tree but disabled
+until their transitive engine dependencies are linked.
