@@ -36,8 +36,9 @@ make_unit_test(MD5Test SOURCE md5_test.cpp
   EXTERNAL addon/md5.cpp)
 
 make_unit_test(AATriangleTest SOURCE aatriangle_test.cpp
+  GTEST SDL2
   EXTERNAL math/aatriangle.cpp
-  SDL2 DEFINITIONS GLM_ENABLE_EXPERIMENTAL)
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL)
 
 make_unit_test(CollisionTest SOURCE collision_test.cpp
   EXTERNAL math/rectf.cpp

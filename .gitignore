@@ -4,6 +4,7 @@ build.*/
 build-cov/
 build-san/
 build-gate/
+build-verify/
 **/CMakeFiles/
 **/CMakeCache.txt
 ./supertux2
