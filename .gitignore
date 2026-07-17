@@ -6,6 +6,7 @@ build-san/
 build-gate/
 build-verify/
 build-uid/
+build-eng/
 **/__pycache__/
 *.pyc
 **/CMakeFiles/
