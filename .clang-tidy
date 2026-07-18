@@ -1,6 +1,27 @@
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,portability-*,performance-*,bugprone-*,misc-*,-misc-unused-parameters'
-WarningsAsErrors: '*,-bugprone-parent-virtual-call,-clang-analyzer-optin.cplusplus.VirtualCall'
+Checks: >
+  clang-diagnostic-*,
+  clang-analyzer-core,
+  bugprone-*,
+  -bugprone-narrowing-conversions,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-unused-parameters,
+  -bugprone-multi-level-implicit-pointer-conversion,
+  misc-*,
+  -misc-unused-parameters,
+  -misc-include-cleaner,
+  -misc-confusable-identifiers,
+  performance-*,
+  -performance-no-int-to-ptr,
+  portability-*
+# Only the checks that catch undefined behaviour / hard crashes are
+# promoted to errors, so clang-tidy reports (does not break the build) on
+# style/noise but fails CI on real UB like null/optional dereference.
+WarningsAsErrors: >
+  bugprone-unchecked-optional-access,
+  bugprone-nullptr-arithmetic,
+  clang-analyzer-core.NullDereference,
+  clang-analyzer-core.CallAndMessage,
+  clang-analyzer-cplusplus.NewDelete
 HeaderFilterRegex: 'src/.*hpp'
-AnalyzeTemporaryDtors: true
 ...

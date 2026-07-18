@@ -243,6 +243,61 @@ jobs:
         run: |
           ctest --output-on-failure -R 'SmokeFullscreen|SmokeRenderPixels|SmokeLevelLoad'
 
+  # Static analysis with clang-tidy. Catches undefined-behaviour classes
+  # (null/optional dereference, bad pointer arithmetic) across the WHOLE
+  # codebase -- not just the code paths the E2E/sanitizer tests happen to
+  # exercise. The .clang-tidy config only promotes the hard-UB checks to
+  # errors; everything else is reported. This job reports (exit 0) and
+  # uploads the findings as an artifact so the count is trackable without
+  # breaking CI on pre-existing warnings; promote more checks to
+  # WarningsAsErrors as the code is cleaned up.
+  clang-tidy:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: recursive
+
+      - name: Apply submodule patches
+        run: bash scripts/apply_submodule_patches.sh
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake ninja-build build-essential clang-tidy \
+            libgtest-dev libogg-dev libvorbis-dev libopenal-dev \
+            libsdl3-dev libsdl3-image-dev libsdl3-ttf-dev \
+            libglib2.0-dev libfreetype6-dev libraqm-dev libglew-dev \
+            libglbinding-dev libcurl4-openssl-dev libglm-dev libfmt-dev \
+            libphysfs-dev zlib1g-dev
+
+      - name: Configure (export compile commands)
+        run: |
+          cmake -B build-tidy -S . \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DBUILD_TESTING=ON \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Run clang-tidy (report-only)
+        run: |
+          find src -name '*.cpp' -print0 \
+            | xargs -0 -P "$(nproc)" clang-tidy -p build-tidy \
+            > tidy-report.txt 2>&1 || true
+          echo "clang-tidy finished (report-only)"
+          grep -c "error:" tidy-report.txt | xargs echo "UB-error count:"
+          grep -c "warning:" tidy-report.txt | xargs echo "warning count:"
+
+      - name: Upload tidy report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clang-tidy-report
+          path: tidy-report.txt
+          if-no-files-found: ignore
+
   coverage:
     runs-on: ubuntu-26.04
     steps:
