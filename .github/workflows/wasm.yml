@@ -107,7 +107,8 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload to server
-        if: ${{ github.ref == 'refs/heads/master' && matrix.build_type == 'Release' && secrets.UPLOAD_URL != '' }}
+        if: ${{ github.ref == 'refs/heads/master' && matrix.build_type == 'Release' }}
+        continue-on-error: true
         env:
           UPLOAD_URL: ${{ secrets.UPLOAD_URL }}
         run: |
