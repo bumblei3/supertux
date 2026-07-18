@@ -32,7 +32,7 @@ jobs:
       fail-fast: false
       matrix:
         compiler: [gcc, clang]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     env:
       CC: ${{ matrix.compiler == 'clang' && 'clang' || 'gcc' }}
       CXX: ${{ matrix.compiler == 'clang' && 'clang++' || 'g++' }}
@@ -103,7 +103,7 @@ jobs:
           ctest --output-on-failure -E 'test_sexp'
 
   sanitizers:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -157,7 +157,7 @@ jobs:
           ctest --output-on-failure -E 'test_sexp'
 
   coverage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v4
         with:
