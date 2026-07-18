@@ -113,7 +113,7 @@ jobs:
           # asserts a clean exit, and (SmokeRenderPixels) that the captured
           # framebuffer is not black. Catches "runs but renders nothing"
           # regressions the unit tests (dummy SDL driver) cannot see.
-          ctest --output-on-failure -R 'SmokeFullscreen|SmokeRenderPixels'
+          ctest --output-on-failure -R 'SmokeFullscreen|SmokeRenderPixels|SmokeLevelLoad|SmokeRendererChoice|SmokeGameplay'
 
   sanitizers:
     runs-on: ubuntu-26.04
@@ -241,7 +241,7 @@ jobs:
           ASAN_OPTIONS: detect_leaks=0:abort_on_error=1:halt_on_error=1
           UBSAN_OPTIONS: halt_on_error=1
         run: |
-          ctest --output-on-failure -R 'SmokeFullscreen|SmokeRenderPixels|SmokeLevelLoad|SmokeRendererChoice'
+          ctest --output-on-failure -R 'SmokeFullscreen|SmokeRenderPixels|SmokeLevelLoad|SmokeRendererChoice|SmokeGameplay'
 
   # Static analysis with clang-tidy. Catches undefined-behaviour classes
   # (null/optional dereference, bad pointer arithmetic) across the WHOLE

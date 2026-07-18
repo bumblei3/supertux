@@ -40,7 +40,7 @@ add_test(
 # crash. Skips gracefully if xvfb-run is unavailable.
 add_test(
   NAME SmokeLevelLoad
-  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_level_load.sh" "${SUPERTUX_BIN}"
+  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_level_load.sh" "${SUPERTUX_BIN}" "${CMAKE_SOURCE_DIR}"
 )
 
 # Gameplay-render smoke test: launches a real .stl level directly (no
@@ -54,7 +54,7 @@ add_test(
 # signal-11.
 add_test(
   NAME SmokeGameplay
-  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_gameplay.sh" "${SUPERTUX_BIN}"
+  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_gameplay.sh" "${SUPERTUX_BIN}" "${CMAKE_SOURCE_DIR}"
 )
 
 # Renderer-choice smoke test: verifies SUPERTUX_RENDERER actually selects

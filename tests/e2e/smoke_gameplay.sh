@@ -17,7 +17,7 @@
 # `timeout`, which would kill xvfb and produce a benign XCloseDisplay
 # signal-11 that is the harness, not the game).
 #
-# Usage: smoke_gameplay.sh <path-to-supertux2> [extra level paths...]
+# Usage: smoke_gameplay.sh <path-to-supertux2> <source-dir>
 
 set -u
 
@@ -28,11 +28,20 @@ if [ -z "$SUPERTUX" ] || [ ! -x "$SUPERTUX" ]; then
 fi
 shift
 
-# Default level set if none provided.
+# Source dir (repo root) so level paths under data/levels/ resolve wherever
+# ctest is invoked from (CI runs ctest inside the build dir, not the root).
+SRC_DIR="${1:-$(cd "$(dirname "$0")/../.." && pwd)}"
+if [ ! -d "$SRC_DIR/data/levels" ]; then
+  echo "SKIP: data/levels not found under '$SRC_DIR'" >&2
+  exit 0
+fi
+shift || true
+
+# Default level set if no extra paths provided (resolved against SRC_DIR).
 if [ "$#" -eq 0 ]; then
   set -- \
-    "data/levels/bonus1/refisherator.stl" \
-    "data/levels/revenge_in_redmond/where_my_super_cape.stl"
+    "$SRC_DIR/data/levels/bonus1/refisherator.stl" \
+    "$SRC_DIR/data/levels/revenge_in_redmond/where_my_super_cape.stl"
 fi
 
 for tool in xvfb-run; do

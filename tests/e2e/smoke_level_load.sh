@@ -16,7 +16,7 @@
 # intentionally not tested here; worldmaps are reached via the in-game
 # menu, not the CLI.)
 #
-# Usage: smoke_level_load.sh <path-to-supertux2> [extra level paths...]
+# Usage: smoke_level_load.sh <path-to-supertux2> <source-dir>
 
 set -u
 
@@ -27,12 +27,20 @@ if [ -z "$SUPERTUX" ] || [ ! -x "$SUPERTUX" ]; then
 fi
 shift
 
-# Default level set if none provided: a few representative levels from
-# different level packs so parser/loader regressions surface broadly.
+# Source dir (repo root) so level paths under data/levels/ resolve wherever
+# ctest is invoked from (CI runs ctest inside the build dir, not the root).
+SRC_DIR="${1:-$(cd "$(dirname "$0")/../.." && pwd)}"
+if [ ! -d "$SRC_DIR/data/levels" ]; then
+  echo "SKIP: data/levels not found under '$SRC_DIR'" >&2
+  exit 0
+fi
+shift || true
+
+# Default level set if none provided (resolved against SRC_DIR).
 if [ "$#" -eq 0 ]; then
   set -- \
-    "data/levels/bonus1/refisherator.stl" \
-    "data/levels/revenge_in_redmond/where_my_super_cape.stl"
+    "$SRC_DIR/data/levels/bonus1/refisherator.stl" \
+    "$SRC_DIR/data/levels/revenge_in_redmond/where_my_super_cape.stl"
 fi
 
 for tool in xvfb-run; do
