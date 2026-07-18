@@ -43,6 +43,20 @@ add_test(
   COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_level_load.sh" "${SUPERTUX_BIN}"
 )
 
+# Gameplay-render smoke test: launches a real .stl level directly (no
+# worldmap) so a GameSession opens and the Compositor::render loop runs
+# (through the intro cutscene, which shares the gameplay render path). Lets
+# the render loop run for a while and asserts it does not crash frame-to-
+# frame -- catches regressions like the PlayerStatusHUD null-deref or the
+# boot use-after-free that only manifest once the game is actually drawing.
+# Does not skip the cutscene (headless xvfb has no reliable key injection);
+# a clean SIGTERM (not `timeout`) avoids the benign xvfb-kill XCloseDisplay
+# signal-11.
+add_test(
+  NAME SmokeGameplay
+  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_gameplay.sh" "${SUPERTUX_BIN}"
+)
+
 # Renderer-choice smoke test: verifies SUPERTUX_RENDERER actually selects
 # the SDL3 renderer driver (regression guard for the black-screen fix where
 # the default opengl renderer presented a black framebuffer but software
