@@ -32,3 +32,13 @@ add_test(
   NAME SmokeRenderPixels
   COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_render_pixels.sh" "${SUPERTUX_BIN}"
 )
+
+# Level-load smoke test: launches the real binary with .stl level files to
+# exercise the level-parsing / GameSession-init path (which the
+# menu/worldmap E2E never reaches). Does not assert on rendered pixels
+# (a headless cutscene may not advance); only asserts loading does not
+# crash. Skips gracefully if xvfb-run is unavailable.
+add_test(
+  NAME SmokeLevelLoad
+  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_level_load.sh" "${SUPERTUX_BIN}"
+)
