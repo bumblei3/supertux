@@ -85,7 +85,7 @@ make_unit_test(UIDTest SOURCE uid_test.cpp uid_test_stub.cpp
 # stubbed out by reader_test_stub.cpp to keep this a self-contained logic test.
 make_unit_test(ReaderTest SOURCE reader_test.cpp reader_test_stub.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
-            "$<LINK_GROUP:RESCAN,SDL3::SDL3;${SUPERTUX_SOURCE_DIR}/build-sdl3/external/tinygettext/libtinygettext.a;${SUPERTUX_SOURCE_DIR}/build-sdl3/external/sexp-cpp/libsexp.a>"
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
   EXTERNAL util/reader_document.cpp util/reader_mapping.cpp
             util/reader_collection.cpp util/reader_iterator.cpp
             util/reader_object.cpp util/gettext.cpp
