@@ -34,5 +34,12 @@ else
   export SDL_VIDEODRIVER=x11
 fi
 
+# On some systems the default OpenGL renderer presents a black framebuffer
+# (SDL3 + certain Mesa/NVIDIA drivers under Wayland/XWayland) while the
+# software renderer works. Default to software unless overridden.
+if [ -z "${SUPERTUX_RENDERER:-}" ]; then
+  export SUPERTUX_RENDERER=software
+fi
+
 echo "Launching SuperTux with SDL_VIDEODRIVER=${SDL_VIDEODRIVER} (DISPLAY=${DISPLAY:-}, WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-})"
 exec "${SUPERTUX_BIN}" "$@"

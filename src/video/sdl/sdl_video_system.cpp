@@ -69,7 +69,26 @@ SDLVideoSystem::create_window()
 
   create_sdl_window(0);
 
-  m_sdl_renderer.reset(SDL_CreateRenderer(m_sdl_window.get(), nullptr));
+  // Prefer a renderer chosen via SUPERTUX_RENDERER (or SDL_RENDERER env).
+  // On some systems the default OpenGL renderer presents a black
+  // framebuffer (SDL3 + certain Mesa/NVIDIA drivers under Wayland/XWayland)
+  // while the software renderer works. Allow overriding without recompiling.
+  const char* renderer_name = SDL_GetHint("SUPERTUX_RENDERER");
+  if (!renderer_name || renderer_name[0] == '\0')
+    renderer_name = SDL_GetHint("SDL_RENDERER");
+
+  SDL_Renderer* renderer = nullptr;
+  if (renderer_name && renderer_name[0] != '\0') {
+    SDL_PropertiesID props = SDL_CreateProperties();
+    SDL_SetStringProperty(props, SDL_PROP_RENDERER_CREATE_NAME_STRING, renderer_name);
+    SDL_SetPointerProperty(props, SDL_PROP_RENDERER_CREATE_WINDOW_POINTER, m_sdl_window.get());
+    renderer = SDL_CreateRendererWithProperties(props);
+    SDL_DestroyProperties(props);
+  }
+  if (!renderer)
+    renderer = SDL_CreateRenderer(m_sdl_window.get(), nullptr);
+
+  m_sdl_renderer.reset(renderer);
   if (!m_sdl_renderer)
   {
     std::stringstream msg;
