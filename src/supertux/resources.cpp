@@ -91,7 +91,15 @@ Resources::load(bool reload)
     {
       current_font = font;
       fixed_font.reset(new TTFFont(font, 18, 1.25f, 2, 1));
-      normal_font = std::move(fixed_font);
+      // NOTE: give normal_font its OWN font instance. Previously this was
+      // `normal_font = fixed_font` (raw aliasing of two unique_ptrs -> UB /
+      // double-close) and later `std::move(fixed_font)` which left
+      // Resources::fixed_font as nullptr -- but Resources::fixed_font is
+      // dereferenced all over the codebase (e.g. PlayerStatusHUD::draw calls
+      // Resources::fixed_font->get_text_width()), so a null fixed_font
+      // SIGSEVs on the real GPU display. Two independent instances are
+      // functionally identical and avoid both the aliasing-UB and the null.
+      normal_font.reset(new TTFFont(font, 18, 1.25f, 2, 1));
       normal_bitmap_font.reset(new BitmapFont(BitmapFont::VARIABLE, "fonts/white.stf"));
       small_font.reset(new TTFFont(font, 10, 1.25f, 2, 1));
       big_font.reset(new TTFFont(font, 22, 1.25f, 2, 1));
