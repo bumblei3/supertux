@@ -10,6 +10,7 @@ build-uid/
 build-eng/
 build-sdl3/
 build-sdl3-asan/
+build-discord/
 **/__pycache__/
 *.pyc
 **/CMakeFiles/
