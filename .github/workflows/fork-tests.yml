@@ -289,11 +289,17 @@ jobs:
             | xargs -0 -P 2 clang-tidy -p build-tidy \
             > tidy-report.txt 2>&1 || true
           echo "clang-tidy finished (report-only)"
-          grep -c "error:" tidy-report.txt | xargs echo "UB-error count:"
-          grep -c "warning:" tidy-report.txt | xargs echo "warning count:"
+          UB=$(grep -c "error:" tidy-report.txt); echo "UB-error count: $UB"
+          WARN=$(grep -c "warning:" tidy-report.txt); echo "warning count: $WARN"
+          # Surface the hard-UB errors (the checks promoted to errors in
+          # .clang-tidy) directly in the log so the result is visible without
+          # downloading the artifact.
+          echo "--- hard-UB error lines (if any) ---"
+          grep -E "error: .*(unchecked-optional-access|nullptr-arithmetic|NullDereference|CallAndMessage|NewDelete)" tidy-report.txt | head -20 || true
 
       - name: Upload tidy report
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: clang-tidy-report
