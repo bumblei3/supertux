@@ -42,3 +42,12 @@ add_test(
   NAME SmokeLevelLoad
   COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_level_load.sh" "${SUPERTUX_BIN}"
 )
+
+# Renderer-choice smoke test: verifies SUPERTUX_RENDERER actually selects
+# the SDL3 renderer driver (regression guard for the black-screen fix where
+# the default opengl renderer presented a black framebuffer but software
+# works). Checks the "SDL_Renderer: <name>" log line, no pixels needed.
+add_test(
+  NAME SmokeRendererChoice
+  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_renderer_choice.sh" "${SUPERTUX_BIN}"
+)
