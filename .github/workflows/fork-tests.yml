@@ -158,6 +158,79 @@ jobs:
         run: |
           ctest --output-on-failure -E 'test_sexp'
 
+  # E2E under AddressSanitizer. The unit-test sanitizer job above only
+  # exercises code reachable from unit tests; the boot/fullscreen/render
+  # path (where the SDL3 texture_manager use-after-free and the font-close
+  # crash actually lived) is NOT covered by units. This job builds the
+  # full supertux2 binary with ASan+UBSan and runs the E2E smoke tests
+  # against it, so a heap corruption in the real startup/render path is
+  # caught automatically. We disable leak detection because the E2E tests
+  # SIGTERM the game mid-run (not a clean teardown), which would otherwise
+  # report benign "leaks" on exit.
+  sanitizers-e2e:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: recursive
+
+      - name: Apply submodule patches
+        run: bash scripts/apply_submodule_patches.sh
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            build-essential \
+            libgtest-dev \
+            libogg-dev \
+            libvorbis-dev \
+            libopenal-dev \
+            libsdl3-dev \
+            libsdl3-image-dev \
+            libsdl3-ttf-dev \
+            libglib2.0-dev \
+            libfreetype6-dev \
+            libraqm-dev \
+            libglew-dev \
+            libglbinding-dev \
+            libcurl4-openssl-dev \
+            libglm-dev \
+            libfmt-dev \
+            libphysfs-dev \
+            zlib1g-dev \
+            xvfb \
+            scrot \
+            imagemagick
+
+      - name: Configure (ASan + UBSan)
+        run: |
+          cmake -B build-san-e2e -S . \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DBUILD_TESTING=ON \
+            -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
+
+      - name: Build supertux2 (ASan)
+        run: |
+          cmake --build build-san-e2e --target supertux2 -j"$(nproc)"
+
+      - name: Configure & build E2E test harness
+        working-directory: build-san-e2e
+        run: |
+          cmake --build . --target tests -j"$(nproc)"
+
+      - name: Run E2E smoke + render tests under ASan
+        working-directory: build-san-e2e
+        env:
+          ASAN_OPTIONS: detect_leaks=0:abort_on_error=1:halt_on_error=1
+          UBSAN_OPTIONS: halt_on_error=1
+        run: |
+          ctest --output-on-failure -R 'SmokeFullscreen|SmokeRenderPixels'
+
   coverage:
     runs-on: ubuntu-26.04
     steps:
