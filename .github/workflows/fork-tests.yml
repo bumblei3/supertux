@@ -283,8 +283,10 @@ jobs:
 
       - name: Run clang-tidy (report-only)
         run: |
+          # -P 2 (not nproc) to avoid OOM on shared CI runners with many
+          # parallel clang-tidy processes over the whole src/ tree.
           find src -name '*.cpp' -print0 \
-            | xargs -0 -P "$(nproc)" clang-tidy -p build-tidy \
+            | xargs -0 -P 2 clang-tidy -p build-tidy \
             > tidy-report.txt 2>&1 || true
           echo "clang-tidy finished (report-only)"
           grep -c "error:" tidy-report.txt | xargs echo "UB-error count:"
