@@ -5,6 +5,7 @@ build-cov/
 build-san/
 build-gate/
 build-verify/
+build-verify2/
 build-uid/
 build-eng/
 build-sdl3/
