@@ -12,7 +12,7 @@ if [ "$SOURCE" = "ON" ]; then
     cpack --config CPackSourceConfig.cmake -G TGZ;
 fi
 
-if ([ "$OS_NAME" = "ubuntu-latest" ]) && [ "$PACKAGE" = "ON" ]; then
+if ([ "$OS_NAME" = "ubuntu-latest" ] || [ "$OS_NAME" = "ubuntu-26.04" ]) && [ "$PACKAGE" = "ON" ]; then
     ../.ci_scripts/build_appimage.sh
     # extract built appimages for uploading
     mv ~/out/* .
@@ -24,5 +24,9 @@ if ([ "$OS_NAME" = "ubuntu-latest" ]) && [ "$PACKAGE" = "ON" ]; then
     done
 fi
 
-mkdir upload
-mv SuperTux* upload/
+mkdir -p upload
+# nullglob is set above, so SuperTux* may expand to nothing (no artifacts);
+# only move if at least one match exists, otherwise `mv` errors out.
+for f in SuperTux*; do
+    [ -e "$f" ] && mv "$f" upload/
+done
