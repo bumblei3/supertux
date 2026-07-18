@@ -2739,19 +2739,25 @@ Player::deactivate()
 bool
 Player::get_input_pressed(const std::string& input)
 {
-  return m_controller->pressed(Control_from_string(input).value());
+  auto control = Control_from_string(input);
+  if (!control) return false;
+  return m_controller->pressed(*control);
 }
 
 bool
 Player::get_input_held(const std::string& input)
 {
-  return m_controller->hold(Control_from_string(input).value());
+  auto control = Control_from_string(input);
+  if (!control) return false;
+  return m_controller->hold(*control);
 }
 
 bool
 Player::get_input_released(const std::string& input)
 {
-  return m_controller->released(Control_from_string(input).value());
+  auto control = Control_from_string(input);
+  if (!control) return false;
+  return m_controller->released(*control);
 }
 
 void
