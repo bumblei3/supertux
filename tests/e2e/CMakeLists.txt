@@ -23,3 +23,12 @@ add_test(
   NAME SmokeFullscreen
   COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_fullscreen.sh" "${SUPERTUX_BIN}"
 )
+
+# Render-output smoke test: boots the real binary under xvfb and asserts
+# the captured framebuffer is NOT black (catches "runs fine but renders
+# nothing" regressions that a clean-exit/boot check cannot see). Skips
+# gracefully if scrot/convert are unavailable.
+add_test(
+  NAME SmokeRenderPixels
+  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_render_pixels.sh" "${SUPERTUX_BIN}"
+)
