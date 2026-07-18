@@ -235,13 +235,13 @@ jobs:
         run: |
           cmake --build . --target tests -j"$(nproc)"
 
-      - name: Run E2E smoke + render + level-load tests under ASan
+      - name: Run E2E smoke + render + level-load + renderer-choice tests under ASan
         working-directory: build-san-e2e
         env:
           ASAN_OPTIONS: detect_leaks=0:abort_on_error=1:halt_on_error=1
           UBSAN_OPTIONS: halt_on_error=1
         run: |
-          ctest --output-on-failure -R 'SmokeFullscreen|SmokeRenderPixels|SmokeLevelLoad'
+          ctest --output-on-failure -R 'SmokeFullscreen|SmokeRenderPixels|SmokeLevelLoad|SmokeRendererChoice'
 
   # Static analysis with clang-tidy. Catches undefined-behaviour classes
   # (null/optional dereference, bad pointer arithmetic) across the WHOLE
