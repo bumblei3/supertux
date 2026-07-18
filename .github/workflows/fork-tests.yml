@@ -72,7 +72,10 @@ jobs:
             libglm-dev \
             libfmt-dev \
             libphysfs-dev \
-            zlib1g-dev
+            zlib1g-dev \
+            xvfb \
+            scrot \
+            imagemagick
 
       - name: Restore ccache
         uses: actions/cache@v4
@@ -91,9 +94,9 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
-      - name: Build unit tests only
+      - name: Build unit tests + game binary
         run: |
-          cmake --build build --target tests -j"$(nproc)"
+          cmake --build build --target tests supertux2 -j"$(nproc)"
 
       - name: Run unit tests
         working-directory: build
@@ -102,6 +105,15 @@ jobs:
           # 2 pre-existing failures unrelated to SuperTux (present on
           # upstream/master too). Run only SuperTux's own unit tests.
           ctest --output-on-failure -E 'test_sexp'
+
+      - name: Run E2E smoke + render tests
+        working-directory: build
+        run: |
+          # Exercises the real supertux2 binary under xvfb: boots to menu,
+          # asserts a clean exit, and (SmokeRenderPixels) that the captured
+          # framebuffer is not black. Catches "runs but renders nothing"
+          # regressions the unit tests (dummy SDL driver) cannot see.
+          ctest --output-on-failure -R 'SmokeFullscreen|SmokeRenderPixels'
 
   sanitizers:
     runs-on: ubuntu-26.04
