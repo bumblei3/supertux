@@ -60,8 +60,8 @@ jobs:
             libogg-dev \
             libvorbis-dev \
             libopenal-dev \
-            libsdl2-dev \
-            libsdl2-image-dev \
+            libsdl3-dev \
+            libsdl3-image-dev \
             libglib2.0-dev \
             libfreetype6-dev \
             libraqm-dev \
@@ -126,8 +126,8 @@ jobs:
             libogg-dev \
             libvorbis-dev \
             libopenal-dev \
-            libsdl2-dev \
-            libsdl2-image-dev \
+            libsdl3-dev \
+            libsdl3-image-dev \
             libglib2.0-dev \
             libfreetype6-dev \
             libraqm-dev \
@@ -180,8 +180,8 @@ jobs:
             libogg-dev \
             libvorbis-dev \
             libopenal-dev \
-            libsdl2-dev \
-            libsdl2-image-dev \
+            libsdl3-dev \
+            libsdl3-image-dev \
             libglib2.0-dev \
             libfreetype6-dev \
             libraqm-dev \
