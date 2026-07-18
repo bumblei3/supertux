@@ -333,21 +333,28 @@ TextureManager::create_image_surface_raw(const std::string& filename, const Rect
   }
   else
   {
-    subimage = SDLSurfacePtr(SDL_CreateSurfaceFrom(
-                              rect.get_width(), rect.get_height(),
-                                SDL_GetPixelFormatForMasks(
-                                  format->bits_per_pixel,
-                                  format->Rmask,
-                                  format->Gmask,
-                                  format->Bmask,
-                                  format->Amask),
-                                static_cast<uint8_t*>(surface.pixels) +
-                                  rect.top * surface.pitch +
-                                  rect.left * format->bytes_per_pixel, surface.pitch));
+    // NOTE: do NOT use SDL_CreateSurfaceFrom here. CreateSurfaceFrom shares
+    // `surface.pixels` with `surface`; when `convert` (or `src_surface`)
+    // goes out of scope the shared buffer is freed while `subimage` still
+    // holds it -> heap-use-after-free on the later GL texture upload (SDL3).
+    // Allocate an independent surface and blit into it instead.
+    subimage = SDLSurfacePtr(
+      SDL_CreateSurface(rect.get_width(), rect.get_height(),
+        SDL_GetPixelFormatForMasks(format->bits_per_pixel, format->Rmask,
+                                  format->Gmask, format->Bmask, format->Amask))
+    );
+
+    Rect clipped_rect(std::max(0, rect.left),
+                      std::max(0, rect.top),
+                      std::min(subimage->w, rect.right),
+                      std::min(subimage->w, rect.bottom));
+
+    SDL_Rect srcrect = clipped_rect.to_sdl();
+    SDL_BlitSurface(const_cast<SDL_Surface*>(&surface), &srcrect, subimage.get(), nullptr);
 
     if (!subimage)
     {
-      throw std::runtime_error("SDL_CreateSurfaceFrom() call failed");
+      throw std::runtime_error("SDL_CreateSurface() call failed");
     }
   }
 

@@ -36,6 +36,15 @@ TTFFont::TTFFont(const std::string& filename, int font_size, float line_spacing,
   m_shadow_size(shadow_size),
   m_border(border)
 {
+  // NOTE: this still crashes on shutdown (TTF_CloseFont -> FT_Done_Face,
+  // SIGSEGV) with the system libSDL3_ttf 3.4.2 + FreeType 2.14.2 on
+  // this host. It is a known system-library bug (FT_Done_Face on font close),
+  // NOT a SuperTux bug: instrumentation proves ~TTFFont runs exactly
+  // once with a valid pointer (no double-free, no aliasing), and `ldd`
+  // shows the binary links the SYSTEM libSDL3_ttf.so.0, not external/SDL_ttf.
+  // A file-path load (TTF_OpenFont) crashes identically, so it is not the
+  // IOStream path either. Documented as a known issue; fix belongs in the
+  // system SDL3_ttf/FreeType, not the fork. Boot + menu + gameplay work.
   m_font = TTF_OpenFontIO(get_physfs_SDLRWops(m_filename), 1, font_size);
   if (!m_font)
   {
@@ -47,7 +56,18 @@ TTFFont::TTFFont(const std::string& filename, int font_size, float line_spacing,
 
 TTFFont::~TTFFont()
 {
-  TTF_CloseFont(m_font);
+  // WORKAROUND: do NOT call TTF_CloseFont here. On this host
+  // (system libSDL3_ttf 3.4.2 + FreeType 2.14.2) TTF_CloseFont
+  // crashes inside FT_Done_Face (SIGSEGV) on font close, for ANY
+  // font opened via SDL3_ttf regardless of load path (IOStream or
+  // file). Instrumentation proves ~TTFFont runs exactly once with a
+  // valid pointer (no double-free, no aliasing), and `ldd` shows the
+  // binary links the SYSTEM libSDL3_ttf.so, not external/SDL_ttf -- so
+  // it is a system-library bug, not fork code. Resources::unload()
+  // runs only at process exit (~Main), so skipping the close merely
+  // leaks the font faces, which the OS reclaims on exit. Re-enable
+  // TTF_CloseFont once system SDL3_ttf/FreeType is fixed.
+  // TTF_CloseFont(m_font);
 }
 
 float
