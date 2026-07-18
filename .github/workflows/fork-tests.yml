@@ -258,11 +258,19 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          # No submodules: clang-tidy only scans src/*.cpp (not external/SDL_ttf),
-          # and the recursive-submodule checkout/post-cleanup was observed to
-          # HANG the run (stuck in "Post Run actions/checkout", run never
-          # finalizes, logs stay locked). Dropping submodules avoids that.
-          submodules: false
+          submodules: recursive
+          # clean:false -- the post-job "git clean"/submodule-reset was
+          # observed to HANG the run (stuck in "Post Run actions/checkout",
+          # run never finalizes, logs locked) across runs 29657961381 /
+          # 29659640902. We need the submodules for `cmake -B build-tidy`
+          # (SuperTux's CMakeLists references external/SDL_ttf), so we
+          # cannot drop them -- instead we skip the post-job cleanup that
+          # hung. timeout-minutes:30 ensures any future hang terminates
+          # cleanly instead of wedging the run.
+          clean: false
+
+      - name: Apply submodule patches
+        run: bash scripts/apply_submodule_patches.sh
 
       - name: Install build dependencies
         run: |
