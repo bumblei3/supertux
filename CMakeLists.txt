@@ -237,6 +237,10 @@ set(TINYGETTEXT_SDL_VERSION "3")
 add_subdirectory(external/tinygettext EXCLUDE_FROM_ALL)
 
 if(ENABLE_DISCORD)
+  # discord-sdk pulls in rapidjson via FetchContent; rapidjson's CMake builds a
+  # "tests" custom target that collides with this fork's own add_custom_target(tests)
+  # in tests/unit/CMakeLists.txt. We never want rapidjson's tests, so disable them.
+  set(RAPIDJSON_BUILD_TESTS OFF CACHE BOOL "" FORCE)
   add_subdirectory(external/discord-sdk EXCLUDE_FROM_ALL)
 endif()
 
