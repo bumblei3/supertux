@@ -29,6 +29,10 @@ on:
     paths:
       - 'src/**'
 
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint_cppcheck:
     runs-on: ubuntu-latest

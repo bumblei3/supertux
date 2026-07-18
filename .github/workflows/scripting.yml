@@ -24,6 +24,10 @@ on:
       - tools/scripting_docs_gen/**
   workflow_dispatch:
 
+concurrency:
+  group: scripting-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   scripting-update:
     runs-on: ubuntu-latest

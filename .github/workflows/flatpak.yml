@@ -23,6 +23,10 @@ on:
     tags:
       - '*'
 
+concurrency:
+  group: flatpak-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   flatpak:
     name: "Flatpak"

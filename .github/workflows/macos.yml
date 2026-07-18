@@ -25,6 +25,10 @@ on:
       - '*'
   pull_request: {}
 
+concurrency:
+  group: macos-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   macos:
 

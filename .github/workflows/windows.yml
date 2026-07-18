@@ -25,6 +25,10 @@ on:
       - '*'
   pull_request: {}
 
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   windows:
 

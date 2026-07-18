@@ -26,6 +26,10 @@ on:
       - '*'
   pull_request: {}
 
+concurrency:
+  group: freebsd-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   bsd:
 

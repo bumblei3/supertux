@@ -25,6 +25,10 @@ on:
       - '*'
   pull_request: {}
 
+concurrency:
+  group: gnulinux-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   gnulinux:
     strategy:

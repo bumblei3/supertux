@@ -25,6 +25,10 @@ on:
       - '*'
   pull_request: {}
 
+concurrency:
+  group: wasm-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   wasm:
     strategy:
