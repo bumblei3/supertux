@@ -147,6 +147,14 @@ make_unit_test(LineIteratorTest SOURCE line_iterator_test.cpp
 make_unit_test(UTF8IteratorTest SOURCE utf8_iterator_test.cpp utf8_iterator_test_stub.cpp
   EXTERNAL util/utf8_iterator.cpp)
 
+# Coverage for ColorOKLCh (util/colorspace_oklab.hpp): sRGB->OKLab LCh
+# conversion against reference values, greyscale hue determinism, lightness
+# monotonicity, and the modified-lightness estimate. Links video/color.cpp
+# (needs SDL3 via color.hpp) with logging stubbed.
+make_unit_test(ColorspaceOklabTest SOURCE colorspace_oklab_test.cpp colorspace_oklab_test_stub.cpp
+  LIBRARIES SDL3::SDL3
+  EXTERNAL util/colorspace_oklab.cpp video/color.cpp)
+
 # TileReplacementTest: regression coverage for the editor tile-replacement
 # degenerate/division-by-zero guard (issue #3810).
 make_unit_test(TileReplacementTest SOURCE tile_replacement_test.cpp
