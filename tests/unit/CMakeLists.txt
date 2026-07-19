@@ -162,6 +162,14 @@ make_unit_test(ColorParseTest SOURCE color_parse_test.cpp color_parse_test_stub.
   LIBRARIES SDL3::SDL3
   EXTERNAL video/color.cpp)
 
+# Coverage for collision/collision.hpp pure geometry (line_intersects_line,
+# intersects_line, rectangle_aatriangle) not asserted by the gtest CollisionTest.
+# collision.cpp pulls in math/aatriangle.hpp + supertux/physic.hpp (both
+# header-only); logging stubbed (collision_geom_test_stub.cpp).
+make_unit_test(CollisionGeomTest SOURCE collision_geom_test.cpp collision_geom_test_stub.cpp
+  EXTERNAL collision/collision.cpp
+  INCLUDES ${CMAKE_BINARY_DIR})
+
 # Coverage for math/anchor_point.hpp: the 9 anchor positions over a known
 # Rectf, placed-object offsets, quarter-offset centres, and string<->anchor
 # round-trips. gettext/logging stubbed (anchor_point_test_stub.cpp); tinygettext
