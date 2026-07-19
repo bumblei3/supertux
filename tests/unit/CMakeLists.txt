@@ -155,6 +155,15 @@ make_unit_test(ColorspaceOklabTest SOURCE colorspace_oklab_test.cpp colorspace_o
   LIBRARIES SDL3::SDL3
   EXTERNAL util/colorspace_oklab.cpp video/color.cpp)
 
+# Coverage for math/anchor_point.hpp: the 9 anchor positions over a known
+# Rectf, placed-object offsets, quarter-offset centres, and string<->anchor
+# round-trips. gettext/logging stubbed (anchor_point_test_stub.cpp); tinygettext
+# include path is needed because gettext.hpp pulls in its header.
+make_unit_test(AnchorPointTest SOURCE anchor_point_test.cpp anchor_point_test_stub.cpp
+  LIBRARIES tinygettext
+  EXTERNAL math/anchor_point.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include ${CMAKE_BINARY_DIR})
+
 # TileReplacementTest: regression coverage for the editor tile-replacement
 # degenerate/division-by-zero guard (issue #3810).
 make_unit_test(TileReplacementTest SOURCE tile_replacement_test.cpp
