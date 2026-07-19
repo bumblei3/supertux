@@ -160,6 +160,10 @@ Addon::parse(const ReaderMapping& mapping)
     std::optional<ReaderCollection> screenshots_reader;
     if (mapping.get("screenshots", screenshots_reader))
     {
+      // False positive: ReaderMapping::get() only emplaces the optional on
+      // success (see reader_mapping.cpp:264), so inside this guarded block
+      // screenshots_reader is guaranteed to hold a value.
+      // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
       for (auto& obj : screenshots_reader->get_objects())
       {
         std::string url;
@@ -171,6 +175,8 @@ Addon::parse(const ReaderMapping& mapping)
     std::optional<ReaderCollection> dependencies_reader;
     if (mapping.get("dependencies", dependencies_reader))
     {
+      // False positive, same reasoning as for screenshots_reader above.
+      // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
       for (auto& obj : dependencies_reader->get_objects())
       {
         std::string id;

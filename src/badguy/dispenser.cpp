@@ -68,6 +68,10 @@ Dispenser::Dispenser(const ReaderMapping& reader) :
     std::optional<ReaderMapping> objects_mapping;
     if (reader.get("objects", objects_mapping))
     {
+      // False positive: ReaderMapping::get() only emplaces the optional on
+      // success (see reader_mapping.cpp:264), so objects_mapping is
+      // guaranteed to hold a value inside this guarded block.
+      // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
       auto iter = objects_mapping->get_iter();
       while (iter.next())
         add_object(GameObjectFactory::instance().create(iter.get_key(), iter.as_mapping()));
@@ -212,6 +216,12 @@ Dispenser::launch_object()
     }
 
     auto object = m_objects[m_next_object].get();
+    if (!object)
+    {
+      // The dispenser object list may contain a failed-to-create entry;
+      // skip it instead of dereferencing a null pointer.
+      return;
+    }
     auto obj_badguy = dynamic_cast<BadGuy*>(object);
     if (obj_badguy && m_limit_dispensed_badguys &&
         m_current_badguys >= m_max_concurrent_badguys)
