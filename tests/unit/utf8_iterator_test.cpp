@@ -89,7 +89,8 @@ int main(void)
   // i.e. 1 > 0) is immediately true, so the loop body never runs. We must NOT
   // call ++it here: operator++ would read past the buffer.
   {
-    UTF8Iterator it("");
+    std::string empty = "";
+    UTF8Iterator it(empty);
     ST_ASSERT("empty: first char is NUL", *it == 0);
     ST_ASSERT("empty: done immediately", it.done());
   }

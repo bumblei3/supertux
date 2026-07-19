@@ -93,7 +93,8 @@ int main(void)
 
   // next() must be idempotent once exhausted (keeps returning false).
   {
-    LineIterator it("x");
+    std::string s = "x";
+    LineIterator it(s);
     ST_ASSERT("first next() true", it.next());
     ST_ASSERT("second next() false", !it.next());
     ST_ASSERT("third next() still false", !it.next());
