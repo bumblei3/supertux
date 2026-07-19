@@ -189,7 +189,8 @@ jobs:
         run: |
           # Manually create zip for GitHub release, when necessary
           $tag = (& git describe --tags --abbrev=0)
-          $systemName = "win" + $(if ($Env:ARCH -eq "x64") {"64"} else {"32"})
+          $arch = $(if ($Env:ARCH -eq "x64") {"64"} else {"32"})
+          $systemName = "Windows-x$arch"
           Compress-Archive `
             -Path ".\SuperTux-portable" `
             -DestinationPath ".\SuperTux-$tag-$systemName-portable.zip"
