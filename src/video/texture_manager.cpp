@@ -323,10 +323,11 @@ TextureManager::create_image_surface_raw(const std::string& filename, const Rect
         SDL_GetPixelFormatForMasks(format->bits_per_pixel, format->Rmask, format->Gmask, format->Bmask, format->Amask))
     );
 
+    // Clip against the *source* image bounds, not the destination surface.
     Rect clipped_rect(std::max(0, rect.left),
                       std::max(0, rect.top),
-                      std::min(subimage->w, rect.right),
-                      std::min(subimage->w, rect.bottom));
+                      std::min(surface.w, rect.right),
+                      std::min(surface.h, rect.bottom));
 
     SDL_Rect srcrect = clipped_rect.to_sdl();
     SDL_BlitSurface(const_cast<SDL_Surface*>(&surface), &srcrect, subimage.get(), nullptr);
@@ -337,24 +338,29 @@ TextureManager::create_image_surface_raw(const std::string& filename, const Rect
     // `surface.pixels` with `surface`; when `convert` (or `src_surface`)
     // goes out of scope the shared buffer is freed while `subimage` still
     // holds it -> heap-use-after-free on the later GL texture upload (SDL3).
-    // Allocate an independent surface and blit into it instead.
+    // Allocate an independent surface and blit the source sub-rect into it.
+    //
+    // Important: blit from `rect` (source coordinates on the full image),
+    // NOT a rect clipped against subimage->w/h. Clipping against the
+    // destination size collapses e.g. (32,32,64,64) to an empty
+    // (32,32,32,32) source rect and leaves every tile-atlas cell blank —
+    // which made the worldmap land tiles invisible (ocean only).
     subimage = SDLSurfacePtr(
       SDL_CreateSurface(rect.get_width(), rect.get_height(),
         SDL_GetPixelFormatForMasks(format->bits_per_pixel, format->Rmask,
                                   format->Gmask, format->Bmask, format->Amask))
     );
-
-    Rect clipped_rect(std::max(0, rect.left),
-                      std::max(0, rect.top),
-                      std::min(subimage->w, rect.right),
-                      std::min(subimage->w, rect.bottom));
-
-    SDL_Rect srcrect = clipped_rect.to_sdl();
-    SDL_BlitSurface(const_cast<SDL_Surface*>(&surface), &srcrect, subimage.get(), nullptr);
-
     if (!subimage)
     {
       throw std::runtime_error("SDL_CreateSurface() call failed");
+    }
+
+    SDL_Rect srcrect = rect.to_sdl();
+    if (!SDL_BlitSurface(const_cast<SDL_Surface*>(&surface), &srcrect,
+                         subimage.get(), nullptr))
+    {
+      throw std::runtime_error(std::string("SDL_BlitSurface() failed: ") +
+                               SDL_GetError());
     }
   }
 

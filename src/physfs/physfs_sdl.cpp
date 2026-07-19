@@ -30,6 +30,32 @@
 #include <assert.h>
 #include <stdio.h>
 
+namespace {
+
+/** Resolve a PHYSFS path that already exists to a real filesystem path. */
+std::string real_path_for_existing(const std::string& filename)
+{
+  const char* path = PHYSFS_getRealDir(filename.c_str());
+  if (!path) {
+    std::stringstream msg;
+    msg << "File '" << filename << "' doesn't exist in any search path";
+    throw std::runtime_error(msg.str());
+  }
+  return FileSystem::join(path, filename);
+}
+
+/** Resolve a PHYSFS write path (may not exist yet) under the write dir. */
+std::string real_path_for_write(const std::string& filename)
+{
+  const char* write_dir = PHYSFS_getWriteDir();
+  if (!write_dir) {
+    throw std::runtime_error("PHYSFS write directory is not set");
+  }
+  return FileSystem::join(write_dir, filename);
+}
+
+} // namespace
+
 SDL_IOStream* get_physfs_SDLRWops(const std::string& filename)
 {
   // check this as PHYSFS seems to be buggy and still returns a
@@ -38,15 +64,15 @@ SDL_IOStream* get_physfs_SDLRWops(const std::string& filename)
     throw std::runtime_error("Couldn't open file: empty filename");
   }
 
-  auto path = PHYSFS_getRealDir(filename.c_str());
-  if (!path) {
+  auto full_path = real_path_for_existing(filename);
+  SDL_IOStream* ops = SDL_IOFromFile(full_path.c_str(), "rb");
+  if (!ops) {
     std::stringstream msg;
-    msg << "File '" << filename << "' doesn't exist in any search path";
+    msg << "Couldn't open '" << filename << "' (" << full_path << "): "
+        << SDL_GetError();
     throw std::runtime_error(msg.str());
   }
-
-  auto full_path = FileSystem::join(path, filename);
-  return SDL_IOFromFile(full_path.c_str(), "rb");
+  return ops;
 }
 
 SDL_IOStream* get_writable_physfs_SDLRWops(const std::string& filename)
@@ -57,13 +83,15 @@ SDL_IOStream* get_writable_physfs_SDLRWops(const std::string& filename)
     throw std::runtime_error("Couldn't open file: empty filename");
   }
 
-  auto path = PHYSFS_getRealDir(filename.c_str());
-  if (!path) {
+  // PHYSFS_getRealDir only works for *existing* files. Screenshots and
+  // other writers create new files, so resolve against the write dir.
+  auto full_path = real_path_for_write(filename);
+  SDL_IOStream* ops = SDL_IOFromFile(full_path.c_str(), "wb");
+  if (!ops) {
     std::stringstream msg;
-    msg << "File '" << filename << "' doesn't exist in any search path";
+    msg << "Couldn't open '" << filename << "' (" << full_path
+        << ") for writing: " << SDL_GetError();
     throw std::runtime_error(msg.str());
   }
-
-  auto full_path = FileSystem::join(path, filename);
-  return SDL_IOFromFile(full_path.c_str(), "wb");
+  return ops;
 }
