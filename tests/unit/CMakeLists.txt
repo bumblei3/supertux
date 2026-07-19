@@ -136,6 +136,17 @@ make_unit_test(StringUtilStTest SOURCE string_util_st_test.cpp
 # static_cast<bool>() because DynamicScopedRef's operator bool() is explicit.
 make_unit_test(DynamicScopedTest SOURCE dynamic_scoped_test.cpp)
 
+# Dependency-free coverage for LineIterator (util/line_iterator.hpp): newline
+# splitting, trailing-newline handling, interior empty lines, exhaustion.
+make_unit_test(LineIteratorTest SOURCE line_iterator_test.cpp
+  EXTERNAL util/line_iterator.cpp)
+
+# Coverage for UTF8Iterator (util/utf8_iterator.hpp): 1-4 byte decoding,
+# malformed-sequence handling, and the 4-byte off-by-one regression. Logging
+# is stubbed (utf8_iterator_test_stub.cpp) to avoid the engine console layer.
+make_unit_test(UTF8IteratorTest SOURCE utf8_iterator_test.cpp utf8_iterator_test_stub.cpp
+  EXTERNAL util/utf8_iterator.cpp)
+
 # TileReplacementTest: regression coverage for the editor tile-replacement
 # degenerate/division-by-zero guard (issue #3810).
 make_unit_test(TileReplacementTest SOURCE tile_replacement_test.cpp
