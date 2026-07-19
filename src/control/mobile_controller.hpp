@@ -66,6 +66,9 @@ private:
   int m_screen_width, m_screen_height;
   float m_mobile_controls_scale;
 
+  // Haptic feedback is disabled under SDL3 (see buzz() in the .cpp): the
+  // SDL_Haptic init path was dropped during the migration, so no haptic
+  // members are kept here.
 private:
   MobileController(const MobileController&) = delete;
   MobileController& operator=(const MobileController&) = delete;

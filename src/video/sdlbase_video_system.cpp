@@ -47,7 +47,6 @@ SDLBaseVideoSystem::SDLBaseVideoSystem() :
   if (mode == nullptr)
   {
     log_warning << "Couldn't get desktop display mode: " << SDL_GetError() << std::endl;
-    //m_desktop_size = g_config->window_size;
     return;
   }
 
@@ -184,8 +183,7 @@ SDLBaseVideoSystem::apply_video_mode()
     return;
   }
 
-  m_desktop_size.width = display->w;
-  m_desktop_size.height = display->h;
+  m_desktop_size = Size(display->w, display->h);
 
   if (!g_config->use_fullscreen)
   {
