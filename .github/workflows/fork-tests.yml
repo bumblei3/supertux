@@ -253,7 +253,12 @@ jobs:
   # WarningsAsErrors as the code is cleaned up.
   clang-tidy:
     runs-on: ubuntu-26.04
-    timeout-minutes: 30
+    # clang-tidy over the whole src/ tree takes ~2h on shared runners
+    # (measured: 1h21m locally with -P 2, ~2h23m in CI). The job is
+    # report-only (|| true), so it must never break CI -- but the old
+    # 30-minute timeout killed it before it finished whenever it ran
+    # unmonitored. Give it enough headroom to complete.
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
         with:
