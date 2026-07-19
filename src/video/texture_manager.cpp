@@ -301,12 +301,19 @@ TextureManager::create_image_surface_raw(const std::string& filename, const Rect
   const SDL_PixelFormatDetails* format = SDL_GetPixelFormatDetails(src_surface.format);
 
   SDLSurfacePtr convert;
-  if (format->Rmask == 0 &&
-      format->Gmask == 0 &&
-      format->Bmask == 0 &&
-      format->Amask == 0)
+  // SDL3's SDL_BlitSurface cannot blit from an indexed/palette surface into a
+  // non-indexed target ("Blit combination not supported"). SuperTux ships a
+  // few indexed PNGs (e.g. worldmap/shared/invisible_paths-editor.png, a 2-bit
+  // palette+alpha image). Convert those to RGBA8888 before sub-imaging. The
+  // original "all masks zero" case also lands here.
+  if (SDL_ISPIXELFORMAT_INDEXED(src_surface.format) ||
+      (format->Rmask == 0 &&
+       format->Gmask == 0 &&
+       format->Bmask == 0 &&
+       format->Amask == 0))
   {
-    log_debug << "Wrong surface format for image " << filename << ". Compensating." << std::endl;
+    log_debug << "Surface for image " << filename
+              << " is indexed or has an unknown format. Converting to RGBA8888." << std::endl;
     convert.reset(SDL_ConvertSurface(const_cast<SDL_Surface*>(&src_surface), SDL_PIXELFORMAT_RGBA8888));
   }
 
