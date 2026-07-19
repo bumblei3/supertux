@@ -164,6 +164,15 @@ make_unit_test(AnchorPointTest SOURCE anchor_point_test.cpp anchor_point_test_st
   EXTERNAL math/anchor_point.cpp
   INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include ${CMAKE_BINARY_DIR})
 
+# Coverage for math/bezier.hpp cubic-Bezier math (get_point/_raw, get_length,
+# get_point_at_length/_by_length). The draw_curve() rendering path is not
+# exercised. glm for Vector; logging stubbed (bezier_test_stub.cpp).
+make_unit_test(BezierTest SOURCE bezier_test.cpp bezier_test_stub.cpp
+  LIBRARIES SDL3::SDL3 glm
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL math/bezier.cpp video/color.cpp
+  INCLUDES ${CMAKE_BINARY_DIR})
+
 # TileReplacementTest: regression coverage for the editor tile-replacement
 # degenerate/division-by-zero guard (issue #3810).
 make_unit_test(TileReplacementTest SOURCE tile_replacement_test.cpp
