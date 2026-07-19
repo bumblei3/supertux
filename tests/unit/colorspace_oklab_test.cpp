@@ -85,12 +85,14 @@ int main(void)
     ST_ASSERT("modified lightness: white > black", lm_white > lm_black);
   }
 
-  // The explicit (L, C, h) constructor stores its arguments verbatim.
+  // The explicit (L, C, h) constructor stores its arguments verbatim. Exact
+  // float equality is avoided (x87/32-bit may store intermediates at higher
+  // precision), so we assert within the shared epsilon.
   {
     ColorOKLCh c(0.5f, 0.1f, 1.2f);
-    ST_ASSERT("explicit ctor: L", c.L == 0.5f);
-    ST_ASSERT("explicit ctor: C", c.C == 0.1f);
-    ST_ASSERT("explicit ctor: h", c.h == 1.2f);
+    ST_ASSERT("explicit ctor: L", approx(c.L, 0.5f));
+    ST_ASSERT("explicit ctor: C", approx(c.C, 0.1f));
+    ST_ASSERT("explicit ctor: h", approx(c.h, 1.2f));
   }
 }
 
