@@ -131,6 +131,11 @@ make_unit_test(EasingTest SOURCE easing_test.cpp
 make_unit_test(StringUtilStTest SOURCE string_util_st_test.cpp
   EXTERNAL util/string_util.cpp)
 
+# Dependency-free coverage for DynamicScopedRef (header-only). Re-enables the
+# test the original author had left disabled; the ST_ASSERT presence checks use
+# static_cast<bool>() because DynamicScopedRef's operator bool() is explicit.
+make_unit_test(DynamicScopedTest SOURCE dynamic_scoped_test.cpp)
+
 # TileReplacementTest: regression coverage for the editor tile-replacement
 # degenerate/division-by-zero guard (issue #3810).
 make_unit_test(TileReplacementTest SOURCE tile_replacement_test.cpp
