@@ -92,6 +92,19 @@ make_unit_test(ReaderTest SOURCE reader_test.cpp reader_test_stub.cpp
   INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
             ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
 
+# Round-trip coverage for util/writer.hpp: write values into a std::ostream,
+# parse them back with ReaderDocument::from_string, verify the save/load cycle.
+# Logging/physfs stubbed (writer_test_stub.cpp); uses the ostream constructor
+# so no file I/O is needed. Links sexp for the s-expression back-end.
+make_unit_test(WriterTest SOURCE writer_test.cpp writer_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
+  EXTERNAL util/writer.cpp util/reader_document.cpp util/reader_mapping.cpp
+            util/reader_collection.cpp util/reader_iterator.cpp
+            util/reader_object.cpp util/gettext.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+            ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
+
 # SDL3 API / fullscreen regression tests. These pin the SDL2->SDL3 API
 # contract (SDL_SetWindowFullscreen returns bool; SDL_RectsEqual rename) and
 # the fixed fullscreen startup path so a future SDL break fails here instead
