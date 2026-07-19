@@ -480,7 +480,9 @@ SDLSubsystem::SDLSubsystem()
   }
 
 #ifdef __ANDROID__
-  g_config->mobile_controls = SDL_GetNumTouchDevices() > 0;
+  int num_touch_devices = 0;
+  SDL_GetTouchDevices(&num_touch_devices);
+  g_config->mobile_controls = num_touch_devices > 0;
 #endif
 
   if (TTF_Init() < 0)
@@ -778,7 +780,7 @@ Main::run(int argc, char** argv)
     }
 
 #ifdef __ANDROID__
-    m_physfs_subsystem.reset(new PhysfsSubsystem(argv[0], args.datadir, SDL_AndroidGetExternalStoragePath()));
+    m_physfs_subsystem.reset(new PhysfsSubsystem(argv[0], args.datadir, SDL_GetAndroidExternalStoragePath()));
 #else
     m_physfs_subsystem.reset(new PhysfsSubsystem(argv[0], args.datadir, args.userdir));
 #endif
