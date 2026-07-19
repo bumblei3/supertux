@@ -75,7 +75,7 @@ uint32_t decode_utf8(const std::string& text, size_t& p)
     if (p+3 >= text.size()) throw std::range_error("Malformed utf-8 sequence");
     uint32_t c2 = static_cast<unsigned char>(text[p+1]);
     uint32_t c3 = static_cast<unsigned char>(text[p+2]);
-    uint32_t c4 = static_cast<unsigned char>(text[p+4]);
+    uint32_t c4 = static_cast<unsigned char>(text[p+3]);
     if (!has_multibyte_mark(static_cast<unsigned char>(c2))) throw std::runtime_error("Malformed utf-8 sequence");
     if (!has_multibyte_mark(static_cast<unsigned char>(c3))) throw std::runtime_error("Malformed utf-8 sequence");
     if (!has_multibyte_mark(static_cast<unsigned char>(c4))) throw std::runtime_error("Malformed utf-8 sequence");
