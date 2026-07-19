@@ -155,6 +155,13 @@ make_unit_test(ColorspaceOklabTest SOURCE colorspace_oklab_test.cpp colorspace_o
   LIBRARIES SDL3::SDL3
   EXTERNAL util/colorspace_oklab.cpp video/color.cpp)
 
+# Coverage for video/color.hpp string (de)serialization: deserialize_from_hex,
+# deserialize_from_rgb, and the serialize/deserialize round-trips (valid
+# parsing, out-of-range rejection, malformed-input handling). Logging stubbed.
+make_unit_test(ColorParseTest SOURCE color_parse_test.cpp color_parse_test_stub.cpp
+  LIBRARIES SDL3::SDL3
+  EXTERNAL video/color.cpp)
+
 # Coverage for math/anchor_point.hpp: the 9 anchor positions over a known
 # Rectf, placed-object offsets, quarter-offset centres, and string<->anchor
 # round-trips. gettext/logging stubbed (anchor_point_test_stub.cpp); tinygettext
