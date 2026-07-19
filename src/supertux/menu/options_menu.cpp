@@ -728,7 +728,7 @@ OptionsMenu::menu_action(MenuItem& item)
         int width;
         int height;
         float refresh_rate;
-        auto& mode = m_resolutions.data[m_resolutions.next].mode;
+        const auto& mode = m_resolutions.data[m_resolutions.next].mode;
         if (m_resolutions.list[m_resolutions.next] == "Desktop")
         {
           g_config->fullscreen_size.width = 0;

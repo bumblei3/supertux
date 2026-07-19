@@ -423,6 +423,10 @@ Menu::process_action(const MenuAction& action)
       break;
   }
 
+  // cppcheck-suppress knownConditionTrueFalse
+  // False positive: cppcheck cannot see that previous_item()/next_item() mutate
+  // m_active_item, so it thinks last_active_item == m_active_item always. The
+  // comparison is genuinely reachable (wrap-around / skipping skippable items).
   if (last_active_item != m_active_item) {
     // Selection caused by Up or Down keyboard action
     if (last_active_item != -1)
