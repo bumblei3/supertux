@@ -117,6 +117,13 @@ make_unit_test(WriterTest SOURCE writer_test.cpp writer_test_stub.cpp
   INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
             ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
 
+# sexp::Value round-trip (parser/serializer). Fully isolated: links only
+# the sexp-cpp library (no engine / tinygettext / SDL), exercising the
+# value types SuperTux's Writer/Reader ultimately produce and consume.
+make_unit_test(SexpValueTest SOURCE sexp_value_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main sexp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include)
+
 # SDL3 API / fullscreen regression tests. These pin the SDL2->SDL3 API
 # contract (SDL_SetWindowFullscreen returns bool; SDL_RectsEqual rename) and
 # the fixed fullscreen startup path so a future SDL break fails here instead
