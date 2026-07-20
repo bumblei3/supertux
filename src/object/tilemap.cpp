@@ -656,7 +656,7 @@ TileMap::resize(int new_width, int new_height, int fill_id,
     }
   }
 
-  m_tiles.resize(new_width * new_height, fill_id);
+  m_tiles.resize(static_cast<size_t>(new_width) * static_cast<size_t>(new_height), fill_id);
 
   if (new_width > m_width) {
     // remap tiles
