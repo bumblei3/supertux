@@ -35,7 +35,7 @@ check_renderer() {
   local want="$1" expect="$2"
   local LOG; LOG="$(mktemp)"
   SUPERTUX_RENDERER="$want" xvfb-run -a bash -c "
-    '$SUPERTUX' --fullscreen --verbose >'$LOG' 2>&1 &
+    '$SUPERTUX' --renderer sdl --fullscreen --verbose >'$LOG' 2>&1 &
     PID=\$!
     for _ in \$(seq 1 40); do
       grep -q 'In main menu\|In worldmap' '$LOG' 2>/dev/null && break

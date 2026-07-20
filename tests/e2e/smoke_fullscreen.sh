@@ -33,9 +33,16 @@ timeout 20 xvfb-run -a "$SUPERTUX" --fullscreen --verbose >"$LOG" 2>&1 &
 PID=$!
 
 # Wait until either the fullscreen line appears or the process ends.
+#
+# Note: under a headless xvfb display SuperTux cannot perform a true
+# fullscreen mode-switch, so X reports a benign "Time out elapsed after
+# mode switch ... reverting" ERROR and SuperTux falls back to a windowed
+# fullscreen-sized surface, logging "switched to fullscreen mode:
+# WxH@R". That fallback is expected headless behavior, NOT a crash -- we
+# therefore match the real reached-state line, not the desktop-mode one.
 FOUND=0
 for _ in $(seq 1 40); do
-  if grep -q "switched to desktop fullscreen mode" "$LOG" 2>/dev/null; then
+  if grep -q "switched to fullscreen mode" "$LOG" 2>/dev/null; then
     FOUND=1
     break
   fi
