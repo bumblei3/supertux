@@ -349,7 +349,7 @@ SpriteData::parse_action(const ReaderMapping& mapping)
     std::optional<ReaderCollection> surfaces_collection;
     std::vector<std::string> images;
     std::optional<ReaderMapping> regions_mapping;
-    if (mapping.get("regions", regions_mapping)) // Regions from images
+    if (mapping.get("regions", regions_mapping) && regions_mapping) // Regions from images
     {
       float max_w = 0;
       float max_h = 0;
@@ -405,7 +405,7 @@ SpriteData::parse_action(const ReaderMapping& mapping)
       if (action->hitbox_w < 1) action->hitbox_w = max_w - action->x_offset;
       if (action->hitbox_h < 1) action->hitbox_h = max_h - action->y_offset;
     }
-    else if (mapping.get("surfaces", surfaces_collection))
+    else if (mapping.get("surfaces", surfaces_collection) && surfaces_collection)
     {
       for (const auto& i : surfaces_collection->get_objects())
       {

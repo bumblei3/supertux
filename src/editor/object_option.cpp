@@ -142,7 +142,7 @@ BoolObjectOption::BoolObjectOption(const std::string& text, bool* pointer, const
                                    std::optional<bool> default_value,
                                    unsigned int flags) :
   ObjectOption(text, key, flags, pointer),
-  m_default_value(std::move(default_value))
+  m_default_value(default_value)
 {
 }
 
@@ -189,7 +189,7 @@ IntObjectOption::IntObjectOption(const std::string& text, int* pointer, const st
                                  std::optional<int> default_value,
                                  unsigned int flags) :
   ObjectOption(text, key, flags, pointer),
-  m_default_value(std::move(default_value))
+  m_default_value(default_value)
 {
 }
 
@@ -260,7 +260,7 @@ FloatObjectOption::FloatObjectOption(const std::string& text, float* pointer, co
                                      std::optional<float> default_value,
                                      unsigned int flags) :
   ObjectOption(text, key, flags, pointer),
-  m_default_value(std::move(default_value))
+  m_default_value(default_value)
 {
 }
 
@@ -413,7 +413,7 @@ StringSelectObjectOption::StringSelectObjectOption(const std::string& text, int*
                                                    const std::string& key, unsigned int flags) :
   ObjectOption(text, key, flags, pointer),
   m_select(select),
-  m_default_value(std::move(default_value))
+  m_default_value(default_value)
 {
 }
 
@@ -481,7 +481,7 @@ EnumObjectOption::EnumObjectOption(const std::string& text, int* pointer,
   ObjectOption(text, key, flags, pointer),
   m_labels(labels),
   m_symbols(symbols),
-  m_default_value(std::move(default_value))
+  m_default_value(default_value)
 {
 }
 
@@ -664,7 +664,7 @@ ColorObjectOption::ColorObjectOption(const std::string& text, Color* pointer, co
                                      std::optional<Color> default_value, bool use_alpha,
                                      unsigned int flags) :
   ObjectOption(text, key, flags, pointer),
-  m_default_value(std::move(default_value)),
+  m_default_value(default_value),
   m_use_alpha(use_alpha)
 {
 }
@@ -730,7 +730,7 @@ void
 ObjectSelectObjectOption::parse(const ReaderMapping& reader)
 {
   std::optional<ReaderMapping> objects_mapping;
-  if (reader.get(get_key().c_str(), objects_mapping))
+  if (reader.get(get_key().c_str(), objects_mapping) && objects_mapping)
   {
     m_value_pointer->clear();
 
@@ -929,7 +929,7 @@ void
 PathObjectOption::parse(const ReaderMapping& reader)
 {
   std::optional<ReaderMapping> path_mapping;
-  if (reader.get("path", path_mapping))
+  if (reader.get("path", path_mapping) && path_mapping)
     m_value_pointer->read(*path_mapping);
 }
 
@@ -1054,7 +1054,7 @@ void
 PathHandleOption::parse(const ReaderMapping& reader)
 {
   std::optional<ReaderMapping> handle_mapping;
-  if (reader.get(get_key().c_str(), handle_mapping))
+  if (reader.get(get_key().c_str(), handle_mapping) && handle_mapping)
   {
     handle_mapping->get("scale_x", m_target.m_scalar_pos.x);
     handle_mapping->get("scale_y", m_target.m_scalar_pos.y);

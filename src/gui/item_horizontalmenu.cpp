@@ -238,6 +238,8 @@ ItemHorizontalMenu::event(const SDL_Event& ev)
       }
       break;
     }
+    default:
+      break;
   }
 }
 

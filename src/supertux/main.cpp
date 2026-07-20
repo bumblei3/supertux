@@ -423,7 +423,7 @@ PhysfsSubsystem::setup_android_datadir() const
   */
 
   std::string zippath = "data.zip";
-  std::string newzip = m_forced_userdir.value();
+  std::string newzip = m_forced_userdir.value_or("");
   newzip.append("/");
   newzip.append(zippath);
 

@@ -38,7 +38,7 @@ public:
     draw_draggable_box(context);
   }
 
-  void set_color(Color color) { m_color = std::move(color); }
+  void set_color(Color color) { m_color = color; }
 
 private:
   Color m_color;

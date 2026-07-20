@@ -48,8 +48,8 @@ private:
   Vector m_mouse_pos;
   Vector m_drag;
   float m_vel;
-  bool m_dragging;
-  bool m_mouse_down;
+  bool m_dragging = false;
+  bool m_mouse_down = false;
   bool m_mouse_over;
   bool m_mouse_over_sym1; // Mouse is over "Do not show again".
   bool m_mouse_over_sym2; // Mouse is over "Close".

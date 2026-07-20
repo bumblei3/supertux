@@ -185,6 +185,8 @@ DartTrap::get_default_sprite_name() const
       return "images/creatures/darttrap/skull/darttrap_skull.sprite";
     case GRANITO:
       return "images/creatures/darttrap/granito/darttrap_granito.sprite";
+    default:
+      break;
   }
   return "images/creatures/darttrap/granito/darttrap_granito.sprite";
 }
@@ -234,6 +236,8 @@ DartTrap::on_type_change(int old_type)
     case SKULL:
       m_dart_sprite = "images/creatures/darttrap/skull/skull_dart.sprite";
       m_dart_lightsprite = "images/creatures/darttrap/skull/dart_light.sprite";
+      break;
+    default:
       break;
   }
 }

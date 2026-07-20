@@ -92,7 +92,7 @@ private:
 
   float m_pos_x;
   HoveredItem m_hovered_item;
-  HoveredItem m_last_active_group;
+  HoveredItem m_last_active_group = HoveredItem::NONE;
   int m_hovered_tool;
 
   std::unique_ptr<ToolIcon> m_rubber;

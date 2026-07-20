@@ -186,6 +186,8 @@ CorruptedGranito::get_default_sprite_name() const
       return "images/creatures/granito/corrupted/corrupted_granito.sprite";
     case SKULLYHOP:
       return "images/creatures/skullyhop/skullyhop.sprite";
+    default:
+      break;
   }
   return "images/creatures/granito/corrupted/corrupted_granito.sprite";
 }

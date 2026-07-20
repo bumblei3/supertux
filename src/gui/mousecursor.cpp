@@ -62,7 +62,7 @@ MouseCursor::set_cursor_action(const std::string& action)
   if (m_cursors.find(action) == m_cursors.end())
   {
     auto surfaces = m_sprite->get_action_surfaces(action);
-    if (surfaces->empty())
+    if (!surfaces || surfaces->empty())
       return;
     std::string filename = (*surfaces)[0]->get_filename();
     SDLSurfacePtr surface = SDLSurface::from_file(filename);

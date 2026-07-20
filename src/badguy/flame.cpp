@@ -75,6 +75,8 @@ Flame::Flame(const ReaderMapping& reader, int type) :
     case ICE:
       m_lightsprite->set_color(Color(0.00f, 0.13f, 0.18f));
       break;
+    default:
+      break;
   }
 }
 

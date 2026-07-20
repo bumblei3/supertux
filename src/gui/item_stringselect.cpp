@@ -27,7 +27,7 @@
 ItemStringSelect::ItemStringSelect(const std::string& text, std::vector<std::string> items, int* selected, int id) :
   MenuItem(text, id),
   m_items(std::move(items)),
-  m_selected(std::move(selected)),
+  m_selected(selected),
   m_pointer_provided(true),
   m_callback(),
   m_width(calculate_width())

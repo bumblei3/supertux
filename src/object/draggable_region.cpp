@@ -20,7 +20,7 @@
 
 DraggableRegion::DraggableRegion(Color color) :
   MovingObject(),
-  m_color(std::move(color))
+  m_color(color)
 {}
 
 
@@ -31,7 +31,7 @@ DraggableRegion::DraggableRegion(const ReaderMapping &reader) :
 
 DraggableRegion::DraggableRegion(Color color, const ReaderMapping &reader) :
   MovingObject(reader),
-  m_color(std::move(color))
+  m_color(color)
 {
 }
 

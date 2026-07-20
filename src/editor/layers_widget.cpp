@@ -477,18 +477,15 @@ EditorLayersWidget::add_layer(GameObject* object, bool initial)
     layer_tilemap->m_editor_active = false;
 
   // The icon is inserted to the correct position.
-  bool inserted = false;
   for (auto i = m_layer_icons.begin(); i != m_layer_icons.end(); ++i) {
     const auto& li = i->get();
     if (li->get_zpos() > z_pos) {
       m_layer_icons.insert(i, std::move(icon));
-      inserted = true;
-      break;
+      return;
     }
   }
 
-  if (!inserted)
-    m_layer_icons.push_back(std::move(icon));
+  m_layer_icons.push_back(std::move(icon));
 }
 
 void

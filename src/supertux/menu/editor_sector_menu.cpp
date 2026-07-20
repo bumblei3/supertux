@@ -81,5 +81,7 @@ EditorSectorMenu::menu_action(MenuItem& item)
         size = new_size;
       }
       break;
+    default:
+      break;
   }
 }

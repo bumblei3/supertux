@@ -46,5 +46,7 @@ WorldmapMenu::menu_action(MenuItem& item)
       MenuManager::instance().clear_menu_stack();
       ScreenManager::current()->pop_screen();
       break;
+    default:
+      break;
   }
 }

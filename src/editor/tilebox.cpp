@@ -301,7 +301,7 @@ EditorTilebox::on_mouse_wheel(const SDL_MouseWheelEvent& wheel)
 void
 EditorTilebox::update_hovered_tile()
 {
-  const int prev_hovered_tile = std::move(m_hovered_tile);
+  const int prev_hovered_tile = m_hovered_tile;
   m_hovered_item = HoveredItem::TILE;
   m_hovered_tile = get_tile_pos(m_mouse_pos);
   if (m_dragging && m_input_type == InputType::TILE)

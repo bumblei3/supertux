@@ -325,6 +325,8 @@ Granito::after_editor_set()
     case STAND:
       set_action("stand", m_dir);
       break;
+    default:
+      break;
   }
 }
 
@@ -361,6 +363,8 @@ Granito::initialize()
     case SCRIPTABLE:
     case STAND:
       set_action("stand", m_dir);
+      break;
+    default:
       break;
   }
 }

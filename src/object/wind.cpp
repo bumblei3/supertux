@@ -135,6 +135,8 @@ Wind::update(float dt_sec_)
         case CURRENT: // Current variant
           Sector::get().add<SpriteParticle>("images/particles/water_piece1.sprite", "default", ppos, ANCHOR_MIDDLE, pspeed, Vector(0, 0), m_layer, false, 0, Color::WHITE, angle);
           break;
+        default:
+          break;
       }
     }
     else

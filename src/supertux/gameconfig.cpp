@@ -188,7 +188,7 @@ Config::load()
   config_mapping.get("custom_title_levels", custom_title_levels);
 
   std::optional<ReaderMapping> config_integrations_mapping;
-  if (config_mapping.get("integrations", config_integrations_mapping))
+  if (config_mapping.get("integrations", config_integrations_mapping) && config_integrations_mapping)
   {
     config_integrations_mapping->get("hide_editor_levelnames", hide_editor_levelnames);
 #ifdef ENABLE_DISCORD
@@ -197,7 +197,7 @@ Config::load()
   }
 
   std::optional<ReaderCollection> config_notifications_mapping;
-  if (config_mapping.get("notifications", config_notifications_mapping))
+  if (config_mapping.get("notifications", config_notifications_mapping) && config_notifications_mapping)
   {
     for (auto const& notification_node : config_notifications_mapping->get_objects())
     {
@@ -226,7 +226,7 @@ Config::load()
     labeltextcolor_, activetextcolor_, hlcolor_, editorcolor_, editorhovercolor_, editorgrabcolor_;
 
   std::optional<ReaderMapping> interface_colors_mapping;
-  if (config_mapping.get("interface_colors", interface_colors_mapping))
+  if (config_mapping.get("interface_colors", interface_colors_mapping) && interface_colors_mapping)
   {
     interface_colors_mapping->get("menubackcolor", menubackcolor_, ColorScheme::Menu::back_color.toVector());
     interface_colors_mapping->get("menufrontcolor", menufrontcolor_, ColorScheme::Menu::front_color.toVector());
@@ -258,7 +258,7 @@ Config::load()
   editor_autotile_help = !developer_mode;
 
   std::optional<ReaderMapping> editor_mapping;
-  if (config_mapping.get("editor", editor_mapping))
+  if (config_mapping.get("editor", editor_mapping) && editor_mapping)
   {
     editor_mapping->get("autosave_frequency", editor_autosave_frequency);
     editor_mapping->get("autotile_help", editor_autotile_help);
@@ -302,7 +302,7 @@ Config::load()
   config_mapping.get("preferred_text_editor", preferred_text_editor);
 
   std::optional<ReaderMapping> config_video_mapping;
-  if (config_mapping.get("video", config_video_mapping))
+  if (config_mapping.get("video", config_video_mapping) && config_video_mapping)
   {
     config_video_mapping->get("fullscreen", use_fullscreen);
     std::string video_string;
@@ -358,7 +358,7 @@ Config::load()
   }
 
   std::optional<ReaderMapping> config_audio_mapping;
-  if (config_mapping.get("audio", config_audio_mapping))
+  if (config_mapping.get("audio", config_audio_mapping) && config_audio_mapping)
   {
     config_audio_mapping->get("sound_enabled", sound_enabled);
     config_audio_mapping->get("music_enabled", music_enabled);
@@ -367,16 +367,16 @@ Config::load()
   }
 
   std::optional<ReaderMapping> config_control_mapping;
-  if (config_mapping.get("control", config_control_mapping))
+  if (config_mapping.get("control", config_control_mapping) && config_control_mapping)
   {
     std::optional<ReaderMapping> keymap_mapping;
-    if (config_control_mapping->get("keymap", keymap_mapping))
+    if (config_control_mapping->get("keymap", keymap_mapping) && keymap_mapping)
     {
       keyboard_config.read(*keymap_mapping);
     }
 
     std::optional<ReaderMapping> joystick_mapping;
-    if (config_control_mapping->get("joystick", joystick_mapping))
+    if (config_control_mapping->get("joystick", joystick_mapping) && joystick_mapping)
     {
       joystick_config.read(*joystick_mapping);
     }
@@ -393,7 +393,7 @@ Config::load()
   }
 
   std::optional<ReaderCollection> config_addons_mapping;
-  if (config_mapping.get("addons", config_addons_mapping))
+  if (config_mapping.get("addons", config_addons_mapping) && config_addons_mapping)
   {
     for (auto const& addon_node : config_addons_mapping->get_objects())
     {

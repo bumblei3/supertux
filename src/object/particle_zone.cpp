@@ -94,6 +94,8 @@ ParticleZone::draw(DrawingContext& context)
     case ParticleZoneType::Destroyer:
       set_color(Color(1.0f, 0.5f, 0.5f, 0.6f));
       break;
+      default:
+        break;
     }
 
     DraggableRegion::draw(context);

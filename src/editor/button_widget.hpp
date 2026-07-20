@@ -29,7 +29,7 @@ class ButtonWidget : public Widget
 public:
   ButtonWidget(SpritePtr sprite, const Vector& pos, std::function<void()> m_sig_click = {}, std::optional<Sizef> sprite_size = std::nullopt);
   ButtonWidget(const std::string& path, const Vector& pos, std::function<void()> callback = {}, std::optional<Sizef> sprite_size = std::nullopt) :
-    ButtonWidget(SpriteManager::current()->create(path), std::move(pos), std::move(callback), std::move(sprite_size))
+    ButtonWidget(SpriteManager::current()->create(path), pos, std::move(callback), sprite_size)
   {
   }
 
@@ -76,7 +76,7 @@ class EditorToolbarButtonWidget : public ButtonWidget
 {
 public:
   EditorToolbarButtonWidget(SpritePtr sprite, const Vector& pos, std::function<void()> m_sig_click = {}, std::optional<Sizef> sprite_size = std::nullopt) :
-    ButtonWidget(std::move(sprite), std::move(pos), m_sig_click, std::move(sprite_size)),
+    ButtonWidget(std::move(sprite), pos, m_sig_click, sprite_size),
     m_tile_mode_visible(true),
     m_object_mode_visible(true),
     m_visible(true)
@@ -84,7 +84,7 @@ public:
   }
 
   EditorToolbarButtonWidget(const std::string& path, const Vector& pos, std::function<void()> callback = {}, std::optional<Sizef> sprite_size = std::nullopt) :
-    ButtonWidget(SpriteManager::current()->create(path), std::move(pos), std::move(callback), std::move(sprite_size)),
+    ButtonWidget(SpriteManager::current()->create(path), pos, std::move(callback), sprite_size),
     m_tile_mode_visible(true),
     m_object_mode_visible(true),
     m_visible(true)
@@ -92,7 +92,7 @@ public:
   }
   
   EditorToolbarButtonWidget(const std::string& path, std::function<void()> callback = {}, const std::string& help_text = "", std::optional<Sizef> sprite_size = std::nullopt) :
-    ButtonWidget(SpriteManager::current()->create(path), Vector(0,0), std::move(callback), std::move(sprite_size)),
+    ButtonWidget(SpriteManager::current()->create(path), Vector(0,0), std::move(callback), sprite_size),
     m_tile_mode_visible(true),
     m_object_mode_visible(true),
     m_visible(true)

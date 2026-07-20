@@ -105,7 +105,7 @@ BonusBlock::BonusBlock(const ReaderMapping& mapping) :
     if (m_contents == Content::CUSTOM)
     {
       std::optional<ReaderCollection> content_collection;
-      if (mapping.get("custom-contents", content_collection))
+      if (mapping.get("custom-contents", content_collection) && content_collection)
       {
         const auto& object_specs = content_collection->get_objects();
         if (!object_specs.empty())
@@ -159,10 +159,9 @@ BonusBlock::add_object(std::unique_ptr<GameObject> object)
 void
 BonusBlock::set_object(std::unique_ptr<GameObject> object)
 {
-  m_object = object.get();
-
   m_objects.clear();
   m_objects.push_back(std::move(object));
+  m_object = m_objects.back().get();
 }
 
 GameObjectTypes

@@ -215,6 +215,8 @@ Coin::collect()
       case 6:
         pitch = 9.f/5;  // bb.
         break;
+      default:
+        break;
     }
     last_pitch = pitch;
   }

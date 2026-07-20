@@ -302,7 +302,7 @@ SectorParser::parse_old_format(const ReaderMapping& reader)
 
   // read reset-points (now spawn-points)
   std::optional<ReaderMapping> resetpoints;
-  if (reader.get("reset-points", resetpoints)) {
+  if (reader.get("reset-points", resetpoints) && resetpoints) {
     auto iter = resetpoints->get_iter();
     while (iter.next()) {
       if (iter.get_key() == "point") {
@@ -319,7 +319,7 @@ SectorParser::parse_old_format(const ReaderMapping& reader)
 
   // read objects
   std::optional<ReaderCollection> objects;
-  if (reader.get("objects", objects)) {
+  if (reader.get("objects", objects) && objects) {
     for (auto const& obj : objects->get_objects())
     {
       auto object = parse_object(obj.get_name(), obj.get_mapping());

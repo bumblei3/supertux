@@ -112,7 +112,7 @@ LevelTile::load_level_information()
       mapping.get("target-time", m_target_time);
 
       std::optional<ReaderMapping> level_stat_preferences;
-      if (mapping.get("statistics", level_stat_preferences))
+      if (mapping.get("statistics", level_stat_preferences) && level_stat_preferences)
         m_statistics.get_preferences().parse(*level_stat_preferences);
     }
     catch (const std::exception& err)

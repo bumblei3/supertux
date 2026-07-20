@@ -168,6 +168,8 @@ PowerUp::setup_lightsprite()
       case STAR:
         lightsprite->set_color(Color(0.4f, 0.4f, 0.4f));
         break;
+      default:
+        break;
     }
   }
 }
@@ -245,8 +247,12 @@ PowerUp::collision(MovingObject& other, const CollisionHit&)
       SoundManager::current()->play("sounds/lifeup.wav", get_pos());
       break;
     case FLIP:
+    {
       FlipLevelTransformer flip_transformer;
       flip_transformer.transform(GameSession::current()->get_current_level());
+      break;
+    }
+    default:
       break;
   }
 
