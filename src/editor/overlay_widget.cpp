@@ -1417,8 +1417,8 @@ EditorOverlayWidget::draw_tile_grid(DrawingContext& context, int tile_size, bool
   Vector end = sp_to_tp( Vector(draw_rect.get_right(), draw_rect.get_bottom()), tile_size );
   start.x = std::max(0.0f, start.x);
   start.y = std::max(0.0f, start.y);
-  end.x = std::min(static_cast<float>(current_tm->get_width() * (32 / tile_size)), end.x);
-  end.y = std::min(static_cast<float>(current_tm->get_height() * (32 / tile_size)), end.y);
+  end.x = std::min(static_cast<float>(current_tm->get_width()) * 32.0f / tile_size, end.x);
+  end.y = std::min(static_cast<float>(current_tm->get_height()) * 32.0f / tile_size, end.y);
 
   Vector line_start(0.0f, 0.0f);
   Vector line_end(0.0f, 0.0f);

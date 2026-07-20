@@ -17,6 +17,7 @@
 #include "object/tilemap.hpp"
 
 #include <tuple>
+#include <cmath>
 
 #include <simplesquirrel/class.hpp>
 #include <simplesquirrel/vm.hpp>
@@ -832,7 +833,7 @@ TileMap::autotile(const Vector& pos, uint32_t tile, AutotileSet* autotileset)
 
   if (autotileset->is_corner())
   {
-    const int x = static_cast<int>(pos.x + 0.5f), y = static_cast<int>(pos.y + 0.5f);
+    const int x = static_cast<int>(std::lround(pos.x)), y = static_cast<int>(std::lround(pos.y));
     if (x < 0 || x >= m_width || y < 0 || y >= m_height)
       return;
 
@@ -937,7 +938,7 @@ TileMap::autotile_erase(const Vector& pos, AutotileSet* autotileset)
 
   if (autotileset->is_corner())
   {
-    const int x = static_cast<int>(pos.x + 0.5f), y = static_cast<int>(pos.y + 0.5f);
+    const int x = static_cast<int>(std::lround(pos.x)), y = static_cast<int>(std::lround(pos.y));
     if (x < 0 || x >= m_width || y < 0 || y >= m_height)
       return;
 

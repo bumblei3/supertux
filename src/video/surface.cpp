@@ -76,7 +76,7 @@ Surface::from_file(const std::string& filename, const std::optional<Rect>& rect)
   {
     auto textureManager = TextureManager::current();
     TexturePtr texture = rect ?
-      textureManager->get(filename, *rect) : textureManager->get(filename);
+      textureManager->get(filename, rect) : textureManager->get(filename);
 
     return SurfacePtr(new Surface(texture, TexturePtr(), NO_FLIP, filename));
   }

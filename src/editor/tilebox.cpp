@@ -359,7 +359,7 @@ Vector
 EditorTilebox::get_tile_coords(int pos, bool relative) const
 {
   return Vector(static_cast<float>((pos % 4) * 32) + (relative ? m_rect.get_left() : 0),
-                static_cast<float>((pos / 4) * 32) + (relative ? m_rect.get_top() : 0) - m_scroll_progress);
+                static_cast<float>(pos * 8) + (relative ? m_rect.get_top() : 0) - m_scroll_progress);
 }
 
 int

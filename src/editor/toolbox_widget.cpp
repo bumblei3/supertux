@@ -423,7 +423,7 @@ Vector
 EditorToolboxWidget::get_tool_coords(int pos) const
 {
   return Vector(static_cast<float>((pos % 4) * 32) + m_pos_x,
-                static_cast<float>((pos / 4) * 32) + 64.f);
+                static_cast<float>(pos * 8) + 64.f);
 }
 
 int
