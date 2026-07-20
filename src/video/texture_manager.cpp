@@ -326,8 +326,7 @@ TextureManager::create_image_surface_raw(const std::string& filename, const Rect
                 << surface.w << "x" << surface.h << ", rect=" << rect << std::endl;
 
     subimage = SDLSurfacePtr(
-      SDL_CreateSurface(rect.get_width(), rect.get_height(),
-        SDL_GetPixelFormatForMasks(format->bits_per_pixel, format->Rmask, format->Gmask, format->Bmask, format->Amask))
+      SDL_CreateSurface(rect.get_width(), rect.get_height(), src_surface.format)
     );
 
     // Clip against the *source* image bounds, not the destination surface.
@@ -352,10 +351,13 @@ TextureManager::create_image_surface_raw(const std::string& filename, const Rect
     // destination size collapses e.g. (32,32,64,64) to an empty
     // (32,32,32,32) source rect and leaves every tile-atlas cell blank —
     // which made the worldmap land tiles invisible (ocean only).
+    //
+    // Format taken from upstream (src_surface.format) to avoid duplicating
+    // the pixel-format mask computation and stay in sync with upstream
+    // commit 3ba2faeab.
     subimage = SDLSurfacePtr(
       SDL_CreateSurface(rect.get_width(), rect.get_height(),
-        SDL_GetPixelFormatForMasks(format->bits_per_pixel, format->Rmask,
-                                  format->Gmask, format->Bmask, format->Amask))
+                        src_surface.format)
     );
     if (!subimage)
     {
