@@ -57,7 +57,7 @@ EditorLevelSelectMenu::reload_menu()
 void
 EditorLevelSelectMenu::initialize()
 {
-  World* world = get_world();
+  World const* world = get_world();
   auto basedir = world->get_basedir();
   m_levelset = std::unique_ptr<Levelset>(new Levelset(basedir, /* recursively = */ true));
   auto num_levels = m_levelset->get_num_levels();
@@ -73,9 +73,9 @@ EditorLevelSelectMenu::initialize()
   {
     for (int i = 0; i < num_levels; ++i)
     {
-      std::string filename = m_levelset->get_level_filename(i);
-      std::string full_filename = FileSystem::join(basedir, filename);
-      std::string title = LevelParser::get_level_name(full_filename);
+      std::string const filename = m_levelset->get_level_filename(i);
+      std::string const full_filename = FileSystem::join(basedir, filename);
+      std::string const title = LevelParser::get_level_name(full_filename);
       add_entry(i, title);
     }
   }
@@ -84,7 +84,7 @@ EditorLevelSelectMenu::initialize()
 
   add_entry(-1, _("Create Level"));
 
-  std::string worldmap_file = FileSystem::join(basedir, "worldmap.stwm");
+  std::string const worldmap_file = FileSystem::join(basedir, "worldmap.stwm");
   if (PHYSFS_exists(worldmap_file.c_str())) {
     add_entry(-4, _("Edit Worldmap"));
   } else {
@@ -121,7 +121,7 @@ EditorLevelSelectMenu::create_worldmap()
 void
 EditorLevelSelectMenu::create_item(bool worldmap)
 {
-  World* world = get_world();
+  World const* world = get_world();
   auto basedir = world->get_basedir();
   auto new_item = worldmap ?
       LevelParser::from_nothing_worldmap(basedir, world->get_title()) :
@@ -164,8 +164,8 @@ EditorLevelSelectMenu::menu_action(MenuItem& item)
   auto editor = Editor::current();
   if (item.get_id() >= 0)
   {
-    std::string file_name = m_levelset->get_level_filename(item.get_id());
-    std::string file_name_full = FileSystem::join(editor->get_level_directory(), file_name);
+    std::string const file_name = m_levelset->get_level_filename(item.get_id());
+    std::string const file_name_full = FileSystem::join(editor->get_level_directory(), file_name);
 
     if (PHYSFS_exists((file_name_full + "~").c_str())) {
       auto dialog = std::make_unique<Dialog>(/* passive = */ false, /* auto_clear_dialogs = */ false);

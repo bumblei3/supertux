@@ -79,7 +79,7 @@ Level::initialize()
 
   m_stats.init(*this);
 
-  Savegame* savegame = ((GameSession::current() && !Editor::current()) ?
+  Savegame const* savegame = ((GameSession::current() && !Editor::current()) ?
     &GameSession::current()->get_savegame() : nullptr);
   PlayerStatus& player_status = savegame ? savegame->get_player_status() : s_dummy_player_status;
 
@@ -127,7 +127,7 @@ Level::save(const std::string& filepath, bool retry)
   log_info << "Attempting to save complete path \"" << filepath << "\"" << std::endl;
   try {
     { // make sure the level directory exists
-      std::string dirname = FileSystem::dirname(filepath);
+      std::string const dirname = FileSystem::dirname(filepath);
       if (!PHYSFS_exists(dirname.c_str()))
       {
         if (!PHYSFS_mkdir(dirname.c_str()))
@@ -160,7 +160,7 @@ Level::save(const std::string& filepath, bool retry)
     } else {
       log_warning << "Failed to save the level, retrying..." << std::endl;
       { // create the level directory again
-        std::string dirname = FileSystem::dirname(filepath);
+        std::string const dirname = FileSystem::dirname(filepath);
         if (!PHYSFS_mkdir(dirname.c_str()))
         {
           std::ostringstream msg;
@@ -272,7 +272,7 @@ Level::get_setting_from_name(const std::string& setting)
 void
 Level::add_sector(std::unique_ptr<Sector> sector)
 {
-  Sector* test = get_sector(sector->get_name());
+  Sector const* test = get_sector(sector->get_name());
   if (test != nullptr) {
     throw std::runtime_error("Trying to add 2 sectors with same name");
   } else {

@@ -73,7 +73,7 @@ void
 Tarantula::initialize()
 {
   m_last_height = m_start_position.y;
-  Rectf ceiling(Vector(get_bbox().get_left(), get_bbox().get_top() - 2.5f),
+  Rectf const ceiling(Vector(get_bbox().get_left(), get_bbox().get_top() - 2.5f),
                 Sizef(get_bbox().get_width(), 2.5f));
   m_attach_ceiling = !Sector::get().is_free_of_tiles(ceiling);
 }
@@ -105,7 +105,7 @@ Tarantula::active_update(float dt_sec)
     return;
   }
 
-  Player* player = get_nearest_player();
+  Player const* player = get_nearest_player();
   if (player)
   {
     if (!Sector::get().is_free_of_statics(Rectf(Vector(player->get_bbox().get_left(),
@@ -117,7 +117,7 @@ Tarantula::active_update(float dt_sec)
 
     if (m_state == STATE_HANG_UP || m_state == STATE_HANG_DOWN)
     {
-      float dist = get_bbox().get_left() - player->get_bbox().get_left();
+      float const dist = get_bbox().get_left() - player->get_bbox().get_left();
       if (std::abs(dist) > RETREAT_RANGE)
       {
         m_retreat = true;
@@ -161,7 +161,7 @@ Tarantula::active_update(float dt_sec)
 
     case STATE_HANG_DOWN:
     {
-      bool finished = hang_to(m_last_height + HANG_HEIGHT, HANG_TIME, false,
+      bool const finished = hang_to(m_last_height + HANG_HEIGHT, HANG_TIME, false,
                               STATE_HANG_UP, EaseSineInOut, "dive");
       if (m_retreat && finished)
       {
@@ -186,7 +186,7 @@ Tarantula::active_update(float dt_sec)
 Tarantula::ApproachResponse
 Tarantula::try_approach()
 {
-  Player* player = get_nearest_player();
+  Player const* player = get_nearest_player();
   if (!player)
     return NONE;
 
@@ -195,11 +195,11 @@ Tarantula::try_approach()
       : get_bbox().get_bottom() >= player->get_bbox().get_top())
     return NONE;
 
-  float dist = get_bbox().get_left() - player->get_bbox().get_left();
+  float const dist = get_bbox().get_left() - player->get_bbox().get_left();
   if (std::abs(dist) > APPROACH_RANGE)
     return NONE;
 
-  Vector eye(get_bbox().get_middle().x,
+  Vector const eye(get_bbox().get_middle().x,
              m_vertical_flip ? get_bbox().get_top() - 1 : get_bbox().get_bottom() + 1);
   if (!Sector::get().can_see_player(eye))
     return NONE;
@@ -237,8 +237,8 @@ Tarantula::try_drop()
 
   // Assuming the player has already been checked...
 
-  float ymult = m_vertical_flip ? -1.f : 1.f;
-  Vector eye(get_bbox().get_middle().x,
+  float const ymult = m_vertical_flip ? -1.f : 1.f;
+  Vector const eye(get_bbox().get_middle().x,
              (m_vertical_flip ? get_bbox().get_top() : get_bbox().get_bottom()) + ymult);
   RaycastResult result = Sector::get().get_first_line_intersection(eye,
                                                                    Vector(eye.x,
@@ -246,7 +246,7 @@ Tarantula::try_drop()
                                                                    true,
                                                                    nullptr);
 
-  float sector_height = static_cast<float>(Sector::get().get_editor_size().height * 32);
+  float const sector_height = static_cast<float>(Sector::get().get_editor_size().height * 32);
   if (!result.is_valid)
   {
     if (m_vertical_flip && eye.y - DROP_DETECT_RANGE - 1.f < 0)
@@ -283,7 +283,7 @@ Tarantula::hang_to(float height, float time, bool calctime, State nextstate, Eas
 {
   set_action(action, 0);
 
-  bool is_newstate = (m_target_height != height);
+  bool const is_newstate = (m_target_height != height);
   m_target_height = height;
 
   if (!m_timer.started())
@@ -301,10 +301,10 @@ Tarantula::hang_to(float height, float time, bool calctime, State nextstate, Eas
     }
   }
 
-  double progress = static_cast<double>(m_timer.get_timegone() / m_timer.get_period());
-  float offset = static_cast<float>(getEasingByName(easing)(progress)) * (m_target_height - m_last_height);
+  double const progress = static_cast<double>(m_timer.get_timegone() / m_timer.get_period());
+  float const offset = static_cast<float>(getEasingByName(easing)(progress)) * (m_target_height - m_last_height);
 
-  Vector pos(get_bbox().get_left(), m_last_height + offset);
+  Vector const pos(get_bbox().get_left(), m_last_height + offset);
   set_pos(pos);
 
   return false;
@@ -351,12 +351,12 @@ Tarantula::draw(DrawingContext& context)
       Editor::is_active())
     return;
 
-  float mult = m_vertical_flip ? -1.f : 1.f;
+  float const mult = m_vertical_flip ? -1.f : 1.f;
 
   Vector pos(get_bbox().get_left() + ((get_bbox().get_width() - static_cast<float>(m_silk->get_width()))/2),
              m_start_position.y + 32.f * -mult);
 
-  int length = static_cast<int>(std::abs(get_bbox().get_top() - m_start_position.y)
+  int const length = static_cast<int>(std::abs(get_bbox().get_top() - m_start_position.y)
                                 / static_cast<float>(m_silk->get_height()));
   for (int i = 0; i <= length + 1; i++) {
     context.color().draw_surface(m_silk, pos, get_layer() - 1);

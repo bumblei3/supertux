@@ -47,9 +47,9 @@ EditorMenu::refresh()
 {
   clear();
 
-  bool worldmap = Editor::current()->get_level()->is_worldmap();
-  bool is_world = Editor::current()->get_world() != nullptr;
-  bool is_temp_level = Editor::current()->is_temp_level();
+  bool const worldmap = Editor::current()->get_level()->is_worldmap();
+  bool const is_world = Editor::current()->get_world() != nullptr;
+  bool const is_temp_level = Editor::current()->is_temp_level();
 
   add_label(_("Level Editor"));
   add_hl();

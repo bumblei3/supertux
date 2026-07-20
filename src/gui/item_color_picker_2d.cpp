@@ -40,17 +40,17 @@ get_pixel(const SDLSurfacePtr& surface, const Vector& pos)
 {
   const SDL_PixelFormatDetails* format = SDL_GetPixelFormatDetails(surface->format);
   assert(format->bytes_per_pixel == 3);
-  int x = math::clamp(
-    static_cast<int>(std::lround(pos.x * static_cast<float>(surface->w - 1))),
-    0,
-    surface->w - 1
-  );
-  int y = math::clamp(
-    static_cast<int>(std::lround(pos.y * static_cast<float>(surface->h - 1))),
+   int const x = math::clamp(
+     static_cast<int>(pos.x * static_cast<float>(surface->w - 1) + 0.5f),
+     0,
+     surface->w - 1
+   );
+   int const y = math::clamp(
+     static_cast<int>(pos.y * static_cast<float>(surface->h - 1) + 0.5f),
     0,
     surface->h - 1
   );
-  uint8_t *pixel = static_cast<uint8_t *>(surface->pixels)
+  uint8_t  const*pixel = static_cast<uint8_t *>(surface->pixels)
     + y * surface->pitch + x * 3;
   if constexpr (SDL_BYTEORDER == SDL_BIG_ENDIAN)
     return Color::from_rgb888(pixel[2], pixel[1], pixel[0]);
@@ -73,12 +73,12 @@ ItemColorPicker2D::ItemColorPicker2D(Color& col) :
 void
 ItemColorPicker2D::draw_marker(Canvas& canvas, Color col, float radius) const
 {
-  ColorOKLCh col_oklab = col;
-  Vector pos_rel(
+  ColorOKLCh const col_oklab = col;
+  Vector const pos_rel(
     fmodf(col_oklab.h * 0.5f / math::PI + 1.0f, 1.0f),
     1.0f - col_oklab.get_modified_lightness()
   );
-  Vector pos(
+  Vector const pos(
     m_image_rect.get_left() + pos_rel.x * (m_image_rect.get_right()
       - m_image_rect.get_left()),
     m_image_rect.get_top() + pos_rel.y * (m_image_rect.get_bottom()
@@ -106,9 +106,9 @@ ItemColorPicker2D::draw(DrawingContext& context, const Vector& pos,
 void
 ItemColorPicker2D::event(const SDL_Event& ev)
 {
-  bool is_mouseclick = ev.type == SDL_EVENT_MOUSE_BUTTON_DOWN
+  bool const is_mouseclick = ev.type == SDL_EVENT_MOUSE_BUTTON_DOWN
     && ev.button.button == SDL_BUTTON_LEFT;
-  bool is_hold_mousemove = ev.type == SDL_EVENT_MOUSE_MOTION
+  bool const is_hold_mousemove = ev.type == SDL_EVENT_MOUSE_MOTION
     && (ev.motion.state & SDL_BUTTON_LMASK);
   if (is_mouseclick) {
     m_mousedown = true;
@@ -117,7 +117,7 @@ ItemColorPicker2D::event(const SDL_Event& ev)
     return;
   }
 
-  Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(
+  Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(
     ev.motion.x, ev.motion.y);
   Vector pos(
     (mouse_pos.x - m_image_rect.get_left())
@@ -136,7 +136,7 @@ ItemColorPicker2D::event(const SDL_Event& ev)
   pos.x = fmodf(pos.x + 3.0f, 1.0f);
   // The lightness is not periodic -> clamp
   pos.y = math::clamp(pos.y, 0.0f, 1.0f);
-  float alpha = m_color.alpha;
+  float const alpha = m_color.alpha;
   m_color = get_pixel(m_image_with_pixels, pos);
   m_color.alpha = alpha;
 }

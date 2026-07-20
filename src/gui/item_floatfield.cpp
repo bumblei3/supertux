@@ -28,7 +28,7 @@ ItemFloatField::ItemFloatField(const std::string& text_, float* input_, int id_,
 
   // Removing all redundant zeros at the end.
   for (auto i = input->end() - 1; i != input->begin(); --i) {
-    char c = *i;
+    char const c = *i;
     if (c == '.')
     {
       input->resize(input->size() - 1);

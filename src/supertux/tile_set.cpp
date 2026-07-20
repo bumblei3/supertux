@@ -90,7 +90,7 @@ TileSet::get(const uint32_t id) const
     return *m_tiles[0];
   } else {
     assert(id < m_tiles.size());
-    Tile* tile = m_tiles[id].get();
+    Tile const* tile = m_tiles[id].get();
     if (tile) {
       return *tile;
     } else {
@@ -157,7 +157,7 @@ TileSet::add_unassigned_tilegroup()
     // Weed out all the non-deprecated tiles that have an ID
     // but no image (mostly tiles that act as
     // spacing between other tiles).
-    Tile* tile_object = m_tiles[tile].get();
+    Tile const* tile_object = m_tiles[tile].get();
     if (found == false && tile_object && !tile_object->is_deprecated())
     {
       unassigned_group.tiles.push_back(tile);

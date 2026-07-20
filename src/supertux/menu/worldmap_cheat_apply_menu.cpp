@@ -42,7 +42,7 @@ WorldmapCheatApplyMenu::WorldmapCheatApplyMenu(int num_players,
 void
 WorldmapCheatApplyMenu::menu_action(MenuItem& item)
 {
-  int id = item.get_id();
+  int const id = item.get_id();
 
   if (id < -1)
     return;

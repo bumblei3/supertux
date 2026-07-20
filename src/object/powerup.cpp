@@ -298,16 +298,16 @@ PowerUp::update(float dt_sec)
       // Stars and herrings should sparkle when close to Tux.
       if (auto* player = Sector::get().get_nearest_player(m_col.m_bbox))
       {
-        float disp_x = player->get_bbox().get_left() - m_col.m_bbox.get_left();
-        float disp_y = player->get_bbox().get_top() - m_col.m_bbox.get_top();
+        float const disp_x = player->get_bbox().get_left() - m_col.m_bbox.get_left();
+        float const disp_y = player->get_bbox().get_top() - m_col.m_bbox.get_top();
         if (disp_x*disp_x + disp_y*disp_y <= 256*256)
         {
           if (graphicsRandom.rand(0, 2) == 0) {
-            float px = graphicsRandom.randf(m_col.m_bbox.get_left() * 1.0f, m_col.m_bbox.get_right() * 1.0f);
-            float py = graphicsRandom.randf(m_col.m_bbox.get_top() * 1.0f, m_col.m_bbox.get_bottom() * 1.0f);
-            Vector ppos = Vector(px, py);
-            Vector pspeed = Vector(0, 0);
-            Vector paccel = Vector(0, 0);
+            float const px = graphicsRandom.randf(m_col.m_bbox.get_left() * 1.0f, m_col.m_bbox.get_right() * 1.0f);
+            float const py = graphicsRandom.randf(m_col.m_bbox.get_top() * 1.0f, m_col.m_bbox.get_bottom() * 1.0f);
+            Vector const ppos = Vector(px, py);
+            Vector const pspeed = Vector(0, 0);
+            Vector const paccel = Vector(0, 0);
             Sector::get().add<SpriteParticle>(
                   "images/particles/sparkle.sprite",
                   // draw bright sparkles when very close to Tux, dark sparkles when slightly further

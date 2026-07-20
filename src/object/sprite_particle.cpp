@@ -99,7 +99,7 @@ SpriteParticle::update(float dt_sec)
   velocity.y += acceleration.y * dt_sec;
 
   // die when too far offscreen
-  Camera& camera = Sector::get().get_camera();
+  Camera const& camera = Sector::get().get_camera();
   if (!camera.get_rect().contains(position)) {
     remove_me();
   }
@@ -108,7 +108,7 @@ SpriteParticle::update(float dt_sec)
 void
 SpriteParticle::draw(DrawingContext& context)
 {
-  Vector draw_pos = position + velocity * context.get_time_offset();
+  Vector const draw_pos = position + velocity * context.get_time_offset();
   if (fade_out_timer.started())
   {
     sprite->set_alpha(std::max(0.f, fade_out_timer.get_timeleft() / fade_out_timer.get_period()));

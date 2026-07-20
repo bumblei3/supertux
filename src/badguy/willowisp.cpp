@@ -175,7 +175,7 @@ WillOWisp::active_update(float dt_sec)
   if (!player) return;
   const Vector p1 = m_col.m_bbox.get_middle();
   const Vector p2 = player->get_bbox().get_middle();
-  Vector dist = (p2 - p1);
+  Vector const dist = (p2 - p1);
 
   switch (m_mystate)
   {
@@ -194,7 +194,7 @@ WillOWisp::active_update(float dt_sec)
       }
       else if (glm::length(dist) >= 1)
       {
-        Vector dir_ = glm::normalize(dist);
+        Vector const dir_ = glm::normalize(dist);
         m_col.set_movement(dir_ * dt_sec * m_flyspeed);
       }
       else
@@ -213,7 +213,7 @@ WillOWisp::active_update(float dt_sec)
       break;
     case STATE_VANISHING:
     {
-      Vector dir_ = glm::normalize(dist);
+      Vector const dir_ = glm::normalize(dist);
       m_col.set_movement(dir_ * dt_sec * m_flyspeed);
       if (m_sprite->animation_done())
       {
@@ -440,7 +440,7 @@ WillOWisp::play_looping_sounds()
 void
 WillOWisp::move_to(const Vector& pos)
 {
-  Vector shift = pos - m_col.m_bbox.p1();
+  Vector const shift = pos - m_col.m_bbox.p1();
   if (get_path())
   {
     get_path()->move_by(shift);

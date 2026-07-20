@@ -29,7 +29,7 @@
 void
 FlipLevelTransformer::transform_sector(Sector& sector)
 {
-  float height = sector.get_height();
+  float const height = sector.get_height();
 
   for (auto& object : sector.get_objects())
   {

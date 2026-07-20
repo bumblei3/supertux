@@ -78,7 +78,7 @@ EditorToolboxWidget::draw(DrawingContext& context)
                                      0.0f, LAYER_GUI - 5);
   }
 
-  Rectf item_rect = get_active_item_rect();
+  Rectf const item_rect = get_active_item_rect();
   context.color().draw_gradient(Color(1.0f, 1.0f, 1.0f, 0.0f),
                                 Color(1.0f, 1.0f, 1.0f, 0.5f),
                                 LAYER_GUI, GradientDirection::HORIZONTAL, item_rect);
@@ -429,8 +429,8 @@ EditorToolboxWidget::get_tool_coords(int pos) const
 int
 EditorToolboxWidget::get_tool_pos(const Vector& coords) const
 {
-  int x = static_cast<int>((coords.x - m_pos_x) / 32.f);
-  int y = static_cast<int>((coords.y - 64.f) / 32.f);
+  int const x = static_cast<int>((coords.x - m_pos_x) / 32.f);
+  int const y = static_cast<int>((coords.y - 64.f) / 32.f);
   return y * 4 + x;
 }
 
@@ -459,7 +459,7 @@ EditorToolboxWidget::get_rect_from_hovered_item(HoveredItem item) const
 Rectf
 EditorToolboxWidget::get_active_item_rect() const
 {
-  InputType it_type = m_tilebox->get_input_type();
+  InputType const it_type = m_tilebox->get_input_type();
   switch (it_type)
   {
     case InputType::TILE:

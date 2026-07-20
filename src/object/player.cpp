@@ -331,7 +331,7 @@ Player::move_to_sector(Sector& other)
       get_parent()->move_object(grabbed_game_object->get_uid(), other);
   }
 
-  for (Key* key : m_collected_keys)
+  for (Key const* key : m_collected_keys)
     get_parent()->move_object(key->get_uid(), other);
 
   // Move the player.
@@ -420,9 +420,9 @@ Player::update(float dt_sec)
 
     m_active_bubbles.remove_if([&](const std::pair<SpritePtr, Vector>& bubble)
       {
-        Rectf bubble_box(bubble.second.x, bubble.second.y, bubble.second.x + 16.f, bubble.second.y + 16.f);
-        bool is_out_of_water = Sector::get().is_free_of_tiles(bubble_box, true, Tile::WATER);
-        bool hits_solid = !Sector::get().is_free_of_tiles(bubble_box, false, Tile::SOLID);
+        Rectf const bubble_box(bubble.second.x, bubble.second.y, bubble.second.x + 16.f, bubble.second.y + 16.f);
+        bool const is_out_of_water = Sector::get().is_free_of_tiles(bubble_box, true, Tile::WATER);
+        bool const hits_solid = !Sector::get().is_free_of_tiles(bubble_box, false, Tile::SOLID);
         return is_out_of_water || hits_solid;
       });
   }
@@ -514,7 +514,7 @@ Player::update(float dt_sec)
 
     Rectf swim_here_box = get_bbox();
     swim_here_box.set_bottom(m_col.m_bbox.get_bottom() - 16.f);
-    bool can_swim_here = !Sector::get().is_free_of_tiles(swim_here_box, true, Tile::WATER);
+    bool const can_swim_here = !Sector::get().is_free_of_tiles(swim_here_box, true, Tile::WATER);
 
     if (m_swimming)
     {
@@ -532,18 +532,18 @@ Player::update(float dt_sec)
 
       if (m_bubble_timer.check())
       {
-        Vector beak_local_offset(30.f, 0.0f);
-        float big_offset_x = is_big() ? 4.0f : 0.0f;
+        Vector const beak_local_offset(30.f, 0.0f);
+        float const big_offset_x = is_big() ? 4.0f : 0.0f;
 
         // Calculate the offsets based on the sprite angle
-        float offset_x = std::cos(m_swimming_angle) * 10.0f;
-        float offset_y = std::sin(m_swimming_angle) * 10.0f;
+        float const offset_x = std::cos(m_swimming_angle) * 10.0f;
+        float const offset_y = std::sin(m_swimming_angle) * 10.0f;
 
         // Rotate the beak offset based on the sprite's angle
-        float rotated_beak_offset_x = beak_local_offset.x * std::cos(m_swimming_angle) - beak_local_offset.y * std::sin(m_swimming_angle);
-        float rotated_beak_offset_y = beak_local_offset.x * std::sin(m_swimming_angle) + beak_local_offset.y * std::cos(m_swimming_angle);
+        float const rotated_beak_offset_x = beak_local_offset.x * std::cos(m_swimming_angle) - beak_local_offset.y * std::sin(m_swimming_angle);
+        float const rotated_beak_offset_y = beak_local_offset.x * std::sin(m_swimming_angle) + beak_local_offset.y * std::cos(m_swimming_angle);
 
-        Vector player_center = m_col.m_bbox.get_middle();
+        Vector const player_center = m_col.m_bbox.get_middle();
         Vector beak_position;
 
         // Determine direction based on the radians
@@ -556,12 +556,12 @@ Player::update(float dt_sec)
           beak_position = player_center + Vector(rotated_beak_offset_x - 4.0f + big_offset_x, rotated_beak_offset_y);
         }
 
-        int num_bubbles = graphicsRandom.rand(1, 3);
+        int const num_bubbles = graphicsRandom.rand(1, 3);
 
         for (int i = 0; i < num_bubbles; ++i)
         {
-          int random_action_index = graphicsRandom.rand(0, 2);
-          std::string selected_action = BUBBLE_ACTIONS[random_action_index];
+          int const random_action_index = graphicsRandom.rand(0, 2);
+          std::string const selected_action = BUBBLE_ACTIONS[random_action_index];
 
           SpritePtr bubble_sprite = m_bubbles_sprite->clone();
           bubble_sprite->set_animation_loops(1);
@@ -579,8 +579,8 @@ Player::update(float dt_sec)
 
           if (num_bubbles > 1)
           {
-            float burst_offset_x = graphicsRandom.randf(-5.0f, 5.0f);
-            float burst_offset_y = graphicsRandom.randf(-5.0f, 5.0f);
+            float const burst_offset_x = graphicsRandom.randf(-5.0f, 5.0f);
+            float const burst_offset_y = graphicsRandom.randf(-5.0f, 5.0f);
             bubble_pos.x += burst_offset_x;
             bubble_pos.y += burst_offset_y;
           }
@@ -760,7 +760,7 @@ Player::update(float dt_sec)
 
   if (m_boost != 0.f)
   {
-    bool sign = std::signbit(m_boost);
+    bool const sign = std::signbit(m_boost);
     m_boost = (sign ? -1.f : +1.f) * (std::abs(m_boost) - dt_sec * BOOST_DECREASE_RATE);
     if (std::signbit(m_boost) != sign)
       m_boost = 0.f;
@@ -785,11 +785,11 @@ Player::update(float dt_sec)
   {
     if (graphicsRandom.rand(0, 2) == 0)
     {
-      float px = graphicsRandom.randf(m_col.m_bbox.get_left() + 0, m_col.m_bbox.get_right() - 0);
-      float py = graphicsRandom.randf(m_col.m_bbox.get_top() + 0, m_col.m_bbox.get_bottom() - 0);
-      Vector ppos = Vector(px, py);
-      Vector pspeed = Vector(0, 0);
-      Vector paccel = Vector(0, 0);
+      float const px = graphicsRandom.randf(m_col.m_bbox.get_left() + 0, m_col.m_bbox.get_right() - 0);
+      float const py = graphicsRandom.randf(m_col.m_bbox.get_top() + 0, m_col.m_bbox.get_bottom() - 0);
+      Vector const ppos = Vector(px, py);
+      Vector const pspeed = Vector(0, 0);
+      Vector const paccel = Vector(0, 0);
       Sector::get().add<SpriteParticle>(
         "images/particles/sparkle.sprite",
         // draw bright sparkle when there is lots of time left,
@@ -986,9 +986,9 @@ Player::slide()
 
   //pre_slide helps us detect the ground where Tux is about to slide on because sometimes on_ground() doesn't work or isn't relevant
   Rectf pre_slide_box = get_bbox();
-  float fast_fall_speed = m_physic.get_velocity_y() <= 400.f ? 0.f : m_physic.get_velocity_y()*0.03f;
+  float const fast_fall_speed = m_physic.get_velocity_y() <= 400.f ? 0.f : m_physic.get_velocity_y()*0.03f;
   pre_slide_box.set_bottom(m_col.m_bbox.get_bottom() + fast_fall_speed + 16.f);
-  bool pre_slide = !Sector::get().is_free_of_statics(pre_slide_box);
+  bool const pre_slide = !Sector::get().is_free_of_statics(pre_slide_box);
 
   if (std::abs(m_physic.get_velocity_x()) > MAX_SLIDE_SPEED) {
     m_physic.set_acceleration_x(-m_physic.get_velocity_x());
@@ -1050,7 +1050,7 @@ Player::handle_input_swimming()
   float pointx = float(m_controller->hold(Control::RIGHT)) - float(m_controller->hold(Control::LEFT)),
         pointy = float(m_controller->hold(Control::DOWN)) - float(m_controller->hold(Control::UP));
 
-  bool boost = m_controller->hold(Control::JUMP);
+  bool const boost = m_controller->hold(Control::JUMP);
 
   swim(pointx, pointy, boost);
 }
@@ -1062,8 +1062,8 @@ Player::swim(float pointx, float pointy, bool boost)
       m_physic.set_gravity_modifier(.0f);
 
     // Angle
-    bool is_ang_defined = (pointx != 0) || (pointy != 0);
-    float pointed_angle = math::angle(Vector(pointx, pointy));
+    bool const is_ang_defined = (pointx != 0) || (pointy != 0);
+    float const pointed_angle = math::angle(Vector(pointx, pointy));
     float delta = 0;
 
     if(is_ang_defined)
@@ -1073,7 +1073,7 @@ Player::swim(float pointx, float pointy, bool boost)
       if(std::abs(delta) > math::PI)
         delta += delta > 0 ? -math::TAU : math::TAU;
 
-      float epsilon = (boost ? TURN_MAGNITUDE : TURN_MAGNITUDE_BOOST) * delta;
+      float const epsilon = (boost ? TURN_MAGNITUDE : TURN_MAGNITUDE_BOOST) * delta;
       m_swimming_angle += epsilon;
 
       if (m_swimming_angle > math::PI)
@@ -1093,7 +1093,7 @@ Player::swim(float pointx, float pointy, bool boost)
         m_swimming_angle = pointed_angle;
 
       m_swimming_accel_modifier = is_ang_defined ? 600.f : 0.f;
-      Vector swimming_direction = math::vec2_from_polar(m_swimming_accel_modifier, pointed_angle);
+      Vector const swimming_direction = math::vec2_from_polar(m_swimming_accel_modifier, pointed_angle);
 
       m_physic.set_acceleration_x((swimming_direction.x - 1.0f * vx) * 2.f);
       m_physic.set_acceleration_y((swimming_direction.y - 1.0f * vy) * 2.f);
@@ -1124,7 +1124,7 @@ Player::swim(float pointx, float pointy, bool boost)
       }
 
       // Turbo, using pointsign
-      float minboostspeed = 100.f;
+      float const minboostspeed = 100.f;
       if (boost && glm::length(m_physic.get_velocity()) > minboostspeed)
       {
         if (glm::length(m_physic.get_velocity()) < SWIM_BOOST_SPEED)
@@ -1165,7 +1165,7 @@ Player::swim(float pointx, float pointy, bool boost)
   else
   {
     // otherwise angle the sprite normally
-    float angle = (std::abs(m_swimming_angle) <= math::PI_2) ?
+    float const angle = (std::abs(m_swimming_angle) <= math::PI_2) ?
                     math::degrees(m_swimming_angle) :
                     math::degrees(math::PI + m_swimming_angle);
 
@@ -1183,8 +1183,8 @@ Player::swim(float pointx, float pointy, bool boost)
 void
 Player::apply_friction()
 {
-  bool is_on_ground = on_ground();
-  float velx = m_physic.get_velocity_x();
+  bool const is_on_ground = on_ground();
+  float const velx = m_physic.get_velocity_x();
   if (is_on_ground && (fabsf(velx) < (m_stone ? 5.f : WALK_SPEED))) {
     m_physic.set_velocity_x(0);
     m_physic.set_acceleration_x(0);
@@ -1388,7 +1388,7 @@ Player::do_standup(bool force_standup)
   }
 
   Rectf new_bbox = m_col.m_bbox;
-  float new_height = m_swimming ? TUX_WIDTH : BIG_TUX_HEIGHT;
+  float const new_height = m_swimming ? TUX_WIDTH : BIG_TUX_HEIGHT;
   new_bbox.move(Vector(0, m_col.m_bbox.get_height() - new_height));
   new_bbox.set_height(new_height);
   if (!Sector::get().is_free_of_movingstatics(new_bbox, this, true) && !force_standup)
@@ -1667,7 +1667,7 @@ Player::handle_input()
   if (!m_stone && !m_swimming) handle_vertical_input();
 
   /* grabbing */
-  bool just_grabbed = try_grab();
+  bool const just_grabbed = try_grab();
 
   /* Shoot! */
   auto active_bullets = Sector::get().get_object_count<Bullet>([this](const Bullet& b){ return &b.get_player() == this; });
@@ -1675,7 +1675,7 @@ Player::handle_input()
     if ((get_bonus() == BONUS_FIRE && active_bullets < MAX_FIRE_BULLETS) ||
         (get_bonus() == BONUS_ICE  && active_bullets < MAX_ICE_BULLETS))
     {
-      Vector pos = get_pos() + Vector(m_col.m_bbox.get_width() / 2.f, m_col.m_bbox.get_height() / 4.f);
+      Vector const pos = get_pos() + Vector(m_col.m_bbox.get_width() / 2.f, m_col.m_bbox.get_height() / 4.f);
       Direction swim_dir;
       swim_dir = ((std::abs(m_swimming_angle) <= math::PI_2)
         || (m_water_jump && std::abs(m_physic.get_velocity_x()) < 10.f)) ? Direction::RIGHT : Direction::LEFT;
@@ -2079,8 +2079,8 @@ Player::draw(DrawingContext& context)
     auto* target = Sector::get().get_object_by_uid<Player>(*m_target);
     if (target)
     {
-      Vector pos(target->get_bbox().get_middle().x, target->get_bbox().get_top() - static_cast<float>(m_multiplayer_arrow->get_height()) * 1.5f);
-      Vector pos_surf(pos - Vector(static_cast<float>(m_multiplayer_arrow->get_width()) / 2.f, 0.f));
+      Vector const pos(target->get_bbox().get_middle().x, target->get_bbox().get_top() - static_cast<float>(m_multiplayer_arrow->get_height()) * 1.5f);
+      Vector const pos_surf(pos - Vector(static_cast<float>(m_multiplayer_arrow->get_width()) / 2.f, 0.f));
       m_multiplayer_arrow->draw(context.color(), pos_surf, LAYER_LIGHTMAP + 1);
       context.color().draw_text(Resources::normal_font, std::to_string(get_id() + 1), pos,
                                 FontAlignment::ALIGN_CENTER, LAYER_LIGHTMAP + 1);
@@ -2329,7 +2329,7 @@ Player::draw(DrawingContext& context)
   // may overshoot slightly, but Tux should never move fast enough that this is perceivable.
   // (While this could be done for all objects, it is most important here as the camera often
   // tracks Tux.) Note `context.get_time_offset()` is only nonzero if frame prediction is on.
-  Vector draw_pos = get_pos() + context.get_time_offset() * m_physic.get_velocity();
+  Vector const draw_pos = get_pos() + context.get_time_offset() * m_physic.get_velocity();
 
   /* Draw Tux */
   if (!m_visible || (m_post_damage_safety_timer.started() && size_t(g_game_time * 40) % 2))
@@ -2342,7 +2342,7 @@ Player::draw(DrawingContext& context)
     m_sprite->draw(context.color(), draw_pos, LAYER_OBJECTS + 1);
 
   //TODO: Replace recoloring with proper costumes
-  Color power_color = (get_bonus() == BONUS_FIRE ? Color(1.f, 0.7f, 0.5f) :
+  Color const power_color = (get_bonus() == BONUS_FIRE ? Color(1.f, 0.7f, 0.5f) :
     get_bonus() == BONUS_ICE ? Color(0.7f, 1.f, 1.f) :
     get_bonus() == BONUS_AIR ? Color(0.7f, 1.f, 0.5f) :
     get_bonus() == BONUS_EARTH ? Color(1.f, 0.9f, 0.6f) :
@@ -2364,7 +2364,7 @@ Player::collision_tile(uint32_t tile_attributes)
       kill(false);
     else
     {
-      Rectf hurtbox = get_bbox().grown(-6.f);
+      Rectf const hurtbox = get_bbox().grown(-6.f);
       if (!Sector::get().is_free_of_tiles(hurtbox, false, Tile::HURTS))
         kill(false);
     }
@@ -3025,7 +3025,7 @@ Player::next_target()
 {
   const auto& players = Sector::get().get_players();
 
-  Player* first = nullptr;
+  Player const* first = nullptr;
   bool is_next = false;
   for (auto* player : players)
   {
@@ -3066,7 +3066,7 @@ Player::prev_target()
 {
   const auto& players = Sector::get().get_players();
 
-  Player* last = nullptr;
+  Player const* last = nullptr;
   for (auto* player : players)
   {
     if (player->is_active())
@@ -3153,8 +3153,8 @@ Player::stop_rolling(bool violent)
   {
     for (int i = 0; i < 5; i++)
     {
-      Vector pspeed = Vector(graphicsRandom.randf(-100.f, 100.f)*(static_cast<float>(i)-2), graphicsRandom.randf(-200.f, -150.f));
-      Vector paccel = Vector(0, 1000.f + graphicsRandom.randf(-100.f, 100.f));
+      Vector const pspeed = Vector(graphicsRandom.randf(-100.f, 100.f)*(static_cast<float>(i)-2), graphicsRandom.randf(-200.f, -150.f));
+      Vector const paccel = Vector(0, 1000.f + graphicsRandom.randf(-100.f, 100.f));
       Sector::get().add<SpriteParticle>(
         "images/particles/rock.sprite", "rock-"+std::to_string(i),
         get_bbox().get_middle(),

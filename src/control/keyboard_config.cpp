@@ -97,7 +97,7 @@ KeyboardConfig::read(const ReaderMapping& keymap_mapping)
     map.get("control", control_text);
 
     int player_id = 0;
-    size_t pos = control_text.find(DELIMITER);
+    size_t const pos = control_text.find(DELIMITER);
     if (pos != std::string::npos)
     {
       try
@@ -172,7 +172,7 @@ KeyboardConfig::write(Writer& writer)
 
   for (const auto& i : m_keymap)
   {
-    std::string player_prefix = (i.second.player > 0) ? std::to_string(i.second.player) + DELIMITER : "";
+    std::string const player_prefix = (i.second.player > 0) ? std::to_string(i.second.player) + DELIMITER : "";
     writer.start_list("map");
     writer.write("key", static_cast<int>(i.first));
     writer.write("control", player_prefix + Control_to_string(i.second.control));

@@ -39,17 +39,17 @@ ContribLevelsetMenu::ContribLevelsetMenu(std::unique_ptr<World> world) :
   m_levelset = std::unique_ptr<Levelset>(new Levelset(m_world->get_basedir()));
 
   auto savegame = Savegame::from_current_profile(m_world->get_basename());
-  LevelsetState state = savegame->get_levelset_state(m_world->get_basedir());
+  LevelsetState const state = savegame->get_levelset_state(m_world->get_basedir());
 
   add_label(m_world->get_title());
   add_hl();
 
   for (int i = 0; i < m_levelset->get_num_levels(); ++i)
   {
-    std::string filename = m_levelset->get_level_filename(i);
-    std::string full_filename = FileSystem::join(m_world->get_basedir(), filename);
-    std::string title = LevelParser::get_level_name(full_filename);
-    LevelState level_state = state.get_level_state(filename);
+    std::string const filename = m_levelset->get_level_filename(i);
+    std::string const full_filename = FileSystem::join(m_world->get_basedir(), filename);
+    std::string const title = LevelParser::get_level_name(full_filename);
+    LevelState const level_state = state.get_level_state(filename);
 
     std::ostringstream out;
     if (level_state.solved)
@@ -74,7 +74,7 @@ ContribLevelsetMenu::menu_action(MenuItem& item)
 
   // Reload the World so that we have something that we can safely
   // std::move() around without wreaking the ContribMenu.
-  std::unique_ptr<World> world = World::from_directory(m_world->get_basedir());
-  std::string filename = m_levelset->get_level_filename(item.get_id());
+  std::unique_ptr<World> const world = World::from_directory(m_world->get_basedir());
+  std::string const filename = m_levelset->get_level_filename(item.get_id());
   GameManager::current()->start_level(*world, filename);
 }

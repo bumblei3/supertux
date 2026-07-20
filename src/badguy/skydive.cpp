@@ -66,7 +66,7 @@ SkyDive::collision_badguy(BadGuy&, const CollisionHit& hit)
 void
 SkyDive::grab(MovingObject& object, const Vector& pos, Direction dir_)
 {
-  Vector movement = pos - get_pos();
+  Vector const movement = pos - get_pos();
   m_col.set_movement(movement);
   m_dir = dir_;
 
@@ -89,7 +89,7 @@ SkyDive::ungrab(MovingObject& object, Direction dir_)
   {
     if (player->is_swimming() || player->is_water_jumping())
     {
-      float swimangle = player->get_swimming_angle();
+      float const swimangle = player->get_swimming_angle();
       m_physic.set_velocity(Vector(std::cos(swimangle) * 40.f, std::sin(swimangle) * 40.f) +
         player->get_physic().get_velocity());
     }

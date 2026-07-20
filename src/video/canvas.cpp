@@ -344,8 +344,8 @@ void
 Canvas::draw_hexagon(const Vector& pos, float radius, const Color& color,
   int layer)
 {
-  float radius2 = radius * sqrtf(0.8f);
-  float x_off_small = radius * sqrtf(0.2f);
+  float const radius2 = radius * sqrtf(0.8f);
+  float const x_off_small = radius * sqrtf(0.2f);
   std::array<Vector, 6> offsets{
     Vector(-x_off_small, -radius2),
     Vector(x_off_small, -radius2),
@@ -365,7 +365,7 @@ Canvas::get_pixel(const Vector& position, const std::shared_ptr<Color>& color_ou
 {
   assert(color_out);
 
-  Vector pos = apply_translate(position)*scale();
+  Vector const pos = apply_translate(position)*scale();
 
   // There is no light offscreen.
   if (pos.x >= static_cast<float>(m_context.get_viewport().get_width()) ||

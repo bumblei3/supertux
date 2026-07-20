@@ -64,7 +64,7 @@ GLPixelRequest::is_ready() const
 {
   assert_gl();
 
-  GLenum ret = glClientWaitSync(m_sync, GL_NONE_BIT, 0);
+  GLenum const ret = glClientWaitSync(m_sync, GL_NONE_BIT, 0);
 
   if (ret == GL_CONDITION_SATISFIED ||
       ret == GL_ALREADY_SIGNALED)

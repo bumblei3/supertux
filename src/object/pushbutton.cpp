@@ -96,7 +96,7 @@ PushButton::collision(MovingObject& other, const CollisionHit& hit)
     return FORCE_MOVE;
 	if (player)
   {
-    float vy = player->get_physic().get_velocity_y();
+    float const vy = player->get_physic().get_velocity_y();
 
     if (m_dir == Direction::DOWN)
     {
@@ -127,10 +127,10 @@ PushButton::collision(MovingObject& other, const CollisionHit& hit)
 
   // change appearance
   m_state = ON;
-  float old_bbox_height = m_col.m_bbox.get_height();
+  float const old_bbox_height = m_col.m_bbox.get_height();
   set_action("on", m_dir, -1);
-  float new_bbox_height = m_col.m_bbox.get_height();
-  Vector delta(0, old_bbox_height - new_bbox_height);
+  float const new_bbox_height = m_col.m_bbox.get_height();
+  Vector const delta(0, old_bbox_height - new_bbox_height);
   set_pos(get_pos() + delta * (m_dir == Direction::DOWN ? 0 : 1.f));
 
   // play sound

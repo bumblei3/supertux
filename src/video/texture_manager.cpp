@@ -199,8 +199,8 @@ TextureManager::get(const ReaderMapping& mapping, const std::optional<Rect>& reg
 TexturePtr
 TextureManager::get(const std::string& _filename)
 {
-  std::string filename = FileSystem::normalize(_filename);
-  Texture::Key key(filename, Rect(0, 0, 0, 0));
+  std::string const filename = FileSystem::normalize(_filename);
+  Texture::Key const key(filename, Rect(0, 0, 0, 0));
   auto i = m_image_textures.find(key);
 
   TexturePtr texture;
@@ -221,8 +221,8 @@ TextureManager::get(const std::string& _filename,
                     const std::optional<Rect>& rect,
                     const Sampler& sampler)
 {
-  std::string filename = FileSystem::normalize(_filename);
-  Texture::Key key = Texture::Key(filename, rect ? *rect : Rect());
+  std::string const filename = FileSystem::normalize(_filename);
+  Texture::Key const key = Texture::Key(filename, rect ? *rect : Rect());
 
   auto i = m_image_textures.find(key);
 
@@ -330,12 +330,12 @@ TextureManager::create_image_surface_raw(const std::string& filename, const Rect
     );
 
     // Clip against the *source* image bounds, not the destination surface.
-    Rect clipped_rect(std::max(0, rect.left),
+    Rect const clipped_rect(std::max(0, rect.left),
                       std::max(0, rect.top),
                       std::min(surface.w, rect.right),
                       std::min(surface.h, rect.bottom));
 
-    SDL_Rect srcrect = clipped_rect.to_sdl();
+    SDL_Rect const srcrect = clipped_rect.to_sdl();
     SDL_BlitSurface(const_cast<SDL_Surface*>(&surface), &srcrect, subimage.get(), nullptr);
   }
   else
@@ -364,7 +364,7 @@ TextureManager::create_image_surface_raw(const std::string& filename, const Rect
       throw std::runtime_error("SDL_CreateSurface() call failed");
     }
 
-    SDL_Rect srcrect = rect.to_sdl();
+    SDL_Rect const srcrect = rect.to_sdl();
     if (!SDL_BlitSurface(const_cast<SDL_Surface*>(&surface), &srcrect,
                          subimage.get(), nullptr))
     {

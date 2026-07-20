@@ -132,7 +132,7 @@ CustomParticleSystem::CustomParticleSystem(const ReaderMapping& reader) :
   {
     if (iter.get_key() == "texture")
     {
-      ReaderMapping mapping = iter.as_mapping();
+      ReaderMapping const mapping = iter.as_mapping();
 
       std::string tex;
       if (!mapping.get("surface", tex))
@@ -635,8 +635,8 @@ CustomParticleSystem::update(float dt_sec)
       }
     }
 
-    float abs_x = get_abs_x();
-    float abs_y = get_abs_y();
+    float const abs_x = get_abs_x();
+    float const abs_y = get_abs_y();
 
     if (!particle->has_been_on_screen) {
       if (particle->pos.y <= static_cast<float>(SCREEN_HEIGHT) + abs_y
@@ -738,7 +738,7 @@ CustomParticleSystem::update(float dt_sec)
           {
             auto c = get_collision(particle, Vector(particle->speedX, particle->speedY) * dt_sec);
 
-            float speed_angle = atanf(-particle->speedY / particle->speedX);
+            float const speed_angle = atanf(-particle->speedY / particle->speedX);
             if (c.slope_normal.x == 0.f && c.slope_normal.y == 0.f) {
               auto cX = get_collision(particle, Vector(particle->speedX, 0) * dt_sec);
               if (cX.left != cX.right)
@@ -747,12 +747,12 @@ CustomParticleSystem::update(float dt_sec)
               if (cY.top != cY.bottom)
                 particle->speedY *= -1;
             } else {
-              float face_angle = atanf(c.slope_normal.y / c.slope_normal.x);
-              float dest_angle = face_angle * 2.f - speed_angle; // Reflect the angle around face_angle.
+              float const face_angle = atanf(c.slope_normal.y / c.slope_normal.x);
+              float const dest_angle = face_angle * 2.f - speed_angle; // Reflect the angle around face_angle.
               float dX = cosf(dest_angle),
                     dY = sinf(dest_angle);
 
-              float true_speed = static_cast<float>(sqrt(pow(particle->speedY, 2)
+              float const true_speed = static_cast<float>(sqrt(pow(particle->speedY, 2)
                                                       + pow(particle->speedX, 2)));
 
               particle->speedX = dX * true_speed;
@@ -916,7 +916,7 @@ CustomParticleSystem::collision(Particle* object, const Vector& movement)
 {
   using namespace collision;
 
-  CustomParticle* particle = dynamic_cast<CustomParticle*>(object);
+  CustomParticle const* particle = dynamic_cast<CustomParticle*>(object);
   assert(particle);
 
   // Calculate rectangle where the object will move.
@@ -927,7 +927,7 @@ CustomParticleSystem::collision(Particle* object, const Vector& movement)
           + particle->props.hb_offset.x * static_cast<float>(particle->props.texture->get_width());
   x2 = x1 + particle->props.hb_scale.x * static_cast<float>(particle->props.texture->get_width()) + movement.x;
   if (x2 < x1) {
-    float temp_x = x1;
+    float const temp_x = x1;
     x1 = x2;
     x2 = temp_x;
   }
@@ -936,17 +936,17 @@ CustomParticleSystem::collision(Particle* object, const Vector& movement)
           + particle->props.hb_offset.y * static_cast<float>(particle->props.texture->get_height());
   y2 = y1 + particle->props.hb_scale.y * static_cast<float>(particle->props.texture->get_height()) + movement.y;
   if (y2 < y1) {
-    float temp_y = y1;
+    float const temp_y = y1;
     y1 = y2;
     y2 = temp_y;
   }
   bool water = false;
 
   // Test with all tiles in this rectangle.
-  int starttilex = int(x1-1) / 32;
-  int starttiley = int(y1-1) / 32;
-  int max_x = int(x2+1);
-  int max_y = int(y2+1);
+  int const starttilex = int(x1-1) / 32;
+  int const starttiley = int(y1-1) / 32;
+  int const max_x = int(x2+1);
+  int const max_y = int(y2+1);
 
   Rectf dest(x1, y1, x2, y2);
   dest.move(movement);
@@ -963,9 +963,9 @@ CustomParticleSystem::collision(Particle* object, const Vector& movement)
         if (! (tile.get_attributes() & (Tile::WATER | Tile::SOLID)))
           continue;
 
-        Rectf rect = solids->get_tile_bbox(x, y);
+        Rectf const rect = solids->get_tile_bbox(x, y);
         if (tile.is_slope ()) { // Slope tile.
-          AATriangle triangle = AATriangle(rect, tile.get_data());
+          AATriangle const triangle = AATriangle(rect, tile.get_data());
 
           if (rectangle_aatriangle(&constraints, dest, triangle)) {
             if (tile.get_attributes() & Tile::WATER)
@@ -1005,7 +1005,7 @@ CustomParticleSystem::get_collision(Particle* object, const Vector& movement)
 {
   using namespace collision;
 
-  CustomParticle* particle = dynamic_cast<CustomParticle*>(object);
+  CustomParticle const* particle = dynamic_cast<CustomParticle*>(object);
   assert(particle);
 
   // Calculate rectangle where the object will move.
@@ -1015,7 +1015,7 @@ CustomParticleSystem::get_collision(Particle* object, const Vector& movement)
   x1 = object->pos.x - particle->props.scale.x * static_cast<float>(particle->props.texture->get_width()) / 2;
   x2 = x1 + particle->props.scale.x * static_cast<float>(particle->props.texture->get_width()) + movement.x;
   if (x2 < x1) {
-    float temp_x = x1;
+    float const temp_x = x1;
     x1 = x2;
     x2 = temp_x;
   }
@@ -1023,16 +1023,16 @@ CustomParticleSystem::get_collision(Particle* object, const Vector& movement)
   y1 = object->pos.y - particle->props.scale.y * static_cast<float>(particle->props.texture->get_height()) / 2;
   y2 = y1 + particle->props.scale.y * static_cast<float>(particle->props.texture->get_height()) + movement.y;
   if (y2 < y1) {
-    float temp_y = y1;
+    float const temp_y = y1;
     y1 = y2;
     y2 = temp_y;
   }
 
   // Test with all tiles in this rectangle.
-  int starttilex = int(x1-1) / 32;
-  int starttiley = int(y1-1) / 32;
-  int max_x = int(x2+1);
-  int max_y = int(y2+1);
+  int const starttilex = int(x1-1) / 32;
+  int const starttiley = int(y1-1) / 32;
+  int const max_x = int(x2+1);
+  int const max_y = int(y2+1);
 
   Rectf dest(x1, y1, x2, y2);
   dest.move(movement);
@@ -1049,9 +1049,9 @@ CustomParticleSystem::get_collision(Particle* object, const Vector& movement)
         if (! (tile.get_attributes() & (/*Tile::WATER |*/ Tile::SOLID)))
           continue;
 
-        Rectf rect = solids->get_tile_bbox(x, y);
+        Rectf const rect = solids->get_tile_bbox(x, y);
         if (tile.is_slope ()) { // Slope tile.
-          AATriangle triangle = AATriangle(rect, tile.get_data());
+          AATriangle const triangle = AATriangle(rect, tile.get_data());
           rectangle_aatriangle(&constraints, dest, triangle);
         } else { // Normal rectangular tile.
           if (dest.overlaps(rect)) {
@@ -1140,7 +1140,7 @@ CustomParticleSystem::add_particle(float lifetime, float x, float y)
   particle->pos.y = y;
 
   float life_elapsed = lifetime;
-  float birth_delta = m_particle_birth_time_variation / 2;
+  float const birth_delta = m_particle_birth_time_variation / 2;
   particle->total_birth = m_particle_birth_time + graphicsRandom.randf(-birth_delta, birth_delta);
   particle->birth_time = particle->total_birth - life_elapsed;
   if (particle->birth_time < 0.f) {
@@ -1149,7 +1149,7 @@ CustomParticleSystem::add_particle(float lifetime, float x, float y)
   } else {
     life_elapsed = 0.f;
   }
-  float life_delta = m_particle_lifetime_variation / 2;
+  float const life_delta = m_particle_lifetime_variation / 2;
   particle->lifetime = m_particle_lifetime - life_elapsed + graphicsRandom.randf(-life_delta, life_delta);
   if (particle->lifetime < 0.f) {
     life_elapsed = -particle->lifetime;
@@ -1157,7 +1157,7 @@ CustomParticleSystem::add_particle(float lifetime, float x, float y)
   } else {
     life_elapsed = 0.f;
   }
-  float death_delta = m_particle_death_time_variation / 2;
+  float const death_delta = m_particle_death_time_variation / 2;
   particle->total_death = m_particle_death_time + graphicsRandom.randf(-death_delta, death_delta);
   particle->death_time = particle->total_death - life_elapsed;
 
@@ -1175,9 +1175,9 @@ CustomParticleSystem::add_particle(float lifetime, float x, float y)
     break;
   }
 
-  float speedx_delta = m_particle_speed_variation_x / 2;
+  float const speedx_delta = m_particle_speed_variation_x / 2;
   particle->speedX = m_particle_speed_x + graphicsRandom.randf(-speedx_delta, speedx_delta);
-  float speedy_delta = m_particle_speed_variation_y / 2;
+  float const speedy_delta = m_particle_speed_variation_y / 2;
   particle->speedY = m_particle_speed_y + graphicsRandom.randf(-speedy_delta, speedy_delta);
   particle->accX = m_particle_acceleration_x;
   particle->accY = m_particle_acceleration_y;
@@ -1186,9 +1186,9 @@ CustomParticleSystem::add_particle(float lifetime, float x, float y)
 
   particle->feather_factor = m_particle_feather_factor;
 
-  float angle_delta = m_particle_rotation_variation / 2;
+  float const angle_delta = m_particle_rotation_variation / 2;
   particle->angle = m_particle_rotation + graphicsRandom.randf(-angle_delta, angle_delta);
-  float angle_speed_delta = m_particle_rotation_speed_variation / 2;
+  float const angle_speed_delta = m_particle_rotation_speed_variation / 2;
   particle->angle_speed = m_particle_rotation_speed + graphicsRandom.randf(-angle_speed_delta, angle_speed_delta);
   particle->angle_acc = m_particle_rotation_acceleration;
   particle->angle_decc = m_particle_rotation_decceleration;
@@ -1214,8 +1214,8 @@ CustomParticleSystem::spawn_particles(float lifetime)
       }
     }
   } else {
-    float abs_x = get_abs_x();
-    float abs_y = get_abs_y();
+    float const abs_x = get_abs_x();
+    float const abs_y = get_abs_y();
     add_particle(lifetime,
                  graphicsRandom.randf(virtual_width) + abs_x,
                  graphicsRandom.randf(virtual_height) + abs_y);

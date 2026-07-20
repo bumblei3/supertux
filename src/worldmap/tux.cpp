@@ -63,7 +63,7 @@ Tux::draw(DrawingContext& context)
 {
   if (m_worldmap->get_sector().get_camera().is_panning()) return;
 
-  std::string action = get_action_prefix_for_bonus(m_worldmap->get_savegame().get_player_status().bonus[0]);
+  std::string const action = get_action_prefix_for_bonus(m_worldmap->get_savegame().get_player_status().bonus[0]);
   if (!action.empty())
   {
     if (m_moving && (get_axis().x != 0 || get_axis().y != 0))
@@ -125,7 +125,7 @@ Tux::get_pos(float time_offset) const
   // `offset` to avoid this would introduce a slightly more noticeable pause
   // at each tile. Both symptoms could be avoided by looking ahead one tile in
   // the worldmap to determine which direction Tux will move when offset > 32.f.
-  float offset = m_offset + (m_moving ? TUXSPEED * time_offset : 0.0f);
+  float const offset = m_offset + (m_moving ? TUXSPEED * time_offset : 0.0f);
 
   switch (m_direction)
   {

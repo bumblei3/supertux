@@ -331,7 +331,7 @@ Background::update(float dt_sec)
   }
   else if (m_timer_color.started())
   {
-    float progress = m_timer_color.get_progress();
+    float const progress = m_timer_color.get_progress();
 
     m_color = (m_src_color + (m_dst_color - m_src_color) * progress).validate();
   }
@@ -404,7 +404,7 @@ Background::draw_image(DrawingContext& context, const Vector& pos_)
 
   if (m_fill)
   {
-    Rectf dstrect(Vector(pos_.x - context.get_width() / 2.0f,
+    Rectf const dstrect(Vector(pos_.x - context.get_width() / 2.0f,
                          pos_.y - context.get_height() / 2.0f),
                   Sizef(context.get_width(),
                         context.get_height()));
@@ -417,7 +417,7 @@ Background::draw_image(DrawingContext& context, const Vector& pos_)
       case LEFT_ALIGNMENT:
         for (int y = start_y; y < end_y; ++y)
         {
-          Vector p(pos_.x - parallax_image_size.width / 2.0f,
+          Vector const p(pos_.x - parallax_image_size.width / 2.0f,
                    pos_.y + static_cast<float>(y) * img_h - img_h_2);
           m_image->draw(canvas, p, m_layer);
         }
@@ -426,7 +426,7 @@ Background::draw_image(DrawingContext& context, const Vector& pos_)
       case RIGHT_ALIGNMENT:
         for (int y = start_y; y < end_y; ++y)
         {
-          Vector p(pos_.x + parallax_image_size.width / 2.0f - img_w,
+          Vector const p(pos_.x + parallax_image_size.width / 2.0f - img_w,
                    pos_.y + static_cast<float>(y) * img_h - img_h_2);
           m_image->draw(canvas, p, m_layer);
         }
@@ -435,7 +435,7 @@ Background::draw_image(DrawingContext& context, const Vector& pos_)
       case TOP_ALIGNMENT:
         for (int x = start_x; x < end_x; ++x)
         {
-          Vector p(pos_.x + static_cast<float>(x) * img_w - img_w_2,
+          Vector const p(pos_.x + static_cast<float>(x) * img_w - img_w_2,
                    pos_.y - parallax_image_size.height / 2.0f);
           m_image->draw(canvas, p, m_layer);
         }
@@ -444,7 +444,7 @@ Background::draw_image(DrawingContext& context, const Vector& pos_)
       case BOTTOM_ALIGNMENT:
         for (int x = start_x; x < end_x; ++x)
         {
-          Vector p(pos_.x + static_cast<float>(x) * img_w - img_w_2,
+          Vector const p(pos_.x + static_cast<float>(x) * img_w - img_w_2,
                    pos_.y - img_h + parallax_image_size.height / 2.0f);
           m_image->draw(canvas, p, m_layer);
         }
@@ -454,7 +454,7 @@ Background::draw_image(DrawingContext& context, const Vector& pos_)
         for (int y = start_y; y < end_y; ++y)
           for (int x = start_x; x < end_x; ++x)
           {
-            Vector p(pos_.x + static_cast<float>(x) * img_w - img_w_2,
+            Vector const p(pos_.x + static_cast<float>(x) * img_w - img_w_2,
                      pos_.y + static_cast<float>(y) * img_h - img_h_2);
 
             if (m_image_top && (y < 0))

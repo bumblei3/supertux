@@ -66,7 +66,7 @@ BouncingSnowball::active_update(float dt_sec)
   lookbelow.set_left(get_bbox().get_left() + 10);
   lookbelow.set_right(get_bbox().get_right() - 10);
   lookbelow.set_top(get_bbox().get_top() + 31);
-  bool groundBelow = !Sector::get().is_free_of_statics(lookbelow);
+  bool const groundBelow = !Sector::get().is_free_of_statics(lookbelow);
   if (groundBelow && (m_physic.get_velocity_y() >= 64.0f))
   {
     set_action(m_dir, "down");
@@ -142,7 +142,7 @@ BouncingSnowball::collision_solid(const CollisionHit& hit)
 
   if (hit.bottom) {
     if (get_state() == STATE_ACTIVE) {
-      float bounce_speed = -m_physic.get_velocity_y()*0.8f;
+      float const bounce_speed = -m_physic.get_velocity_y()*0.8f;
       m_physic.set_velocity_y(std::min(JUMPSPEED, bounce_speed));
       set_action(m_dir, "up", /* loops = */ 1);
     } else {

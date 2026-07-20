@@ -319,7 +319,7 @@ Editor::draw(Compositor& compositor)
                                   GradientDirection::HORIZONTAL,
                                   shadow_rect);
 
-    Rectf layers_rect = Rectf{0, SCREEN_HEIGHT - 32.f - LINE_THICKNESS,
+    Rectf const layers_rect = Rectf{0, SCREEN_HEIGHT - 32.f - LINE_THICKNESS,
                               SCREEN_WIDTH - 128.f, SCREEN_HEIGHT - 32.f};
     context.color().draw_filled_rect(layers_rect, line_color, LAYER_GUI + 1);
     // END Draw shadows and line
@@ -375,8 +375,8 @@ Editor::update(float dt_sec, const Controller& controller)
     if (m_time_since_last_save >= static_cast<float>(std::max(
         g_config->editor_autosave_frequency, 1)) * 60.f) {
       m_time_since_last_save = 0.f;
-      std::string backup_filename = get_autosave_from_levelname(m_levelfile);
-      std::string directory = get_level_directory();
+      std::string const backup_filename = get_autosave_from_levelname(m_levelfile);
+      std::string const directory = get_level_directory();
 
       // Set the test level file even though we're not testing, so that
       // if the user quits the editor without ever testing, it'll delete
@@ -623,7 +623,7 @@ Editor::test_level(const std::optional<std::pair<std::string, Vector>>& test_pos
   Compositor::s_render_lighting = true;
 
   std::unique_ptr<World> owned_world;
-  World* current_world = m_world.get();
+  World const* current_world = m_world.get();
 
   if (!g_config->max_viewport && g_config->editor_max_viewport)
     VideoSystem::current()->get_viewport().force_full_viewport(false);
@@ -649,8 +649,8 @@ Editor::test_level(const std::optional<std::pair<std::string, Vector>>& test_pos
     return;
   }
 
-  std::string backup_filename = get_autosave_from_levelname(m_levelfile);
-  std::string directory = get_level_directory();
+  std::string const backup_filename = get_autosave_from_levelname(m_levelfile);
+  std::string const directory = get_level_directory();
 
   // This is jank to get an owned World pointer, GameManager/World
   // could probably need a refactor to handle this better.
@@ -1552,8 +1552,8 @@ Editor::get_status() const
   status.m_details.push_back("In Editor");
   if (!g_config->hide_editor_levelnames && m_level)
   {
-    std::string level_type = (m_level->is_worldmap() ? "worldmap" : "level");
-    std::string status_text = "Editing " + level_type + ": " + m_level->get_name();
+    std::string const level_type = (m_level->is_worldmap() ? "worldmap" : "level");
+    std::string const status_text = "Editing " + level_type + ": " + m_level->get_name();
 
     status.m_details.push_back(status_text);
   }
@@ -1661,7 +1661,7 @@ Editor::select_object(GameObject* object)
   }
   m_selected_object = object;
 
-  ObjectSettings os = object->get_settings();
+  ObjectSettings const os = object->get_settings();
   for (const auto& option : os.get_options())
   {
     if ((option->get_flags() & OPTION_HIDDEN) && !(option->get_flags() & OPTION_VISIBLE_PROPERTIES))

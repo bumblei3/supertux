@@ -40,8 +40,8 @@ Fireworks::update(float )
     pos += Vector(graphicsRandom.randf(static_cast<float>(SCREEN_WIDTH)),
                   graphicsRandom.randf(static_cast<float>(SCREEN_HEIGHT) / 2.0f));
 
-    float red = graphicsRandom.randf(1.0f);
-    float green = graphicsRandom.randf(1.0f);
+    float const red = graphicsRandom.randf(1.0f);
+    float const green = graphicsRandom.randf(1.0f);
     Sector::get().add<Particles>(
       pos, 0, 360, 140.0f, 140.0f,
       Vector(0, 0), 45, Color(red, green, 0.0f), 3, 1.3f,

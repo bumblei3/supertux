@@ -83,8 +83,8 @@ dewrangle(const std::string& symbol)
   // dewrangled symbol in, but still safety return the original string on any
   // failure. don't like doing this but i'm sorry ;-/
   std::stringstream res;
-  size_t leftof = symbol.find('(');
-  size_t offset = symbol.find('+');
+  size_t const leftof = symbol.find('(');
+  size_t const offset = symbol.find('+');
   // check if this doesn't make sense
   if (leftof == std::string::npos ||
       offset == std::string::npos ||
@@ -92,7 +92,7 @@ dewrangle(const std::string& symbol)
     return symbol;
 
   res << symbol.substr(0, leftof + 1);
-  std::string just_symbol = symbol.substr(leftof + 1, offset - leftof - 1);
+  std::string const just_symbol = symbol.substr(leftof + 1, offset - leftof - 1);
   char* dewrangled = abi::__cxa_demangle(just_symbol.c_str(), NULL, NULL, NULL);
   if (dewrangled)
   {
@@ -454,7 +454,7 @@ ErrorHandler::error_dialog_exception(const std::string& exception)
     stream << "\n\n" << exception;
   }
 
-  std::string msg = stream.str();
+  std::string const msg = stream.str();
 
   std::cerr << msg << std::endl;
 
@@ -473,7 +473,7 @@ ErrorHandler::error_dialog_exception(const std::string& exception)
     }
   };
 
-  SDL_MessageBoxData data = {
+  SDL_MessageBoxData const data = {
     SDL_MESSAGEBOX_ERROR, // flags
     nullptr, // window
     "Error", // title

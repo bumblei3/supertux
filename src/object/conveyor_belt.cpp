@@ -84,10 +84,10 @@ ConveyorBelt::update(float dt_sec)
 {
   if (m_running)
   {
-    Vector shift_movement(m_speed * (m_dir == Direction::LEFT ? -1.0f : 1.0f) * 32.0f * dt_sec, 0.0f);
+    Vector const shift_movement(m_speed * (m_dir == Direction::LEFT ? -1.0f : 1.0f) * 32.0f * dt_sec, 0.0f);
     m_col.propagate_movement(shift_movement);
 
-    int frames = m_sprite->get_frames();
+    int const frames = m_sprite->get_frames();
 
     m_frame += m_speed * static_cast<float>(frames) * dt_sec * 2.5f;
 
@@ -107,7 +107,7 @@ ConveyorBelt::update(float dt_sec)
 void
 ConveyorBelt::draw(DrawingContext &context)
 {
-  int frame_index = m_running ? m_frame_index : 0;
+  int const frame_index = m_running ? m_frame_index : 0;
   for (int i = 0; i < m_length; i++)
   {
     m_sprite->set_frame(frame_index);

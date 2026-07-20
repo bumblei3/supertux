@@ -148,7 +148,7 @@ WorldMapSector::setup()
 
   // Check if Tux is on an auto-playing level.
   // No need to play music in that case.
-  LevelTile* level = at_object<LevelTile>();
+  LevelTile const* level = at_object<LevelTile>();
   if(level && level->is_auto_play() && !level->is_solved())
     return;
 
@@ -246,7 +246,7 @@ WorldMapSector::draw_status(DrawingContext& context)
       level->get_statistics().draw_worldmap_info(context, level->get_target_time());
     }
 
-    SpecialTile* special_tile = at_object<SpecialTile>();
+    SpecialTile const* special_tile = at_object<SpecialTile>();
     if (special_tile)
     {
       /* Display an in-map message in the map, if any as been selected */
@@ -258,10 +258,10 @@ WorldMapSector::draw_status(DrawingContext& context)
     }
 
     // display teleporter messages
-    Teleporter* teleporter = at_object<Teleporter>();
+    Teleporter const* teleporter = at_object<Teleporter>();
     if (teleporter && (!teleporter->get_message().empty()))
     {
-      Vector pos = Vector(context.get_width() / 2.0f,
+      Vector const pos = Vector(context.get_width() / 2.0f,
                           context.get_height() - Resources::normal_font->get_height() - 30.0f);
       context.color().draw_text(Resources::normal_font, teleporter->get_message(), pos, ALIGN_CENTER, LAYER_FOREGROUND1, WorldMap::s_teleporter_message_color);
     }
@@ -352,9 +352,9 @@ WorldMapSector::update(float dt_sec)
       if (level_->get_tile_pos() == tux_pos) {
         try {
           bool skip_cutscene = false;
-          Vector shrinkpos = Vector(level_->get_pos().x + 16 - m_camera->get_offset().x,
+          Vector const shrinkpos = Vector(level_->get_pos().x + 16 - m_camera->get_offset().x,
                                     level_->get_pos().y +  8 - m_camera->get_offset().y);
-          std::string levelfile = m_parent.m_levels_path + level_->get_level_filename();
+          std::string const levelfile = m_parent.m_levels_path + level_->get_level_filename();
 
           auto game_session = std::make_unique<GameSession>(levelfile, m_parent.get_savegame(), &level_->get_statistics());
           if (m_parent.m_really_enter_level)
@@ -441,7 +441,7 @@ WorldMapSector::tile_data_at(const Vector& p) const
 
   for (const auto& tilemap : get_solid_tilemaps()) {
     const Tile& tile = tilemap->get_tile(static_cast<int>(p.x), static_cast<int>(p.y));
-    int dirdata = tile.get_data();
+    int const dirdata = tile.get_data();
     dirs |= dirdata;
   }
 
@@ -486,7 +486,7 @@ WorldMapSector::finished_level(Level* gamelevel)
     return;
   }
 
-  bool old_level_state = level->is_solved();
+  bool const old_level_state = level->is_solved();
   level->set_solved(true);
 
   /* Deal with statistics */
@@ -506,7 +506,7 @@ WorldMapSector::finished_level(Level* gamelevel)
     // FIXME: Mostly a hack
     Direction dir = Direction::NONE;
 
-    int dirdata = available_directions_at(m_tux->get_tile_pos());
+    int const dirdata = available_directions_at(m_tux->get_tile_pos());
     // first, test for crossroads
     if (dirdata == Tile::WORLDMAP_CNSE ||
         dirdata == Tile::WORLDMAP_CNSW ||
@@ -563,8 +563,8 @@ WorldMapSector::path_ok(const Direction& direction, const Vector& old_pos, Vecto
   }
   else
   { // Check if the tile allows us to go to new_pos
-    int old_tile_data = tile_data_at(old_pos);
-    int new_tile_data = tile_data_at(*new_pos);
+    int const old_tile_data = tile_data_at(old_pos);
+    int const new_tile_data = tile_data_at(*new_pos);
     switch (direction)
     {
       case Direction::WEST:
@@ -614,7 +614,7 @@ WorldMapSector::move_to_spawnpoint(const std::string& spawnpoint, bool pan)
 {
   auto sp = get_spawnpoint_by_name(spawnpoint);
   if (sp != nullptr) {
-    Vector p = sp->get_pos();
+    Vector const p = sp->get_pos();
     m_tux->set_tile_pos(p);
     m_tux->set_direction(sp->get_auto_dir());
     if (pan) {

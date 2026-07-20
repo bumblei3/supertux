@@ -434,7 +434,7 @@ Menu::process_action(const MenuAction& action)
     m_items[m_active_item]->process_action(MenuAction::SELECT);
   }
 
-  bool last_action = m_items[m_active_item]->no_other_action();
+  bool const last_action = m_items[m_active_item]->no_other_action();
   m_items[m_active_item]->process_action(action);
   if (last_action)
     return;
@@ -462,7 +462,7 @@ Menu::draw_item(DrawingContext& context, int index, float y_pos)
 
   if (m_active_item == index && pitem->select_blink())
   {
-    float blink = (sinf(g_real_time * math::PI * 1.0f)/2.0f + 0.5f) * 0.5f + 0.25f;
+    float const blink = (sinf(g_real_time * math::PI * 1.0f)/2.0f + 0.5f) * 0.5f + 0.25f;
     context.color().draw_filled_rect(Rectf(Vector(m_pos.x - menu_width/2 + 10 - 2, y_pos - static_cast<float>(pitem->get_height())/2 - 2),
                                            Vector(m_pos.x + menu_width/2 - 10 + 2, y_pos + static_cast<float>(pitem->get_height())/2 + 2)),
                                      Color(1.0f, 1.0f, 1.0f, blink),
@@ -484,7 +484,7 @@ Menu::calculate_width()
   float max_width = 0;
   for (unsigned int i = 0; i < m_items.size(); ++i)
   {
-    float w = static_cast<float>(m_items[i]->get_width());
+    float const w = static_cast<float>(m_items[i]->get_width());
     if (w > max_width)
       max_width = w;
   }
@@ -670,7 +670,7 @@ Menu::event(const SDL_Event& ev)
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
     if (ev.button.button == SDL_BUTTON_LEFT)
     {
-      Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
+      Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
 
       if ((mouse_pos.x > m_pos.x - get_width() / 2.0f &&
            mouse_pos.x < m_pos.x + get_width() / 2.0f &&
@@ -695,9 +695,9 @@ Menu::event(const SDL_Event& ev)
           m_mouse_deadzone = 0;
 		return;
 	  }
-      Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
-      float x = mouse_pos.x;
-      float y = mouse_pos.y;
+      Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
+      float const x = mouse_pos.x;
+      float const y = mouse_pos.y;
 
       if (x > m_pos.x - get_width()/2 &&
          x < m_pos.x + get_width()/2 &&

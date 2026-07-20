@@ -175,16 +175,16 @@ BitmapFont::loadFontSurface(const std::string& glyphimage,
                       GlyphWidth glyph_width_,
                       int char_width)
 {
-  SurfacePtr glyph_surface  = Surface::from_file("images/engine/fonts/" + glyphimage);
-  SurfacePtr shadow_surface = Surface::from_file("images/engine/fonts/" + shadowimage);
+  SurfacePtr const glyph_surface  = Surface::from_file("images/engine/fonts/" + glyphimage);
+  SurfacePtr const shadow_surface = Surface::from_file("images/engine/fonts/" + shadowimage);
 
-  int surface_idx = static_cast<int>(glyph_surfaces.size());
+  int const surface_idx = static_cast<int>(glyph_surfaces.size());
   glyph_surfaces.push_back(glyph_surface);
   shadow_surfaces.push_back(shadow_surface);
 
   int row = 0;
   int col = 0;
-  int wrap = glyph_surface->get_width() / char_width;
+  int const wrap = glyph_surface->get_width() / char_width;
 
   SDLSurfacePtr surface;
 
@@ -196,8 +196,8 @@ BitmapFont::loadFontSurface(const std::string& glyphimage,
 
   for (unsigned int i = 0; i < chars.size(); ++i) {
     for (UTF8Iterator chr(chars[i]); !chr.done(); ++chr) {
-      int y = row * (char_height + 2*border) + border;
-      int x = col * (char_width + 2*border) + border;
+      int const y = row * (char_height + 2*border) + border;
+      int const x = col * (char_width + 2*border) + border;
       if ( ++col == wrap ) { col=0; row++; }
       if ( *chr == 0x0020 && glyphs[0x20].surface_idx != -1) continue;
 
@@ -323,7 +323,7 @@ BitmapFont::wrap_to_width(const std::string& s_, float width, std::string* overf
 
   // If we can find a whitespace character to break at, return text up to this character.
   for (int i = static_cast<int>(s.length()) - 1; i >= 0; i--) {
-    std::string s2 = s.substr(0,i);
+    std::string const s2 = s.substr(0,i);
     if (s[i] != ' ') continue;
     if (get_text_width(s2) <= width) {
       if (overflow) *overflow = s.substr(i+1);
@@ -346,7 +346,7 @@ BitmapFont::wrap_to_width(const std::string& s_, float width, std::string* overf
 
     // Check whether text now goes over allowed width, and if so
     // return everything up to the character and put the rest in the overflow.
-    std::string s2 = s.substr(0,i+char_bytes);
+    std::string const s2 = s.substr(0,i+char_bytes);
     if (get_text_width(s2) > width) {
       if (i == 0) i += char_bytes; // Edge case when even one char is too wide.
       if (overflow) *overflow = s.substr(i);

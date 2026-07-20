@@ -51,12 +51,12 @@ GhostParticleSystem::init()
   virtual_width = static_cast<float>(SCREEN_WIDTH) * 2.0f;
 
   // Create two ghosts.
-  size_t ghostcount = 2;
+  size_t const ghostcount = 2;
   for (size_t i=0; i<ghostcount; ++i) {
     auto particle = std::make_unique<GhostParticle>();
     particle->pos.x = graphicsRandom.randf(virtual_width);
     particle->pos.y = graphicsRandom.randf(static_cast<float>(SCREEN_HEIGHT));
-    int size = graphicsRandom.rand(2);
+    int const size = graphicsRandom.rand(2);
     particle->texture = ghosts[size];
     particle->speed = graphicsRandom.randf(std::max(50.0f, static_cast<float>(size) * 10.0f),
                                            180.0f + static_cast<float>(size) * 10.0f);

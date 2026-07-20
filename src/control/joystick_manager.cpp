@@ -140,7 +140,7 @@ JoystickManager::on_joystick_removed(int instance_id)
 void
 JoystickManager::process_hat_event(const SDL_JoyHatEvent& jhat)
 {
-  Uint8 changed = hat_state ^ jhat.value;
+  Uint8 const changed = hat_state ^ jhat.value;
 
   if (wait_for_joystick >= 0)
   {
@@ -215,7 +215,7 @@ JoystickManager::process_axis_event(const SDL_JoyAxisEvent& jaxis)
   {
     // Split the axis into left and right, so that both can be
     // mapped separately (needed for jump/down vs up/down)
-    int axis = jaxis.axis + 1;
+    int const axis = jaxis.axis + 1;
 
     auto left = m_joystick_config.m_joy_axis_map.find(std::make_pair(jaxis.which, -axis));
     auto right = m_joystick_config.m_joy_axis_map.find(std::make_pair(jaxis.which, axis));

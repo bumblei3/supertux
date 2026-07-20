@@ -182,7 +182,7 @@ AddonPreviewMenu::rebuild_menu()
 
   add_hl();
 
-  bool addon_installed = m_addon.is_installed();
+  bool const addon_installed = m_addon.is_installed();
   if ((!addon_installed || m_update) && !info_unavailable)
   {
     const std::string action = m_update ? _("Update") : _("Install");
@@ -306,7 +306,7 @@ void
 AddonPreviewMenu::install_addon()
 {
   auto addon_id = m_addon.get_id();
-  TransferStatusListPtr status = AddonManager::current()->request_install_addon(addon_id);
+  TransferStatusListPtr const status = AddonManager::current()->request_install_addon(addon_id);
   auto dialog = std::make_unique<DownloadDialog>(status, false);
   const Addon& repository_addon = AddonManager::current()->get_repository_addon(addon_id);
   auto menu_item_text = addon_string_util::generate_menu_item_text(repository_addon);

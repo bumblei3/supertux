@@ -116,7 +116,7 @@ TTFSurfaceManager::cache_cleanup_step()
 void
 TTFSurfaceManager::print_debug_info(std::ostream& out)
 {
-  int cache_bytes = std::accumulate(m_cache.begin(), m_cache.end(), 0, [](int accumulator, const std::pair<Key, CacheEntry>& entry) {
+  int const cache_bytes = std::accumulate(m_cache.begin(), m_cache.end(), 0, [](int accumulator, const std::pair<Key, CacheEntry>& entry) {
     return accumulator + entry.second.ttf_surface->get_width() * entry.second.ttf_surface->get_height() * 4;
   });
   out << "TTFSurfaceManager.cache_size: " << m_cache.size() << "  " << cache_bytes / 1000 << "KB" << std::endl;

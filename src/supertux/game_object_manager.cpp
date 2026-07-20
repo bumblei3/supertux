@@ -107,7 +107,7 @@ GameObjectManager::process_resolve_requests()
 
   for (const auto& request : m_name_resolve_requests)
   {
-    GameObject* object = get_object_by_name<GameObject>(request.name);
+    GameObject const* object = get_object_by_name<GameObject>(request.name);
     if (!object)
     {
       log_warning << "GameObjectManager: Name resolve for '" << request.name << "' failed." << std::endl;
@@ -338,7 +338,7 @@ GameObjectManager::flush_game_objects()
 void
 GameObjectManager::update_solid(TileMap* tm) {
   auto it = std::find(m_solid_tilemaps.begin(), m_solid_tilemaps.end(), tm);
-  bool found = it != m_solid_tilemaps.end();
+  bool const found = it != m_solid_tilemaps.end();
   if (tm->is_solid() && !found) {
     m_solid_tilemaps.push_back(tm);
   } else if(!tm->is_solid() && found) {

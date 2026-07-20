@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 {
   g_main = std::make_unique<Main>();
 
-  int ret = g_main->run(argc, argv);
+  int const ret = g_main->run(argc, argv);
 
 #if !defined(__EMSCRIPTEN__)
   // Manually destroy, as atexit() functions are called before global

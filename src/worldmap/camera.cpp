@@ -75,7 +75,7 @@ Camera::get_offset(float time_offset) const
     return target_pos;
   }
 
-  float pan_time_remaining = m_pan_time_remaining - time_offset;
+  float const pan_time_remaining = m_pan_time_remaining - time_offset;
   if (pan_time_remaining > 0) {
     // Smoothly interpolate the camera's position.
     float f = pan_time_remaining / m_pan_time_full;
@@ -93,7 +93,7 @@ Camera::pan()
   m_pan_startpos = m_camera_offset;
   Vector target_pos = get_camera_pos_for_tux();
   clamp_camera_position(target_pos);
-  Vector start_to_target = target_pos - m_pan_startpos;
+  Vector const start_to_target = target_pos - m_pan_startpos;
   m_pan_time_full = glm::length(start_to_target) / 612.41f;
   if (m_pan_time_full > CAMERA_PAN_TIME_MAX)
     m_pan_time_full = CAMERA_PAN_TIME_MAX;
@@ -106,7 +106,7 @@ Camera::get_camera_pos_for_tux(float time_offset) const
   auto& tux = m_worldmap_sector.get_singleton_by_type<Tux>();
 
   Vector camera_offset_(0.0f, 0.0f);
-  Vector tux_pos = tux.get_pos(time_offset);
+  Vector const tux_pos = tux.get_pos(time_offset);
   camera_offset_.x = tux_pos.x - static_cast<float>(SCREEN_WIDTH) / 2.0f;
   camera_offset_.y = tux_pos.y - static_cast<float>(SCREEN_HEIGHT) / 2.0f;
   return camera_offset_;

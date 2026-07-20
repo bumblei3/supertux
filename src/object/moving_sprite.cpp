@@ -167,7 +167,7 @@ MovingSprite::set_action(const Direction& dir, int loops)
 void
 MovingSprite::set_action_centered(const std::string& action, int loops)
 {
-  Vector old_size = m_col.m_bbox.get_size().as_vector();
+  Vector const old_size = m_col.m_bbox.get_size().as_vector();
   m_sprite->set_action(action, loops);
   update_hitbox();
   set_pos(get_pos() - (m_col.m_bbox.get_size().as_vector() - old_size) / 2.0f);
@@ -176,7 +176,7 @@ MovingSprite::set_action_centered(const std::string& action, int loops)
 void
 MovingSprite::set_action(const std::string& action, int loops, AnchorPoint anchorPoint)
 {
-  Rectf old_bbox = m_col.m_bbox;
+  Rectf const old_bbox = m_col.m_bbox;
   m_sprite->set_action(action, loops);
   update_hitbox();
   set_pos(get_anchor_pos(old_bbox, m_sprite->get_current_hitbox_width(),
@@ -213,7 +213,7 @@ MovingSprite::after_editor_set()
 {
   MovingObject::after_editor_set();
 
-  std::string current_action = m_sprite->get_action();
+  std::string const current_action = m_sprite->get_action();
   if (!change_sprite(m_sprite_name)) // If sprite change fails, change back to default.
   {
     change_sprite(get_default_sprite_name());
@@ -228,13 +228,13 @@ MovingSprite::spawn_explosion_sprites(int count, const std::string& sprite_path)
 {
   for (int i = 0; i < count; i++)
   {
-    Vector ppos = m_col.m_bbox.get_middle();
-    float angle = graphicsRandom.randf(-math::PI_2, math::PI_2);
-    float velocity = graphicsRandom.randf(350, 400);
-    float vx = sinf(angle)*velocity;
-    float vy = -cosf(angle)*velocity;
-    Vector pspeed = Vector(vx, vy);
-    Vector paccel = Vector(0, Sector::get().get_gravity()*10);
+    Vector const ppos = m_col.m_bbox.get_middle();
+    float const angle = graphicsRandom.randf(-math::PI_2, math::PI_2);
+    float const velocity = graphicsRandom.randf(350, 400);
+    float const vx = sinf(angle)*velocity;
+    float const vy = -cosf(angle)*velocity;
+    Vector const pspeed = Vector(vx, vy);
+    Vector const paccel = Vector(0, Sector::get().get_gravity()*10);
     Sector::get().add<SpriteParticle>(sprite_path,
                                       "default",
                                       ppos, ANCHOR_MIDDLE,

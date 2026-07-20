@@ -94,14 +94,14 @@ AngryStone::active_update(float dt_sec)
         auto badguy = this;
         const Vector& playerPos = player->get_pos();
         const Vector& badguyPos = badguy->get_pos();
-        float dx = (playerPos.x - badguyPos.x);
-        float dy = (playerPos.y - badguyPos.y);
+        float const dx = (playerPos.x - badguyPos.x);
+        float const dy = (playerPos.y - badguyPos.y);
 
-        float playerHeight = player->get_bbox().get_height();
-        float badguyHeight = badguy->get_bbox().get_height();
+        float const playerHeight = player->get_bbox().get_height();
+        float const badguyHeight = badguy->get_bbox().get_height();
 
-        float playerWidth = player->get_bbox().get_width();
-        float badguyWidth = badguy->get_bbox().get_width();
+        float const playerWidth = player->get_bbox().get_width();
+        float const badguyWidth = badguy->get_bbox().get_width();
 
         if ((dx > -playerWidth) && (dx < badguyWidth))
         {

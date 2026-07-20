@@ -148,7 +148,7 @@ void
 RCrystallo::draw(DrawingContext& context)
 {
   context.push_transform();
-  Vector draw_pos = get_pos() + m_physic.get_velocity() * context.get_time_offset();
+  Vector const draw_pos = get_pos() + m_physic.get_velocity() * context.get_time_offset();
   m_sprite->draw(context.color(), draw_pos, m_layer);
   context.pop_transform();
 }
@@ -196,7 +196,7 @@ RCrystallo::kill_fall()
     if (is_valid())
     {
       remove_me();
-      Vector spawn_pos = m_col.m_bbox.get_middle()
+      Vector const spawn_pos = m_col.m_bbox.get_middle()
                          - Vector(m_col.m_bbox.get_width() * 0.5f, m_col.m_bbox.get_height() * 0.5f);
       // Create 4 shards that the enemy splits into, which serve as an additional threat.
       Sector::get().add<Shard>(spawn_pos, Vector(100.f, -500.f));

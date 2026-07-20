@@ -65,11 +65,11 @@ RubLight::get_settings()
 HitResponse
 RubLight::collision(MovingObject& other, const CollisionHit&)
 {
-  Player* player = dynamic_cast<Player*>(&other);
+  Player const* player = dynamic_cast<Player*>(&other);
   if (player != nullptr &&
       player->get_bbox().get_bottom() < m_col.m_bbox.get_top() + SHIFT_DELTA) {
-    Vector vel_player = player->get_velocity();
-    float vel_horiz = fabsf(vel_player.x) / 32.0f;
+    Vector const vel_player = player->get_velocity();
+    float const vel_horiz = fabsf(vel_player.x) / 32.0f;
     if (player->is_skidding())
       rub(vel_horiz * 0.3f);
     else
@@ -82,9 +82,9 @@ RubLight::collision(MovingObject& other, const CollisionHit&)
     return FORCE_MOVE;
   }
 
-  WalkingBadguy* obj = dynamic_cast<WalkingBadguy*>(&other);
+  WalkingBadguy const* obj = dynamic_cast<WalkingBadguy*>(&other);
   if (obj != nullptr) {
-    float vel_horiz = fabsf(obj->get_velocity_x()) / 32.0f;
+    float const vel_horiz = fabsf(obj->get_velocity_x()) / 32.0f;
     rub(vel_horiz * 0.01f);
   }
 
@@ -136,8 +136,8 @@ void
 RubLight::draw(DrawingContext& context)
 {
   if (state == STATE_FADING) {
-    float brightness = get_brightness();
-    Color col = color.multiply_linearly(brightness);
+    float const brightness = get_brightness();
+    Color const col = color.multiply_linearly(brightness);
     light->set_color(col);
     light->set_blend(Blend::ADD);
     light->draw(context.light(), get_pos(), m_layer);

@@ -74,7 +74,7 @@ Boss::draw_hit_points(DrawingContext& context)
     context.set_translation(Vector(0, 0));
     context.transform().scale = 1.f;
 
-    float startpos = (context.get_width() - static_cast<float>((m_hud_head->get_width() * m_max_lives))) / 2;
+    float const startpos = (context.get_width() - static_cast<float>((m_hud_head->get_width() * m_max_lives))) / 2;
     for (int i = 0; i < m_lives; ++i)
     {
       context.color().draw_surface(m_hud_head,

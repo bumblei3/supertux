@@ -107,7 +107,7 @@ ItemScriptLine::paste() // Paste with mutli-line support
 
   std::vector<std::string> paste_lines;
   char* clipboard_content = SDL_GetClipboardText();
-  std::string clipboard_content_str(clipboard_content);
+  std::string const clipboard_content_str(clipboard_content);
   StringUtil::split(paste_lines, clipboard_content_str, '\n');
   SDL_free(clipboard_content);
 

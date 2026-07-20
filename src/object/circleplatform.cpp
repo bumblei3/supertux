@@ -73,7 +73,7 @@ CirclePlatform::update(float dt_sec)
     angle = fmodf(angle + dt_sec * speed, math::TAU);
     if (!Editor::is_active())
     {
-      Vector newpos(start_position.x + cosf(angle) * radius,
+      Vector const newpos(start_position.x + cosf(angle) * radius,
                     start_position.y + sinf(angle) * radius);
       m_col.set_movement(newpos - get_pos());
       m_col.propagate_movement(newpos - get_pos());
@@ -96,7 +96,7 @@ CirclePlatform::draw(DrawingContext& context)
 
   if (Editor::is_active())
   {
-    Rectf rect(Vector(get_pos().x - radius + get_bbox().get_width() / 2,
+    Rectf const rect(Vector(get_pos().x - radius + get_bbox().get_width() / 2,
                       get_pos().y - radius + get_bbox().get_height() / 2),
                Sizef(radius * 2, radius * 2));
     context.color().draw_surface_scaled(m_radius_indicator, rect, m_layer);

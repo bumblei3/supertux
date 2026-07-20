@@ -118,8 +118,8 @@ Wind::update(float dt_sec_)
   if (!blowing || !particles_enabled) return;
   if (m_col.m_bbox.get_width() <= 16 || m_col.m_bbox.get_height() <= 16) return;
 
-  Vector ppos = Vector(graphicsRandom.randf(m_col.m_bbox.get_left() + 8, m_col.m_bbox.get_right() - 8), graphicsRandom.randf(m_col.m_bbox.get_top() + 8, m_col.m_bbox.get_bottom() - 8));
-  Vector pspeed = Vector(graphicsRandom.randf(speed.x - 20, speed.x + 20), graphicsRandom.randf(speed.y - 20, speed.y + 20));
+  Vector const ppos = Vector(graphicsRandom.randf(m_col.m_bbox.get_left() + 8, m_col.m_bbox.get_right() - 8), graphicsRandom.randf(m_col.m_bbox.get_top() + 8, m_col.m_bbox.get_bottom() - 8));
+  Vector const pspeed = Vector(graphicsRandom.randf(speed.x - 20, speed.x + 20), graphicsRandom.randf(speed.y - 20, speed.y + 20));
 
   // Approx. 1 particle per tile
   if (graphicsRandom.randf(0.f, 100.f) < (m_col.m_bbox.get_width() / 32.f) * (m_col.m_bbox.get_height() / 32.f))

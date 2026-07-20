@@ -170,7 +170,7 @@ public:
     auto it = m_objects_by_type_index.find(type_idx);
     if (it == m_objects_by_type_index.end()) {
       // use a dummy return value to avoid making this method non-const
-      static std::vector<GameObject*> dummy;
+      static std::vector<GameObject*> const dummy;
       return dummy;
     } else {
       return it->second;

@@ -46,7 +46,7 @@ inline void makePlane(const Vector& p1, const Vector& p2, Vector& n, float& c)
 {
   n = Vector(p2.y - p1.y, p1.x - p2.x);
   c = -glm::dot(p2, n);
-  float nval = glm::length(n);
+  float const nval = glm::length(n);
   n /= nval;
   c /= nval;
 }
@@ -123,12 +123,12 @@ bool rectangle_aatriangle(Constraints* constraints, const Rectf& rect,
       assert(false);
   }
 
-  float n_p1 = -glm::dot(normal, p1);
-  float depth = n_p1 - c;
+  float const n_p1 = -glm::dot(normal, p1);
+  float const depth = n_p1 - c;
   if (depth < 0)
     return false;
 
-  Vector outvec = normal * (depth + 0.2f);
+  Vector const outvec = normal * (depth + 0.2f);
 
   const float RDELTA = 3;
   if (p1.x < area.get_left() - RDELTA || p1.x > area.get_right() + RDELTA
@@ -173,13 +173,13 @@ bool rectangle_aatriangle(Constraints* constraints, const Rectf& rect,
 
 void set_rectangle_rectangle_constraints(Constraints* constraints, const Rectf& r1, const Rectf& r2)
 {
-  float itop = r1.get_bottom() - r2.get_top();
-  float ibottom = r2.get_bottom() - r1.get_top();
-  float ileft = r1.get_right() - r2.get_left();
-  float iright = r2.get_right() - r1.get_left();
+  float const itop = r1.get_bottom() - r2.get_top();
+  float const ibottom = r2.get_bottom() - r1.get_top();
+  float const ileft = r1.get_right() - r2.get_left();
+  float const iright = r2.get_right() - r1.get_left();
 
-  float vert_penetration = std::min(itop, ibottom);
-  float horiz_penetration = std::min(ileft, iright);
+  float const vert_penetration = std::min(itop, ibottom);
+  float const horiz_penetration = std::min(ileft, iright);
   if (vert_penetration < horiz_penetration) {
     if (itop < ibottom) {
       constraints->constrain_bottom(r2.get_top());
@@ -238,10 +238,10 @@ bool line_intersects_line(const Vector& line1_start, const Vector& line1_end, co
 
 bool intersects_line(const Rectf& r, const Vector& line_start, const Vector& line_end)
 {
-  Vector p1 = r.p1();
-  Vector p2 = Vector(r.get_right(), r.get_top());
-  Vector p3 = r.p2();
-  Vector p4 = Vector(r.get_left(), r.get_bottom());
+  Vector const p1 = r.p1();
+  Vector const p2 = Vector(r.get_right(), r.get_top());
+  Vector const p3 = r.p2();
+  Vector const p4 = Vector(r.get_left(), r.get_bottom());
   if (line_intersects_line(p1, p2, line_start, line_end)) return true;
   if (line_intersects_line(p2, p3, line_start, line_end)) return true;
   if (line_intersects_line(p3, p4, line_start, line_end)) return true;

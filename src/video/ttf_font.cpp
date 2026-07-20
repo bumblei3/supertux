@@ -91,7 +91,7 @@ TTFFont::get_text_width(const std::string& text) const
       // Not in cache
       int w = 0;
       int h = 0;
-      int ret = TTF_GetStringSize(m_font, line.c_str(), line.length(), &w, &h);
+      int const ret = TTF_GetStringSize(m_font, line.c_str(), line.length(), &w, &h);
       if (ret < 0) {
         get_logging_instance(false) << "TTFFont::get_text_width(): " << SDL_GetError() << std::endl;
       }
@@ -136,7 +136,7 @@ TTFFont::draw_text(Canvas& canvas, const std::string& text,
 
     if (!line.empty())
     {
-      TTFSurfacePtr ttf_surface = TTFSurfaceManager::current()->create_surface(*this, line);
+      TTFSurfacePtr const ttf_surface = TTFSurfaceManager::current()->create_surface(*this, line);
       const float width = static_cast<float>(ttf_surface->get_width());
 
       Vector new_pos(pos.x, last_y);
@@ -176,7 +176,7 @@ TTFFont::wrap_to_width(const std::string& text, float width, std::string* overfl
 
   // if we can find a whitespace character to break at, return text up to this character
   for (int i = static_cast<int>(s.length()) - 1; i >= 0; i--) {
-    std::string s2 = s.substr(0,i);
+    std::string const s2 = s.substr(0,i);
     if (s[i] != ' ') continue;
     if (get_text_width(s2) <= width) {
       if (overflow) *overflow = s.substr(i+1);
@@ -199,7 +199,7 @@ TTFFont::wrap_to_width(const std::string& text, float width, std::string* overfl
 
     // check whether text now goes over allowed width, and if so
     // return everything up to the character and put the rest in the overflow
-    std::string s2 = s.substr(0,i+char_bytes);
+    std::string const s2 = s.substr(0,i+char_bytes);
     if (get_text_width(s2) > width) {
       if (i == 0) i += char_bytes; // edge case when even one char is too wide
       if (overflow) *overflow = s.substr(i);

@@ -73,7 +73,7 @@ ControllerHUD::draw(DrawingContext& context)
   if (Editor::current() && Editor::current()->is_active())
     return;
   Canvas& canvas = context.color();
-  Controller& controller = InputManager::current()->get_controller();
+  Controller const& controller = InputManager::current()->get_controller();
 
   update_pos();
 

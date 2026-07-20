@@ -170,7 +170,7 @@ AddonMenu::rebuild_menu()
 void
 AddonMenu::menu_action(MenuItem& item)
 {
-  int index = item.get_id();
+  int const index = item.get_id();
   if (index == MNID_CHECK_ONLINE)
   {
     check_for_updates();
@@ -188,7 +188,7 @@ AddonMenu::menu_action(MenuItem& item)
   }
   else if (IS_UPDATE_MENU_ID(index))
   {
-    int idx = UNPACK_UPDATE_MENU_ID(index);
+    int const idx = UNPACK_UPDATE_MENU_ID(index);
     if (0 <= idx && idx < static_cast<int>(m_installed_addons.size()))
     {
       const Addon& addon = AddonManager::current()->get_installed_addon(m_installed_addons[idx]);
@@ -197,7 +197,7 @@ AddonMenu::menu_action(MenuItem& item)
   }
   else if (IS_INSTALLED_MENU_ID(index))
   {
-    int idx = UNPACK_INSTALLED_MENU_ID(index);
+    int const idx = UNPACK_INSTALLED_MENU_ID(index);
     if (0 <= idx && idx < static_cast<int>(m_installed_addons.size()))
     {
       const Addon& addon = AddonManager::current()->get_installed_addon(m_installed_addons[idx]);
@@ -221,7 +221,7 @@ AddonMenu::check_for_updates()
 
   try
   {
-    TransferStatusPtr status = AddonManager::current()->request_check_online();
+    TransferStatusPtr const status = AddonManager::current()->request_check_online();
     auto dialog = std::make_unique<DownloadDialog>(status, false);
     dialog->set_title(_("Checking for updates..."));
     MenuManager::instance().set_dialog(std::move(dialog));

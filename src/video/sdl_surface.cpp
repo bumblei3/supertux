@@ -34,10 +34,10 @@ SDLSurface::create_rgba(int width, int height)
   Uint32 bmask = 0x0000ff00;
   Uint32 amask = 0x000000ff;
 #else
-  Uint32 rmask = 0x000000ff;
-  Uint32 gmask = 0x0000ff00;
-  Uint32 bmask = 0x00ff0000;
-  Uint32 amask = 0xff000000;
+  Uint32 const rmask = 0x000000ff;
+  Uint32 const gmask = 0x0000ff00;
+  Uint32 const bmask = 0x00ff0000;
+  Uint32 const amask = 0xff000000;
 #endif
   SDLSurfacePtr surface(SDL_CreateSurface(width, height,
                         SDL_GetPixelFormatForMasks(32, rmask, gmask, bmask, amask)));
@@ -59,10 +59,10 @@ SDLSurface::create_rgb(int width, int height)
   Uint32 bmask = 0x0000ff00;
   Uint32 amask = 0x00000000;
 #else
-  Uint32 rmask = 0x000000ff;
-  Uint32 gmask = 0x0000ff00;
-  Uint32 bmask = 0x00ff0000;
-  Uint32 amask = 0x00000000;
+  Uint32 const rmask = 0x000000ff;
+  Uint32 const gmask = 0x0000ff00;
+  Uint32 const bmask = 0x00ff0000;
+  Uint32 const amask = 0x00000000;
 #endif
   SDLSurfacePtr surface(SDL_CreateSurface(width, height,
             SDL_GetPixelFormatForMasks(24, rmask, gmask, bmask, amask)));
@@ -104,7 +104,7 @@ SDLSurface::save_png(const SDL_Surface& surface, const std::string& filename)
 {
   // This does not lead to a double free when 'tmp == screen', as
   // SDL_PNGFormatAlpha() will increase the refcount of surface.
-  SDLSurfacePtr tmp(SDL_PNGFormatAlpha(const_cast<SDL_Surface*>(&surface)));
+  SDLSurfacePtr const tmp(SDL_PNGFormatAlpha(const_cast<SDL_Surface*>(&surface)));
   SDL_IOStream* ops;
   try {
     ops = get_writable_physfs_SDLRWops(filename);
@@ -113,7 +113,7 @@ SDLSurface::save_png(const SDL_Surface& surface, const std::string& filename)
       e.what() << std::endl;
     return false;
   }
-  int ret = SDL_SavePNG_RW(tmp.get(), ops, 1);
+  int const ret = SDL_SavePNG_RW(tmp.get(), ops, 1);
   if (ret < 0)
   {
     log_warning << "Saving " << filename << " failed: " << SDL_GetError() << std::endl;

@@ -39,18 +39,18 @@ LevelsetScreen::LevelsetScreen(const std::string& basedir, const std::string& le
   m_start_pos(start_pos),
   m_skip_intro(skip_intro)
 {
-  Levelset levelset(basedir);
+  Levelset const levelset(basedir);
   for (int i = 0; i < levelset.get_num_levels(); ++i)
   {
-    std::string lev = levelset.get_level_filename(i);
+    std::string const lev = levelset.get_level_filename(i);
     if (!Editor::current())
       m_savegame.set_levelset_state(m_basedir, lev, false);
   }
 
   if (!Editor::current())
   {
-    LevelsetState state = m_savegame.get_levelset_state(basedir);
-    LevelState level_state = state.get_level_state(level_filename);
+    LevelsetState const state = m_savegame.get_levelset_state(basedir);
+    LevelState const level_state = state.get_level_state(level_filename);
     m_solved = level_state.solved;
   }
 

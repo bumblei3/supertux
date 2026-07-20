@@ -113,7 +113,7 @@ Climbable::draw(DrawingContext& context)
     context.push_transform();
     context.set_translation(Vector(0, 0));
     context.transform().scale = 1.f;
-    Vector pos = Vector(0, static_cast<float>(SCREEN_HEIGHT) / 2.0f - Resources::normal_font->get_height() / 2.0f);
+    Vector const pos = Vector(0, static_cast<float>(SCREEN_HEIGHT) / 2.0f - Resources::normal_font->get_height() / 2.0f);
     context.color().draw_center_text(Resources::normal_font, _(message), pos, LAYER_HUD, Climbable::text_color);
     context.pop_transform();
   }

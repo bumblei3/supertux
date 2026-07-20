@@ -38,7 +38,7 @@ public:
     position_top(),
     position_bottom()
   {
-    float infinity = (std::numeric_limits<float>::has_infinity ?
+    float const infinity = (std::numeric_limits<float>::has_infinity ?
                       std::numeric_limits<float>::infinity() :
                       std::numeric_limits<float>::max());
     position_left = -infinity;
@@ -49,7 +49,7 @@ public:
 
   bool has_constraints() const
   {
-    float infinity = (std::numeric_limits<float>::has_infinity ?
+    float const infinity = (std::numeric_limits<float>::has_infinity ?
                       std::numeric_limits<float>::infinity() :
                       std::numeric_limits<float>::max());
     return

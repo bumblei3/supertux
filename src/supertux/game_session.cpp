@@ -350,7 +350,7 @@ GameSession::on_escape_press(bool force_quick_respawn)
 {
   auto players = m_currentsector->get_players();
 
-  int alive = m_currentsector->get_object_count<Player>([](const Player& p) {
+  int const alive = m_currentsector->get_object_count<Player>([](const Player& p) {
     return p.is_alive();
   });
 
@@ -375,7 +375,7 @@ GameSession::on_escape_press(bool force_quick_respawn)
     return;   // Don't let the player open the menu, when Tux is dying.
   }
 
-  int textscrollers = m_currentsector->get_object_count<TextScroller>([](const TextScroller& ts) {
+  int const textscrollers = m_currentsector->get_object_count<TextScroller>([](const TextScroller& ts) {
     return !ts.is_fading();
   });
 
@@ -563,7 +563,7 @@ GameSession::setup()
   }
   m_currentsector->get_singleton_by_type<MusicObject>().play_music(LEVEL_MUSIC);
 
-  int total_stats_to_be_collected = m_level->m_stats.m_total_coins + m_level->m_stats.m_total_secrets;
+  int const total_stats_to_be_collected = m_level->m_stats.m_total_coins + m_level->m_stats.m_total_secrets;
   if ((!m_levelintro_shown) && (total_stats_to_be_collected > 0) && m_savegame && !m_skip_intro) {
     m_levelintro_shown = true;
     m_active = false;
@@ -636,7 +636,7 @@ GameSession::update(float dt_sec, const Controller& controller)
   // Respawning in new sector?
   if (!m_newsector.empty() && !m_newspawnpoint.empty() && (m_spawn_fade_timer.check() || m_spawn_fade_type == ScreenFade::FadeType::NONE)) {
     auto sector = m_level->get_sector(m_newsector);
-    std::string current_music = m_currentsector->get_singleton_by_type<MusicObject>().get_music();
+    std::string const current_music = m_currentsector->get_singleton_by_type<MusicObject>().get_music();
     if (sector == nullptr) {
       log_warning << "Sector '" << m_newsector << "' not found" << std::endl;
       sector = m_level->get_sector(m_spawnpoints.at(0).sector); // Assign start sector.
@@ -973,7 +973,7 @@ GameSession::start_sequence(Player* caller, Sequence seq, const SequenceData* da
     caller->set_speedlimit(230); // MAX_WALK_XM
   }
 
-  int remaining_players = get_current_sector().get_object_count<Player>([](const Player& p){
+  int const remaining_players = get_current_sector().get_object_count<Player>([](const Player& p){
     return p.is_active();
   });
 

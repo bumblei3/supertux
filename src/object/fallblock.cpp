@@ -122,7 +122,7 @@ FallBlock::found_victim_down() const
   if (auto* player = Sector::get().get_nearest_player(m_col.m_bbox))
   {
     const Rectf& player_bbox = player->get_bbox();
-    Rectf crush_area_down = Rectf(m_col.m_bbox.get_left()+1, m_col.m_bbox.get_bottom(),
+    Rectf const crush_area_down = Rectf(m_col.m_bbox.get_left()+1, m_col.m_bbox.get_bottom(),
                                   m_col.m_bbox.get_right()-1, std::max(m_col.m_bbox.get_bottom(),player_bbox.get_top()-1));
     if ((player_bbox.get_top() >= m_col.m_bbox.get_bottom())
         && (player_bbox.get_right() > (m_col.m_bbox.get_left() - 4))

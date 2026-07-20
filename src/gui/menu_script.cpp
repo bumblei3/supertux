@@ -38,10 +38,10 @@ ScriptMenu::ScriptMenu(UID uid, const std::string& key, std::string* script_) :
 
   // Split the script to the lines.
   std::string script = *base_script;
-  std::string line_break = "\n";
+  std::string const line_break = "\n";
   size_t endl_pos = script.find(line_break);
   while (endl_pos != std::string::npos) {
-    std::string new_line = script.substr(0, endl_pos);
+    std::string const new_line = script.substr(0, endl_pos);
     script = script.substr(endl_pos + line_break.length());
     push_string(new_line);
     endl_pos = script.find(line_break);
@@ -68,7 +68,7 @@ ScriptMenu::ScriptMenu(UID uid, const std::string& key, std::string* script_) :
 
 ScriptMenu::~ScriptMenu()
 {
-  time_t mtime = Editor::current()->m_script_manager.get_mtime(m_uid, m_key);
+  time_t const mtime = Editor::current()->m_script_manager.get_mtime(m_uid, m_key);
 
   // Don't save if the external file was edited.
   if (mtime > m_start_time)

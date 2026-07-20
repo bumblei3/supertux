@@ -76,7 +76,7 @@ KeyboardManager::process_key_event(const SDL_KeyboardEvent& event)
   else
   {
     auto control = key_mapping->second;
-    bool value = (event.type == SDL_EVENT_KEY_DOWN);
+    bool const value = (event.type == SDL_EVENT_KEY_DOWN);
 
     if (control.player >= m_parent->get_num_users())
       return;

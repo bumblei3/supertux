@@ -65,7 +65,7 @@ WorldMapState::load_state()
 
   Savegame& savegame = m_worldmap.get_savegame();
 
-  ssq::VM& vm = SquirrelVirtualMachine::current()->get_vm();
+  ssq::VM const& vm = SquirrelVirtualMachine::current()->get_vm();
   if (savegame.get_save_version() == m_worldmap.get_save_version())
   {
     try
@@ -79,7 +79,7 @@ WorldMapState::load_state()
         worlds_table.rename(old_map_filename.c_str(), m_worldmap.m_map_filename.c_str());
 
       /** Get state table for the current worldmap. **/
-      ssq::Table worldmap_table = worlds_table.findTable(m_worldmap.m_map_filename.c_str());
+      ssq::Table const worldmap_table = worlds_table.findTable(m_worldmap.m_map_filename.c_str());
 
       // Load the current sector.
       ssq::Table sector_table;
@@ -108,7 +108,7 @@ WorldMapState::load_state()
 
       try
       {
-        ssq::Object music = sector_table.find("music");
+        ssq::Object const music = sector_table.find("music");
         auto& music_object = m_worldmap.get_sector().get_singleton_by_type<MusicObject>();
         music_object.set_music(music.toString());
       }
@@ -161,9 +161,9 @@ WorldMapState::load_tux(const ssq::Table& table)
   tux.get("back", back_str);
   sector.m_tux->m_back_direction = string_to_direction(back_str);
   sector.m_tux->set_tile_pos(p);
-  Direction back_dir = string_to_direction(back_str);
+  Direction const back_dir = string_to_direction(back_str);
 
-  int tile_data = sector.tile_data_at(p);
+  int const tile_data = sector.tile_data_at(p);
   if (!(tile_data & (Tile::WORLDMAP_NORTH | Tile::WORLDMAP_SOUTH | Tile::WORLDMAP_WEST | Tile::WORLDMAP_EAST)))
   {
     log_warning << "Player at illegal position " << p.x << ", " << p.y << " respawning." << std::endl;
@@ -226,7 +226,7 @@ void
 WorldMapState::load_tilemap_visibility(const ssq::Table& table)
 {
   if (m_position_was_reset) return;
-  WorldMapSector& sector = m_worldmap.get_sector();
+  WorldMapSector const& sector = m_worldmap.get_sector();
 
   try
   {
@@ -286,9 +286,9 @@ WorldMapState::load_sprite_change_objects(const ssq::Table& table)
 void
 WorldMapState::save_state(bool initial) const
 {
-  WorldMapSector& sector = m_worldmap.get_sector();
+  WorldMapSector const& sector = m_worldmap.get_sector();
 
-  ssq::VM& vm = SquirrelVirtualMachine::current()->get_vm();
+  ssq::VM const& vm = SquirrelVirtualMachine::current()->get_vm();
   try
   {
     /** Get or create state table for all worldmaps. **/

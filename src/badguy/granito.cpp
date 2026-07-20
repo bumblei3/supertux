@@ -71,7 +71,7 @@ Granito::active_update(float dt_sec)
 
   Rectf airbornebox = get_bbox();
   airbornebox.set_bottom(get_bbox().get_bottom() + 8.f);
-  bool airbornebefore = m_airborne;
+  bool const airbornebefore = m_airborne;
   m_airborne = (Sector::get().is_free_of_movingstatics(airbornebox, this));
 
   if (m_airborne && get_velocity_y() != 0)
@@ -387,16 +387,16 @@ Granito::try_wave()
   if (!player)
     return false;
 
-  Vector mid = get_bbox().get_middle();
-  Vector plrmid = player->get_bbox().get_middle();
+  Vector const mid = get_bbox().get_middle();
+  Vector const plrmid = player->get_bbox().get_middle();
 
-  float xdist = mid.x - plrmid.x;
+  float const xdist = mid.x - plrmid.x;
   if (std::abs(xdist) > 32.f*4.f)
     return false;
 
   RaycastResult result = Sector::get().get_first_line_intersection(mid, plrmid, false, get_collision_object());
 
-  CollisionObject** resultobj = std::get_if<CollisionObject*>(&result.hit);
+  CollisionObject* const* resultobj = std::get_if<CollisionObject*>(&result.hit);
   if (resultobj && *resultobj == player->get_collision_object())
   {
     // Only wave if facing player.
@@ -439,10 +439,10 @@ Granito::sit()
 
   if (!m_airborne)
   {
-    float oldheight = get_bbox().get_size().height;
+    float const oldheight = get_bbox().get_size().height;
     set_action("sit", m_dir);
 
-    float height = get_bbox().get_size().height;
+    float const height = get_bbox().get_size().height;
     set_pos(Vector(get_bbox().get_left(), get_bbox().get_top() + oldheight - height));
   }
   else
@@ -523,8 +523,8 @@ Granito::try_jump()
 
   if (walk_speed == 0 || m_airborne) return false;
 
-  float eye = (m_dir == Direction::LEFT ? get_bbox().get_left() : get_bbox().get_right());
-  float inc = (m_dir == Direction::LEFT ? -32.f : 32.f);
+  float const eye = (m_dir == Direction::LEFT ? get_bbox().get_left() : get_bbox().get_right());
+  float const inc = (m_dir == Direction::LEFT ? -32.f : 32.f);
 
   RaycastResult result = Sector::get().get_first_line_intersection({eye, get_bbox().get_middle().y},
                                                                    {eye + inc, get_bbox().get_middle().y},

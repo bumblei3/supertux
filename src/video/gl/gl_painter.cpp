@@ -405,7 +405,7 @@ GLPainter::draw_line(const DrawingRequest& draw_req)
   auto&& request = std::get<LineRequest>(draw_req.request);
   assert_gl();
 
-  Vector viewport_scale = m_video_system.get_viewport().get_scale();
+  Vector const viewport_scale = m_video_system.get_viewport().get_scale();
   const float& x1 = request.pos.x;
   const float& y1 = request.pos.y;
   const float& x2 = request.dest_pos.x;

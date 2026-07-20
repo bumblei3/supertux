@@ -47,10 +47,10 @@ InfoBox::InfoBox(const std::string& text) :
 void
 InfoBox::draw(DrawingContext& context)
 {
-  float x1 = context.get_width() / 2.0f - 200.0f;
-  float y1 = context.get_height() / 2.0f - 200.0f;
-  float width = 400.0f;
-  float height = 200.0f;
+  float const x1 = context.get_width() / 2.0f - 200.0f;
+  float const y1 = context.get_height() / 2.0f - 200.0f;
+  float const width = 400.0f;
+  float const height = 200.0f;
 
   context.color().draw_filled_rect(Rectf(Vector(x1, y1),
                                          Sizef(width, height)),

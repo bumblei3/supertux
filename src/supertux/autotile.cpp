@@ -133,7 +133,7 @@ AutotileSet::AutotileSet(const std::vector<Autotile*>& tiles, uint32_t default_t
 
 AutotileSet::~AutotileSet()
 {
-  for (Autotile* autotile : m_autotiles)
+  for (Autotile const* autotile : m_autotiles)
     delete autotile;
 }
 
@@ -288,7 +288,7 @@ AutotileSet::validate(int32_t start, int32_t end) const
   // autotiles should have a valid tile ID that can be surrounded by emptiness.
   for (int mask = (m_corner ? 1 : 0); mask <= (m_corner ? 15 : 255); mask++)
   {
-    uint8_t num_mask = static_cast<uint8_t>(mask);
+    uint8_t const num_mask = static_cast<uint8_t>(mask);
     bool tile_exists = false;
     uint32_t tile_nonsolid = 0; // Relevant only for non-corner autotiles.
     uint32_t tile_with_that_mask = 0; // Used to help users debug.

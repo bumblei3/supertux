@@ -36,7 +36,7 @@ SDLBaseVideoSystem::SDLBaseVideoSystem() :
 //  SDL_VideoInit(nullptr);
 //#endif
 #ifndef __ANDROID__
-  SDL_DisplayID prim_display = SDL_GetPrimaryDisplay();
+  SDL_DisplayID const prim_display = SDL_GetPrimaryDisplay();
   if (prim_display == 0)
   {
     log_warning << "Couldn't get primary display: " << SDL_GetError() << std::endl;
@@ -118,7 +118,7 @@ SDLBaseVideoSystem::create_sdl_window(Uint32 flags)
       // construction). Re-query it now so we don't fall back to a fixed
       // window_size, which would make SDL try to find a matching fullscreen
       // mode instead of using the desktop mode.
-      SDL_DisplayID display = SDL_GetPrimaryDisplay();
+      SDL_DisplayID const display = SDL_GetPrimaryDisplay();
       if (display != 0)
       {
         const SDL_DisplayMode* mode = SDL_GetDesktopDisplayMode(display);

@@ -144,7 +144,7 @@ InfoBoxLine::split(const std::string& text, float width, bool small)
     // append wrapped parts of line into list
     std::string overflow;
     do {
-      FontPtr font = get_font_by_format_char(format_char);
+      FontPtr const font = get_font_by_format_char(format_char);
       std::string s2 = s;
       if (font) s2 = font->wrap_to_width(s2, width, &overflow);
       lines.emplace_back(new InfoBoxLine(format_char, s2));

@@ -51,14 +51,14 @@ Physic::set_acceleration(const Vector& vector)
 Vector
 Physic::get_movement(float dt_sec)
 {
-  float grav = gravity_enabled_flag ? (Sector::get().get_gravity() * gravity_modifier * 100.0f) : 0;
+  float const grav = gravity_enabled_flag ? (Sector::get().get_gravity() * gravity_modifier * 100.0f) : 0;
 
   // Semi-implicit Euler integration
   // with constant acceleration, this will result in a position delta of
   // v t + .5 a t (t+dt_sec) at total time t
   vx += ax * dt_sec;
   vy += (ay + grav) * dt_sec;
-  Vector result(vx * dt_sec, vy * dt_sec);
+  Vector const result(vx * dt_sec, vy * dt_sec);
 
   return result;
 }

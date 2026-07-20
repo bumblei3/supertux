@@ -162,7 +162,7 @@ Dispenser::active_update(float dt_sec)
       // Auto always shoots in Tux's direction.
       if (m_autotarget)
       {
-        Direction target_dir = (player->get_pos().x > get_pos().x) ? Direction::RIGHT : Direction::LEFT;
+        Direction const target_dir = (player->get_pos().x > get_pos().x) ? Direction::RIGHT : Direction::LEFT;
         if (m_dir != target_dir)
         {
           m_dir = target_dir;
@@ -195,7 +195,7 @@ Dispenser::launch_object()
     Direction launch_dir = m_dir;
     if (!m_autotarget && m_start_dir == Direction::AUTO)
     {
-      Player* player = get_nearest_player();
+      Player const* player = get_nearest_player();
       if (player)
         launch_dir = (player->get_pos().x > get_pos().x) ? Direction::RIGHT : Direction::LEFT;
     }

@@ -64,7 +64,7 @@ EditorConvertersMenu::EditorConvertersMenu() :
   add_file(_("Select Tile Conversion File"), &m_tile_conversion_file, { "sttc" }, "images/converters", false,
            [this](MenuItem& item, const std::string& file_path, bool in_basedir) {
              if (in_basedir) {
-               std::string basename = FileSystem::basename(file_path);
+               std::string const basename = FileSystem::basename(file_path);
                auto it = m_converters.find(basename);
                if (it == m_converters.end())
                  return;

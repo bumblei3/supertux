@@ -63,7 +63,7 @@ MD5 md5_from_file(const std::string& filename)
     while (true)
     {
       unsigned char buffer[1024];
-      PHYSFS_sint64 len = PHYSFS_readBytes(file, buffer, sizeof(buffer));
+      PHYSFS_sint64 const len = PHYSFS_readBytes(file, buffer, sizeof(buffer));
       if (len <= 0) break;
       md5.update(buffer, static_cast<unsigned int>(len));
     }
@@ -93,7 +93,7 @@ static Addon& get_addon(const AddonManager::AddonMap& list, const AddonId& id,
   }
   else
   {
-    std::string type = installed ? "installed" : "repository";
+    std::string const type = installed ? "installed" : "repository";
     throw std::runtime_error("Couldn't find " + type + " addon with id: " + id);
   }
 }
@@ -119,7 +119,7 @@ static std::vector<AddonId> get_addons(const AddonManager::AddonMap& list)
 
 static PHYSFS_EnumerateCallbackResult add_to_dictionary_path(void *data, const char *origdir, const char *fname)
 {
-    std::string full_path = FileSystem::join(origdir, fname);
+    std::string const full_path = FileSystem::join(origdir, fname);
     if (physfsutil::is_directory(full_path))
     {
         log_debug << "Adding \"" << full_path << "\" to dictionary search path" << std::endl;
@@ -131,7 +131,7 @@ static PHYSFS_EnumerateCallbackResult add_to_dictionary_path(void *data, const c
 
 static PHYSFS_EnumerateCallbackResult remove_from_dictionary_path(void *data, const char *origdir, const char *fname)
 {
-    std::string full_path = FileSystem::join(origdir, fname);
+    std::string const full_path = FileSystem::join(origdir, fname);
     if (physfsutil::is_directory(full_path))
     {
         g_dictionary_manager->remove_directory(full_path);
@@ -312,20 +312,20 @@ AddonManager::request_install_addon(const AddonId& addon_id)
 
   auto& addon = get_repository_addon(addon_id);
 
-  std::string install_filename = FileSystem::join(m_addon_directory, addon.get_filename());
+  std::string const install_filename = FileSystem::join(m_addon_directory, addon.get_filename());
 
   // Install add-on dependencies, if any.
   request_install_addon_dependencies(addon);
 
   // Install the add-on.
-  TransferStatusPtr status = m_downloader.request_download(addon.get_url(), install_filename);
+  TransferStatusPtr const status = m_downloader.request_download(addon.get_url(), install_filename);
   status->then(
     [this, install_filename, addon_id](bool success)
     {
       if (success)
       {
         // Complete the add-on installation.
-        Addon& repository_addon = get_repository_addon(addon_id);
+        Addon const& repository_addon = get_repository_addon(addon_id);
 
         MD5 md5 = md5_from_file(install_filename);
         if (repository_addon.get_md5() != md5.hex_digest())
@@ -415,7 +415,7 @@ AddonManager::install_addon(const AddonId& addon_id)
 
   auto& repository_addon = get_repository_addon(addon_id);
 
-  std::string install_filename = FileSystem::join(m_addon_directory, repository_addon.get_filename());
+  std::string const install_filename = FileSystem::join(m_addon_directory, repository_addon.get_filename());
 
   m_downloader.download(repository_addon.get_url(), install_filename);
 
@@ -654,7 +654,7 @@ AddonManager::disable_old_addons()
 void
 AddonManager::mount_old_addons()
 {
-  std::string mountpoint;
+  std::string const mountpoint;
   for (auto& [id, addon] : m_installed_addons) {
     if (is_old_enabled_addon(addon)) {
       if (PHYSFS_mount(addon->get_install_filename().c_str(), mountpoint.c_str(), !addon->overrides_data()) == 0)
@@ -683,7 +683,7 @@ AddonManager::unmount_old_addons()
 bool
 AddonManager::is_from_old_addon(const std::string& filename) const
 {
-  std::string real_path = PHYSFS_getRealDir(filename.c_str());
+  std::string const real_path = PHYSFS_getRealDir(filename.c_str());
   for (auto& [id, addon] : m_installed_addons) {
     if (is_old_enabled_addon(addon) &&
         addon->get_install_filename() == real_path) {
@@ -752,7 +752,7 @@ AddonManager::scan_for_info(const std::string& archive_os_path) const
   physfsutil::enumerate_files("/", [archive_os_path, &nfoFilename](const std::string& file) {
     if (StringUtil::has_suffix(file, ".nfo"))
     {
-      std::string nfo_filename = FileSystem::join("/", file);
+      std::string const nfo_filename = FileSystem::join("/", file);
 
       // Make sure it's in the current archive_os_path.
       const char* realdir = PHYSFS_getRealDir(nfo_filename.c_str());
@@ -787,11 +787,11 @@ AddonManager::add_installed_archive(const std::string& archive, const std::strin
   else
   {
     bool has_error = false;
-    std::string os_path = FileSystem::join(realdir, archive);
+    std::string const os_path = FileSystem::join(realdir, archive);
 
     PHYSFS_mount(os_path.c_str(), nullptr, 1);
 
-    std::string nfo_filename = scan_for_info(os_path);
+    std::string const nfo_filename = scan_for_info(os_path);
 
     if (nfo_filename.empty())
     {
@@ -934,7 +934,7 @@ AddonManager::check_for_langpack_updates()
     {
       const std::string& addon_id = "language-pack";
       log_debug << "Looking for language add-on with ID " << addon_id << "..." << std::endl;
-      Addon& langpack = get_repository_addon(addon_id);
+      Addon const& langpack = get_repository_addon(addon_id);
 
       try
       {

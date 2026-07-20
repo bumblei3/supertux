@@ -109,7 +109,7 @@ FishChasing::active_update(float dt_sec) {
   case FOUND:
     if (!m_frozen)
     {
-      Direction dir = m_physic.get_velocity_x() <= 0.f ? Direction::LEFT : Direction::RIGHT;
+      Direction const dir = m_physic.get_velocity_x() <= 0.f ? Direction::LEFT : Direction::RIGHT;
       set_action("notice", dir, 1);
     }
 

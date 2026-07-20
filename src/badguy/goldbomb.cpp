@@ -91,7 +91,7 @@ GoldBomb::active_update(float dt_sec)
   // Look for any of these in safe distance:
   // Player, ticking Haywire, ticking Bomb or ticking GoldBomb
   MovingObject* obj = nullptr;
-  std::vector<MovingObject*> objs = Sector::get().get_nearby_objects(get_bbox().get_middle(), SAFE_DIST);
+  std::vector<MovingObject*> const objs = Sector::get().get_nearby_objects(get_bbox().get_middle(), SAFE_DIST);
   for (MovingObject* currobj : objs)
   {
     obj = currobj;

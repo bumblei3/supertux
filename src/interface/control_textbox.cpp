@@ -84,13 +84,13 @@ ControlTextbox::draw(DrawingContext& context)
                                    LAYER_GUI);
 
   if (m_caret_pos != m_secondary_caret_pos) {
-    float lgt1 = Resources::small_font
+    float const lgt1 = Resources::small_font
                  ->get_text_width(get_first_chars_visible(std::max(
                                 std::min(m_caret_pos, m_secondary_caret_pos) - m_current_offset,
                                 0
                                 )));
 
-    float lgt2 = Resources::small_font
+    float const lgt2 = Resources::small_font
                  ->get_text_width(get_first_chars_visible(std::min(
                                  std::max(m_caret_pos, m_secondary_caret_pos) - m_current_offset,
                                  int(get_contents_visible().size())
@@ -113,7 +113,7 @@ ControlTextbox::draw(DrawingContext& context)
                             LAYER_GUI + 1,
                             Color::WHITE);
   if (m_cursor_timer > 0 && m_has_focus) {
-    float lgt = Resources::small_font
+    float const lgt = Resources::small_font
                                 ->get_text_width(get_first_chars_visible(m_caret_pos - m_current_offset));
 
     context.color().draw_line(m_rect.p1() + Vector(lgt + 5.f, 2.f),
@@ -127,7 +127,7 @@ ControlTextbox::draw(DrawingContext& context)
 bool
 ControlTextbox::on_mouse_button_down(const SDL_MouseButtonEvent& button)
 {
-  Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(button.x, button.y);
+  Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(button.x, button.y);
   if (m_rect.contains(mouse_pos)) {
     m_has_focus = true;
     m_cursor_timer = CONTROL_CURSOR_TIMER;
@@ -160,7 +160,7 @@ ControlTextbox::on_mouse_motion(const SDL_MouseMotionEvent& motion)
 {
   InterfaceControl::on_mouse_motion(motion);
 
-  Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(motion.x, motion.y);
+  Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(motion.x, motion.y);
   if (m_mouse_pressed) {
     m_cursor_timer = CONTROL_CURSOR_TIMER;
     m_caret_pos = get_text_position(mouse_pos);
@@ -316,7 +316,7 @@ ControlTextbox::event(const SDL_Event& ev) {
 bool
 ControlTextbox::parse_value(bool call_on_change /* = true  (see header)*/)
 {
-  std::string new_str = get_contents();
+  std::string const new_str = get_contents();
 
   // Abort if we have a validation function for the string, and the function
   // says the string is invalid.
@@ -343,10 +343,10 @@ ControlTextbox::parse_value(bool call_on_change /* = true  (see header)*/)
 void
 ControlTextbox::revert_value()
 {
-  std::string str = m_internal_string_backup;
+  std::string const str = m_internal_string_backup;
 
   m_charlist.clear();
-  for (char c : str) {
+  for (char const c : str) {
     m_charlist.push_back(c);
   }
 
@@ -367,7 +367,7 @@ ControlTextbox::get_contents() const
 {
   std::string temp;
 
-  for (char c : m_charlist) {
+  for (char const c : m_charlist) {
     temp += c;
   }
 
@@ -379,7 +379,7 @@ ControlTextbox::get_first_chars(int amount) const
 {
   std::string temp;
 
-  for (char c : m_charlist) {
+  for (char const c : m_charlist) {
     if (!(amount--)) break;
     temp += c;
   }
@@ -393,7 +393,7 @@ ControlTextbox::get_contents_visible() const
   std::string temp;
   int remaining = m_current_offset;
 
-  for (char c : m_charlist) {
+  for (char const c : m_charlist) {
     if (--remaining < 0) {
       temp += c;
     }
@@ -411,7 +411,7 @@ ControlTextbox::get_first_chars_visible(int amount) const
 int
 ControlTextbox::get_text_position(const Vector& pos) const
 {
-  float dist = pos.x - m_rect.get_left();
+  float const dist = pos.x - m_rect.get_left();
   int i = 0;
 
   while (Resources::small_font->get_text_width(get_first_chars_visible(i)) < dist
@@ -465,7 +465,7 @@ ControlTextbox::copy() const
     return false;
 
   SDL_ClearError();
-  int ret = SDL_SetClipboardText(get_selected_text().c_str());
+  int const ret = SDL_SetClipboardText(get_selected_text().c_str());
 
   if (ret)
     log_warning << "Couldn't copy text to clipboard: " << SDL_GetError() << std::endl;
@@ -479,7 +479,7 @@ ControlTextbox::paste()
   if (!SDL_HasClipboardText())
     return false;
 
-  char* txt = SDL_GetClipboardText();
+  char const* txt = SDL_GetClipboardText();
 
   if (txt)
     put_text(std::string(txt));
@@ -498,7 +498,7 @@ ControlTextbox::get_selected_text() const
       end = std::max(m_caret_pos, m_secondary_caret_pos),
       pos = 0;
 
-  for (char c : m_charlist)
+  for (char const c : m_charlist)
   {
     if (pos++ < start)
       continue;
@@ -515,9 +515,9 @@ ControlTextbox::get_selected_text() const
 bool
 ControlTextbox::put_text(const std::string& text)
 {
-  bool has_erased_text = erase_selected_text();
+  bool const has_erased_text = erase_selected_text();
 
-  for (char c : text)
+  for (char const c : text)
   {
     auto it = m_charlist.begin();
     advance(it, m_caret_pos);

@@ -49,8 +49,8 @@ ObjectIcon::~ObjectIcon()
 void
 ObjectIcon::calculate_offset()
 {
-  float w = static_cast<float>(m_surface->get_width());
-  float h = static_cast<float>(m_surface->get_height());
+  float const w = static_cast<float>(m_surface->get_width());
+  float const h = static_cast<float>(m_surface->get_height());
 
   if (w > h) {
     m_offset.x = 0;

@@ -78,7 +78,7 @@ AddonBrowseMenu::rebuild_menu()
     try
     {
       // Add-on is already installed, so check if they are the same.
-      Addon& installed_addon = AddonManager::current()->get_installed_addon(addon_id);
+      Addon const& installed_addon = AddonManager::current()->get_installed_addon(addon_id);
       if (installed_addon.get_md5() == addon.get_md5() ||
           installed_addon.get_version() > addon.get_version())
       {
@@ -166,7 +166,7 @@ AddonBrowseMenu::check_online()
 {
   try
   {
-    TransferStatusPtr status = AddonManager::current()->request_check_online();
+    TransferStatusPtr const status = AddonManager::current()->request_check_online();
     status->then([this](bool success)
     {
       if (success)
@@ -219,7 +219,7 @@ AddonBrowseMenu::menu_action(MenuItem& item)
   }
   else if (IS_REPOSITORY_MENU_ID(index))
   {
-    int idx = UNPACK_REPOSITORY_MENU_ID(index);
+    int const idx = UNPACK_REPOSITORY_MENU_ID(index);
     if (0 <= idx && idx < static_cast<int>(m_repository_addons.size()))
     {
       const Addon& addon = AddonManager::current()->get_repository_addon(m_repository_addons[idx]);

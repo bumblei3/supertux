@@ -165,7 +165,7 @@ EditorToolbarWidget::EditorToolbarWidget(Editor& editor) :
   size_t i = 0;
   for (auto &widget : general_widgets)
   {
-    Vector pos(32 * i, 0);
+    Vector const pos(32 * i, 0);
     widget->set_position(pos);
     widget->set_flat(true);
     m_widgets.insert(m_widgets.begin() + i, std::move(widget));
@@ -174,7 +174,7 @@ EditorToolbarWidget::EditorToolbarWidget(Editor& editor) :
 
   for (auto &widget : tile_mode_widgets)
   {
-    Vector pos(32 * i, 0);
+    Vector const pos(32 * i, 0);
     widget->set_position(pos);
     widget->set_flat(true);
     widget->set_visible_in_object_mode(false);
@@ -185,7 +185,7 @@ EditorToolbarWidget::EditorToolbarWidget(Editor& editor) :
 
   for (auto &widget : object_mode_widgets)
   {
-    Vector pos(32 * (i - tile_mode_widgets.size()), 0);
+    Vector const pos(32 * (i - tile_mode_widgets.size()), 0);
     widget->set_position(pos);
     widget->set_flat(true);
     widget->set_visible_in_tile_mode(false);

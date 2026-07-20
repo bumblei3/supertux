@@ -44,7 +44,7 @@ MarkerObject::~MarkerObject()
 int
 MarkerObject::get_rotation() const
 {
-  Vector dir = get_point_vector();
+  Vector const dir = get_point_vector();
   if (dir.x == 0 && dir.y == 0)
     return 0;
 
@@ -54,7 +54,7 @@ MarkerObject::get_rotation() const
 void
 MarkerObject::draw(DrawingContext& context)
 {
-  Vector dir = get_point_vector();
+  Vector const dir = get_point_vector();
   SurfacePtr marker_surface = nullptr;
   if (dir.x == 0 && dir.y == 0) {
     if (hide_if_no_offset())

@@ -96,7 +96,7 @@ Path::read(const ReaderMapping& reader)
     } else if (iter.get_key() == "adapt_speed") {
       iter.get(m_adapt_speed);
     } else if (iter.get_key() == "node") {
-      ReaderMapping node_mapping = iter.as_mapping();
+      ReaderMapping const node_mapping = iter.as_mapping();
 
       // each new node will inherit all values from the last one
       Node node(this);
@@ -185,7 +185,7 @@ Path::get_nearest_node_idx(const Vector& reference_point) const
   float nearest_node_dist = 0;
   int id = 0;
   for (std::vector<Node>::const_iterator i = m_nodes.begin(); i != m_nodes.end(); ++i, ++id) {
-    float dist = glm::distance(i->position, reference_point);
+    float const dist = glm::distance(i->position, reference_point);
     if ((nearest_node_id == -1) || (dist < nearest_node_dist)) {
       nearest_node_id = id;
       nearest_node_dist = dist;
@@ -202,7 +202,7 @@ Path::get_farthest_node_idx(const Vector& reference_point) const
   int id = 0;
   for (std::vector<Node>::const_iterator i = m_nodes.begin(); i != m_nodes.end(); ++i, ++id)
   {
-    float dist = glm::distance(i->position, reference_point);
+    float const dist = glm::distance(i->position, reference_point);
     if ((farthest_node_id == -1) || (dist > farthest_node_dist)) {
       farthest_node_id = id;
       farthest_node_dist = dist;

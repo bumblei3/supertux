@@ -387,10 +387,10 @@ OptionsMenu::add_window_resolutions()
   m_window_resolutions.list = { "640x480", "854x480", "800x600", "1280x720", "1280x800",
                                 "1440x900", "1920x1080", "1920x1200", "2560x1440" };
   m_window_resolutions.next = -1;
-  Size window_size = VideoSystem::current()->get_window_size();
+  Size const window_size = VideoSystem::current()->get_window_size();
   std::ostringstream out;
   out << window_size.width << "x" << window_size.height;
-  std::string window_size_text = out.str();
+  std::string const window_size_text = out.str();
   for (size_t i = 0; i < m_window_resolutions.list.size(); ++i)
   {
     if (m_window_resolutions.list[i] == window_size_text)
@@ -413,13 +413,13 @@ void
 OptionsMenu::add_resolutions()
 {
   int display_mode_count;
-  SDL_DisplayID prim_display = SDL_GetPrimaryDisplay();
+  SDL_DisplayID const prim_display = SDL_GetPrimaryDisplay();
   if (prim_display == 0)
   {
     log_warning << "Couldn't get primary display: " << SDL_GetError() << std::endl;
     return; // at this point, we just give up.
   }
-  std::unique_ptr<SDL_DisplayMode*, decltype(&SDL_free)> display_modes(
+  std::unique_ptr<SDL_DisplayMode*, decltype(&SDL_free)> const display_modes(
     SDL_GetFullscreenDisplayModes(prim_display, &display_mode_count), &SDL_free);
 
   if (display_modes == nullptr)
@@ -536,7 +536,7 @@ OptionsMenu::add_sound_volume()
 
   std::ostringstream sound_vol_stream;
   sound_vol_stream << g_config->sound_volume << "%";
-  std::string sound_vol_string = sound_vol_stream.str();
+  std::string const sound_vol_string = sound_vol_stream.str();
 
   if (std::find(m_sound_volumes.list.begin(),
                 m_sound_volumes.list.end(), sound_vol_string) == m_sound_volumes.list.end())
@@ -572,7 +572,7 @@ OptionsMenu::add_music_volume()
 
   std::ostringstream music_vol_stream;
   music_vol_stream << g_config->music_volume << "%";
-  std::string music_vol_string = music_vol_stream.str();
+  std::string const music_vol_string = music_vol_stream.str();
 
   if (std::find(m_music_volumes.list.begin(),
                m_music_volumes.list.end(), music_vol_string) == m_music_volumes.list.end())
@@ -608,7 +608,7 @@ OptionsMenu::add_flash_intensity()
 
   std::ostringstream flash_intensity_value_stream;
   flash_intensity_value_stream << g_config->flash_intensity << "%";
-  std::string flash_intensity_string = flash_intensity_value_stream.str();
+  std::string const flash_intensity_string = flash_intensity_value_stream.str();
 
   if (std::find(m_flash_intensity_values.list.begin(),
     m_flash_intensity_values.list.end(), flash_intensity_string) == m_flash_intensity_values.list.end())
@@ -848,7 +848,7 @@ OptionsMenu::menu_action(MenuItem& item)
     case MNID_SOUND_VOLUME:
       if (sscanf(m_sound_volumes.list[m_sound_volumes.next].c_str(), "%i", &g_config->sound_volume) == 1)
       {
-        bool sound_enabled = g_config->sound_volume > 0 ? true : false;
+        bool const sound_enabled = g_config->sound_volume > 0 ? true : false;
         SoundManager::current()->enable_sound(sound_enabled);
         SoundManager::current()->set_sound_volume(g_config->sound_volume);
         g_config->save();
@@ -863,7 +863,7 @@ OptionsMenu::menu_action(MenuItem& item)
     case MNID_MUSIC_VOLUME:
       if (sscanf(m_music_volumes.list[m_music_volumes.next].c_str(), "%i", &g_config->music_volume) == 1)
       {
-        bool music_enabled = g_config->music_volume > 0 ? true : false;
+        bool const music_enabled = g_config->music_volume > 0 ? true : false;
         SoundManager::current()->enable_music(music_enabled);
         SoundManager::current()->set_music_volume(g_config->music_volume);
         g_config->save();

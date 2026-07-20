@@ -308,7 +308,7 @@ Statistics::draw_endseq_panel(DrawingContext& context, Statistics* best_stats, c
   context.color().draw_text(Resources::normal_font, time_to_string(m_time), Vector(col_x_positions[1], y), ALIGN_LEFT, layer, tcolor);
   if (best_stats)
   {
-    float time_best = (best_stats->m_time < m_time && best_stats->m_time > 0.0f) ? best_stats->m_time : m_time;
+    float const time_best = (best_stats->m_time < m_time && best_stats->m_time > 0.0f) ? best_stats->m_time : m_time;
     if (target_time == 0.0f || (time_best != 0.0f && time_best < target_time))
       tcolor = Statistics::perfect_color;
     else
@@ -330,8 +330,8 @@ Statistics::draw_endseq_panel(DrawingContext& context, Statistics* best_stats, c
 
     if (best_stats)
     {
-      int coins_best = (best_stats->m_coins > m_coins) ? best_stats->m_coins : m_coins;
-      int total_coins_best = (best_stats->m_total_coins > m_total_coins) ? best_stats->m_total_coins : m_total_coins;
+      int const coins_best = (best_stats->m_coins > m_coins) ? best_stats->m_coins : m_coins;
+      int const total_coins_best = (best_stats->m_total_coins > m_total_coins) ? best_stats->m_total_coins : m_total_coins;
       if (coins_best >= total_coins_best)
         tcolor = Statistics::perfect_color;
       else
@@ -353,8 +353,8 @@ Statistics::draw_endseq_panel(DrawingContext& context, Statistics* best_stats, c
 
     if (best_stats)
     {
-      int secrets_best = (best_stats->m_secrets > m_secrets) ? best_stats->m_secrets : m_secrets;
-      int total_secrets_best = (best_stats->m_total_secrets > m_total_secrets) ? best_stats->m_total_secrets : m_total_secrets;
+      int const secrets_best = (best_stats->m_secrets > m_secrets) ? best_stats->m_secrets : m_secrets;
+      int const total_secrets_best = (best_stats->m_total_secrets > m_total_secrets) ? best_stats->m_total_secrets : m_total_secrets;
       if (secrets_best >= total_secrets_best)
         tcolor = Statistics::perfect_color;
       else
@@ -374,14 +374,14 @@ Statistics::draw_ingame_stats(DrawingContext& context, bool on_pause_menu)
   {
     if (on_pause_menu || (m_cleared_secrets && m_secrets_time < 5.f))
     {
-      std::string text(secrets_to_string(m_secrets, m_total_secrets));
+      std::string const text(secrets_to_string(m_secrets, m_total_secrets));
       float width = Resources::normal_font->get_text_width(text),
             x_offset = width + 75.f;
 
       if (!on_pause_menu)
         x_offset *= std::min(1.f, -std::abs(m_secrets_time - 2.5f) + 2.5f);
 
-      Vector pos(context.get_width() - x_offset, y);
+      Vector const pos(context.get_width() - x_offset, y);
 
       context.color().draw_filled_rect(Rectf(pos.x, pos.y, pos.x + width + 37.f,
                                              pos.y + height).grown(5.f),
@@ -403,14 +403,14 @@ Statistics::draw_ingame_stats(DrawingContext& context, bool on_pause_menu)
 
   if (m_preferences.enable_coins && (on_pause_menu || (m_cleared_coins && m_coins_time < 5.f)))
   {
-    std::string text(coins_to_string(m_coins, m_total_coins));
+    std::string const text(coins_to_string(m_coins, m_total_coins));
     float width = Resources::normal_font->get_text_width(text),
           x_offset = width + 75.f;
 
     if (!on_pause_menu)
       x_offset *= std::min(1.f, -std::abs(m_coins_time - 2.5f) + 2.5f);
 
-    Vector pos(context.get_width() - x_offset, y);
+    Vector const pos(context.get_width() - x_offset, y);
 
     context.color().draw_filled_rect(Rectf(pos.x, pos.y, pos.x + width + 37.f,
                                            pos.y + height).grown(5.f),
@@ -520,10 +520,10 @@ Statistics::time_to_string(float time)
   }
   else
   {
-    int time_csecs = static_cast<int>(time * 100);
-    int mins = (time_csecs / 6000);
-    int secs = (time_csecs % 6000) / 100;
-    int cscs = (time_csecs % 6000) % 100;
+    int const time_csecs = static_cast<int>(time * 100);
+    int const mins = (time_csecs / 6000);
+    int const secs = (time_csecs % 6000) / 100;
+    int const cscs = (time_csecs % 6000) % 100;
     os << std::setw(2) << std::setfill('0') << mins << ":" << std::setw(2) << std::setfill('0') << secs << "." << std::setw(2) << std::setfill('0') << cscs;
   }
 

@@ -278,7 +278,7 @@ FishSwimming::active_update(float dt_sec)
       }
       else
       {
-        Player* player = Sector::get().get_nearest_player(get_pos());
+        Player const* player = Sector::get().get_nearest_player(get_pos());
         if (player)
         {
           if (player->get_pos().x < get_pos().x)
@@ -319,7 +319,7 @@ FishSwimming::active_update(float dt_sec)
     const float turn_initiation_offset = FISH_PATROL_SPEED / 2.0f;
 
     // Smooth turn requires radius > initiation distance to avoid jitter.
-    bool use_smooth_turn = (m_radius > turn_initiation_offset);
+    bool const use_smooth_turn = (m_radius > turn_initiation_offset);
 
     if (use_smooth_turn)
     {
@@ -458,7 +458,7 @@ FishSwimming::maintain_velocity_x(float goal_x_velocity)
   if (m_frozen || !m_in_water)
     return;
 
-  float current_x_velocity = m_physic.get_velocity_x();
+  float const current_x_velocity = m_physic.get_velocity_x();
   /* We're very close to our target speed. Just set it to avoid oscillation. */
   if ((current_x_velocity > (goal_x_velocity - 5.0f)) &&
      (current_x_velocity < (goal_x_velocity + 5.0f)))
@@ -502,7 +502,7 @@ FishSwimming::maintain_velocity_y(float goal_y_velocity)
   if (m_frozen || !m_in_water)
     return;
 
-  float current_y_velocity = m_physic.get_velocity_y();
+  float const current_y_velocity = m_physic.get_velocity_y();
   /* We're very close to our target speed. Just set it to avoid oscillation. */
   if ((current_y_velocity > (goal_y_velocity - 5.0f)) &&
      (current_y_velocity < (goal_y_velocity + 5.0f)))

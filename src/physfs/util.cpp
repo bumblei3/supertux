@@ -75,7 +75,7 @@ void remove_content(const std::string& dir)
 {
   PHYSFS_UTIL_DIRECTORY_GUARD;
   enumerate_files(dir, [&dir](const std::string& file) {
-    std::string path = FileSystem::join(dir, file);
+    std::string const path = FileSystem::join(dir, file);
     if (is_directory(path))
       remove_with_content(path);
     PHYSFS_delete(path.c_str());
@@ -140,7 +140,7 @@ bool enumerate_files_alphabetical(const std::string& pathname, std::function<boo
 {
   // PHYSFS_enumerateFiles guarantees alphabetical sorting.
   std::unique_ptr<char*, decltype(&PHYSFS_freeList)>
-    files(PHYSFS_enumerateFiles(pathname.c_str()),
+    const files(PHYSFS_enumerateFiles(pathname.c_str()),
           PHYSFS_freeList);
 
   if (!files)

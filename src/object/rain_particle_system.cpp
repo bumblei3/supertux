@@ -107,18 +107,18 @@ RainParticleSystem::get_settings()
 void RainParticleSystem::set_amount(float amount)
 {
   // Don't spawn too many particles to avoid destroying the player's computer
-  float real_amount = math::clamp(amount, min_amount, max_amount);
+  float const real_amount = math::clamp(amount, min_amount, max_amount);
 
-  int old_raindropcount = static_cast<int>(virtual_width*m_current_real_amount/6.0f);
-  int new_raindropcount = static_cast<int>(virtual_width*real_amount/6.0f);
-  int delta = new_raindropcount - old_raindropcount;
+  int const old_raindropcount = static_cast<int>(virtual_width*m_current_real_amount/6.0f);
+  int const new_raindropcount = static_cast<int>(virtual_width*real_amount/6.0f);
+  int const delta = new_raindropcount - old_raindropcount;
 
   if (delta > 0) {
     for (int i=0; i<delta; ++i) {
       auto particle = std::make_unique<RainParticle>();
       particle->pos.x = static_cast<float>(graphicsRandom.rand(int(virtual_width)));
       particle->pos.y = static_cast<float>(graphicsRandom.rand(int(virtual_height)));
-      int rainsize = graphicsRandom.rand(2);
+      int const rainsize = graphicsRandom.rand(2);
       particle->texture = rainimages[rainsize];
       do {
         particle->speed = ((static_cast<float>(rainsize) + 1.0f) * 45.0f + graphicsRandom.randf(3.6f));
@@ -159,7 +159,7 @@ void RainParticleSystem::update(float dt_sec)
       m_amount_fade_time_remaining = 2.f;*/
       // Test above
     } else {
-      float amount = dt_sec / m_amount_fade_time_remaining;
+      float const amount = dt_sec / m_amount_fade_time_remaining;
       m_current_amount += (m_target_amount - m_current_amount) * amount;
       m_amount_fade_time_remaining -= dt_sec;
     }
@@ -173,7 +173,7 @@ void RainParticleSystem::update(float dt_sec)
       m_current_speed = m_target_speed;
       m_speed_fade_time_remaining = 0.f;
     } else {
-      float amount = dt_sec / m_speed_fade_time_remaining;
+      float const amount = dt_sec / m_speed_fade_time_remaining;
       m_current_speed += (m_target_speed - m_current_speed) * amount;
       m_speed_fade_time_remaining -= dt_sec;
     }
@@ -194,21 +194,21 @@ void RainParticleSystem::update(float dt_sec)
   }
 
   const auto& cam_translation = Sector::get().get_camera().get_translation();
-  float movement_multiplier = dt_sec * Sector::get().get_gravity() * m_current_speed * 1.41421353f;
-  float abs_x = cam_translation.x;
-  float abs_y = cam_translation.y;
+  float const movement_multiplier = dt_sec * Sector::get().get_gravity() * m_current_speed * 1.41421353f;
+  float const abs_x = cam_translation.x;
+  float const abs_y = cam_translation.y;
 
   for (auto& it : particles) {
     auto particle = static_cast<RainParticle*>(it.get());
 
-    float movement = particle->speed * movement_multiplier;
+    float const movement = particle->speed * movement_multiplier;
     particle->pos.y += movement * cosf((particle->angle + 45.f) * 3.14159265f / 180.f);
     particle->pos.x -= movement * sinf((particle->angle + 45.f) * 3.14159265f / 180.f);
-    int col = collision(particle, Vector(-movement, movement));
+    int const col = collision(particle, Vector(-movement, movement));
     if ((particle->pos.y > static_cast<float>(SCREEN_HEIGHT) + abs_y) || (col >= 0)) {
       //Create rainsplash
       if ((particle->pos.y <= static_cast<float>(SCREEN_HEIGHT) + abs_y) && (col >= 1)){
-        bool vertical = (col == 2);
+        bool const vertical = (col == 2);
         if (!vertical) { //check if collision happened from above
           int splash_x, splash_y; // move outside if statement when
                                   // uncommenting the else statement below.
@@ -224,8 +224,8 @@ void RainParticleSystem::update(float dt_sec)
            Sector::get().add<RainSplash>(Vector(splash_x, splash_y),vertical);
            } */
       }
-      int new_x = graphicsRandom.rand(int(virtual_width)) + int(abs_x);
-      int new_y = 0;
+      int const new_x = graphicsRandom.rand(int(virtual_width)) + int(abs_x);
+      int const new_y = 0;
       //FIXME: Don't move particles over solid tiles
       particle->pos.x = static_cast<float>(new_x);
       particle->pos.y = static_cast<float>(new_y);

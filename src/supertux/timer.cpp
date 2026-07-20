@@ -56,7 +56,7 @@ Timer::check()
 void
 Timer::pause()
 {
-  float left = get_timeleft();
+  float const left = get_timeleft();
   stop();
   m_cycle_pause = left;
 }

@@ -135,7 +135,7 @@ PathGameObject::draw(DrawingContext& context)
 
         for (float i = dot_distance; i < length; i += dot_distance) // NOLINT
         {
-          Vector dot_pos = p1 + unit * i;
+          Vector const dot_pos = p1 + unit * i;
           m_edge_sprite->draw(context.color(), Vector(dot_pos), LAYER_OBJECTS - 1);
         }
       }

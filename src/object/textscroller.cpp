@@ -168,7 +168,7 @@ TextScroller::parse_content(const ReaderCollection& collection)
   {
     if (item.get_name() == "image")
     {
-      std::string image_file = item.get_sexp().as_array()[1].as_string();
+      std::string const image_file = item.get_sexp().as_array()[1].as_string();
       m_lines.emplace_back(new InfoBoxLine('!', image_file));
     }
     else if (item.get_name() == "person")

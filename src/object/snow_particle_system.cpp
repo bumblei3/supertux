@@ -80,11 +80,11 @@ SnowParticleSystem::init()
   m_timer.start(.01f);
 
   // Create random snowflakes.
-  int snowflakecount = static_cast<int>(virtual_width / 10.0f);
+  int const snowflakecount = static_cast<int>(virtual_width / 10.0f);
   for (int i = 0; i < snowflakecount; ++i)
   {
     auto particle = std::make_unique<SnowParticle>();
-    int snowsize = graphicsRandom.rand(3);
+    int const snowsize = graphicsRandom.rand(3);
 
     particle->pos.x = graphicsRandom.randf(virtual_width);
     particle->pos.y = graphicsRandom.randf(static_cast<float>(SCREEN_HEIGHT));
@@ -164,7 +164,7 @@ SnowParticleSystem::update(float dt_sec)
       assert(false);
   }
 
-  float sq_g = sqrtf(Sector::get().get_gravity());
+  float const sq_g = sqrtf(Sector::get().get_gravity());
 
   for (auto& part : particles)
   {

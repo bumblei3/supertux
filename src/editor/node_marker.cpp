@@ -66,11 +66,11 @@ NodeMarker::remove_me()
 Vector
 NodeMarker::get_point_vector() const
 {
-  std::vector<Path::Node>::const_iterator next = next_node();
+  std::vector<Path::Node>::const_iterator const next = next_node();
   if (next == m_path->m_nodes.end()) {
     return Vector(0,0);
   } else {
-    Vector p = Bezier::get_point(m_node->position,
+    Vector const p = Bezier::get_point(m_node->position,
                                  m_node->bezier_after,
                                  next->bezier_before,
                                  next->position,
@@ -195,7 +195,7 @@ void NodeMarker::update_node_time(std::vector<Path::Node>::iterator current, std
     return;  // Nothing to do.
   }
 
-  float delta = Bezier::get_length(current->position,
+  float const delta = Bezier::get_length(current->position,
                                     current->bezier_after,
                                     next->bezier_before,
                                     next->position);

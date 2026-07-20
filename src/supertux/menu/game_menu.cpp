@@ -51,7 +51,7 @@ GameMenu::GameMenu() :
     GameSession::current()->abort_level();
   })
 {
-  Level& level = GameSession::current()->get_current_level();
+  Level const& level = GameSession::current()->get_current_level();
 
   if (!level.get_name().empty())
   {
@@ -127,8 +127,8 @@ GameMenu::menu_action(MenuItem& item)
         }
 
         MenuManager::instance().clear_menu_stack();
-        std::string level_file = GameSession::current()->get_level_file();
-        std::string return_to = worldmap::WorldMap::current()->get_levels_path();
+        std::string const level_file = GameSession::current()->get_level_file();
+        std::string const return_to = worldmap::WorldMap::current()->get_levels_path();
         // Pop ourselves out of the worldmap... don't ask :)
         ScreenManager::current()->pop_screen();
         ScreenManager::current()->pop_screen();
@@ -146,7 +146,7 @@ GameMenu::menu_action(MenuItem& item)
             ScreenManager::current()->push_screen([return_to]() -> worldmap::WorldMap* {
               // TODO: Move this somewhere else, it is similar to the GameManager::start_worldmap code
               // Also, what if the world gets deleted in the middle of editing?
-              std::unique_ptr<World> world = World::from_directory(FileSystem::strip_leading_dirs(return_to));
+              std::unique_ptr<World> const world = World::from_directory(FileSystem::strip_leading_dirs(return_to));
               if (!world)
               {
                 Dialog::show_message(_("Couldn't open editor for this level."));

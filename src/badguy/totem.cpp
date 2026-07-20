@@ -88,14 +88,14 @@ Totem::active_update(float dt_sec)
       if (!((m_dir == Direction::LEFT) && (t.m_dir == Direction::RIGHT))) continue;
 
       Vector p1 = m_col.m_bbox.p1();
-      Vector p2 = t.get_pos();
+      Vector const p2 = t.get_pos();
 
       // Skip if we are not on the same height.
-      float dy = (p1.y - p2.y);
+      float const dy = (p1.y - p2.y);
       if (fabsf(dy - 0) > 2) continue;
 
       // Skip if the totem is too far away.
-      float dx = (p1.x - p2.x);
+      float const dx = (p1.x - p2.x);
       if (fabsf(dx - 128) > 2) continue;
 
       m_physic.set_velocity_y(JUMP_ON_SPEED_Y);

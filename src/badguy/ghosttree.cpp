@@ -87,8 +87,8 @@ GhostTree::get_attack_pos() const
   if (m_attack == ATTACK_NORMAL)
     return Vector(middle, base);
 
-  Player* player = get_nearest_player();
-  Vector player_pos = player ? player->get_pos() : get_bbox().get_middle();
+  Player const* player = get_nearest_player();
+  Vector const player_pos = player ? player->get_pos() : get_bbox().get_middle();
 
   switch (m_attack)
   {
@@ -226,7 +226,7 @@ GhostTree::rotate_willo_color() {
 
 void
 GhostTree::spawn_willowisp(AttackType color) {
-  Vector pos(m_col.m_bbox.get_width() / 2,
+  Vector const pos(m_col.m_bbox.get_width() / 2,
   m_col.m_bbox.get_height() / 2 + (m_flip == NO_FLIP
                                    ? (m_willo_spawn_y + WILLOWISP_TOP_OFFSET)
                                    : -(m_willo_spawn_y + WILLOWISP_TOP_OFFSET + 32.0f)));
@@ -360,7 +360,7 @@ GhostTree::set_state(MyState new_state) {
 void
 GhostTree::start_attack()
 {
-  float middle = get_bbox().get_middle().x;
+  float const middle = get_bbox().get_middle().x;
   switch (m_attack) {
     case ATTACK_NORMAL:
       m_root_attack.reset(new GhostTreeAttackMain(m_attack_pos));

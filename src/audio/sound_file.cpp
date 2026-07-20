@@ -74,7 +74,7 @@ std::unique_ptr<SoundFile> load_music_file(const std::string& filename_original)
       throw SoundError("can't loop from negative value");
     }
 
-    std::string basedir = FileSystem::dirname(filename);
+    std::string const basedir = FileSystem::dirname(filename);
     raw_music_file = FileSystem::normalize(basedir + raw_music_file);
 
     auto file = PHYSFS_openRead(raw_music_file.c_str());
@@ -304,7 +304,7 @@ std::unordered_map<std::string, std::string> fallback_paths = {
 
 const std::string get_fallback_path(const std::string& file_path)
 {
-  std::string file_name = FileSystem::basename(file_path);
+  std::string const file_name = FileSystem::basename(file_path);
   auto it = fallback_paths.find(file_name);
   if (it != fallback_paths.end())
     return it->second;

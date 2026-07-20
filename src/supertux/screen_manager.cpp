@@ -71,7 +71,7 @@ struct ScreenManager::FPS_Stats
   void report_frame()
   {
     auto time_now = std::chrono::steady_clock::now();
-    int dtime_us = static_cast<int>(std::chrono::duration_cast<
+    int const dtime_us = static_cast<int>(std::chrono::duration_cast<
       std::chrono::microseconds>(time_now - time_prev).count());
     assert(dtime_us >= 0);  // Steady clock.
     if (dtime_us == 0)
@@ -85,7 +85,7 @@ struct ScreenManager::FPS_Stats
     if (max_us < dtime_us)
       max_us = dtime_us;
 
-    float expired_seconds = static_cast<float>(acc_us) / 1000000.0f;
+    float const expired_seconds = static_cast<float>(acc_us) / 1000000.0f;
     if (expired_seconds < 0.5f)
       return;
     // Update values to be printed every 0.5 s
@@ -112,9 +112,9 @@ struct ScreenManager::FPS_Stats
   // previous and current 0.5 s measuring intervals
   float get_highest_max_ms() const
   {
-    float previous_max_ms = 1000.0f / last_fps_min;
+    float const previous_max_ms = 1000.0f / last_fps_min;
     if (measurements_cnt > 0) {
-      float current_max_ms = static_cast<float>(max_us) / 1000.0f;
+      float const current_max_ms = static_cast<float>(max_us) / 1000.0f;
       return std::max<float>(previous_max_ms, current_max_ms);
     }
     return previous_max_ms;
@@ -231,7 +231,7 @@ ScreenManager::draw_fps(DrawingContext& context, FPS_Stats& fps_statistics)
   char str1[60];
   char str2[60];
   char str3[60];
-  int str_length = sizeof(str1);
+  int const str_length = sizeof(str1);
   snprintf(str1, str_length, "%3.1f /",
     static_cast<double>(fps_statistics.get_fps_min()));
   snprintf(str2, str_length, "%3.1f /",
@@ -254,7 +254,7 @@ ScreenManager::draw_player_pos(DrawingContext& context)
 {
   if (auto session = GameSession::current())
   {
-    Sector& sector = session->get_current_sector();
+    Sector const& sector = session->get_current_sector();
 
     float height = 0;
     for (const auto* p : sector.get_players())
@@ -354,7 +354,7 @@ ScreenManager::process_events()
     {
       case SDL_EVENT_FINGER_DOWN:
       {
-        SDL_Event old_event = event;
+        SDL_Event const old_event = event;
 
         SDL_Event event2;
 
@@ -376,7 +376,7 @@ ScreenManager::process_events()
 
       case SDL_EVENT_FINGER_UP:
       {
-        SDL_Event old_event = event;
+        SDL_Event const old_event = event;
 
         // Always generate mouse up event, because the finger can generate mouse click
         // and then move to the screen button, and the mouse button will stay pressed
@@ -399,7 +399,7 @@ ScreenManager::process_events()
 
       case SDL_EVENT_FINGER_MOTION:
       {
-        SDL_Event old_event = event;
+        SDL_Event const old_event = event;
 
         if (m_mobile_controller.process_finger_motion_event(event.tfinger))
           break; // Event was processed by touch controls, do not generate mouse event
@@ -613,7 +613,7 @@ void ScreenManager::loop_iter()
   g_real_time += 1e-9f * static_cast<float>(nsecs);
   last_time = now;
 
-  float max_elapsed_time = 4 * seconds_per_step;
+  float const max_elapsed_time = 4 * seconds_per_step;
   if (elapsed_time > max_elapsed_time) {
     // when the game loads up or levels are switched the elapsed_ticks grows
     // extremely large, so we just reduce those large time jumps to what can
@@ -621,7 +621,7 @@ void ScreenManager::loop_iter()
     elapsed_time = max_elapsed_time;
   }
 
-  bool always_draw = g_debug.draw_redundant_frames || g_config->frame_prediction;
+  bool const always_draw = g_debug.draw_redundant_frames || g_config->frame_prediction;
 
   if (elapsed_time < seconds_per_step && !always_draw) {
     // Sleep a bit because not enough time has passed since the previous
@@ -634,16 +634,16 @@ void ScreenManager::loop_iter()
   Integration::update_status_all(m_screen_stack.back()->get_status());
   Integration::update_all();
 
-  float speed_multiplier = g_debug.get_game_speed_multiplier();
+  float const speed_multiplier = g_debug.get_game_speed_multiplier();
   int steps = static_cast<int>(std::floor(elapsed_time / seconds_per_step));
 
   // Do not calculate more than a few steps at once
   // The maximum number of steps executed before drawing a frame is
   // adjusted to the current average frame rate
-  float fps = m_fps_statistics->get_fps();
+  float const fps = m_fps_statistics->get_fps();
   if (fps != 0) {
     // Skip if fps not ready yet (during first 0.5 seconds of startup).
-    float seconds_per_frame = 1.0f / fps;
+    float const seconds_per_frame = 1.0f / fps;
     int max_steps_per_frame = static_cast<int>(
       ceilf(seconds_per_frame / seconds_per_step));
     if (max_steps_per_frame < 2)
@@ -665,7 +665,7 @@ void ScreenManager::loop_iter()
     // so that the game is deterministic.
     // In cases which don't affect regular gameplay, such as the
     // end sequence and debugging, dtime can be changed.
-    float dtime = seconds_per_step * m_speed * speed_multiplier;
+    float const dtime = seconds_per_step * m_speed * speed_multiplier;
     g_game_time += dtime;
     process_events();
     update_gamelogic(dtime);
@@ -675,7 +675,7 @@ void ScreenManager::loop_iter()
   // When the game is laggy, real time may be >1 step after the game time
   // To avoid predicting positions too far ahead, when using frame prediction,
   // limit the draw time offset to at most one step.
-  float time_offset = m_speed * speed_multiplier * std::min(elapsed_time, seconds_per_step);
+  float const time_offset = m_speed * speed_multiplier * std::min(elapsed_time, seconds_per_step);
 
   if (((steps > 0 && !m_screen_stack.empty())
       || always_draw) && m_actions.empty() || m_screen_fade) {

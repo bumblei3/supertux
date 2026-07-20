@@ -145,7 +145,7 @@ Sprite::update()
     return;
   }
 
-  float frame_inc = m_last_ticks > 0.f ? m_action->fps * (g_game_time - m_last_ticks) : 0.f;
+  float const frame_inc = m_last_ticks > 0.f ? m_action->fps * (g_game_time - m_last_ticks) : 0.f;
   m_last_ticks = g_game_time;
 
   if (m_is_paused) return;

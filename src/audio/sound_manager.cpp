@@ -90,11 +90,11 @@ SoundManager::~SoundManager()
 ALuint
 SoundManager::load_file_into_buffer(SoundFile& file)
 {
-  ALenum format = get_sample_format(file);
+  ALenum const format = get_sample_format(file);
   ALuint buffer;
   alGenBuffers(1, &buffer);
   check_al_error("Couldn't create audio buffer: ");
-  std::unique_ptr<char[]> samples(new char[file.m_size]);
+  std::unique_ptr<char[]> const samples(new char[file.m_size]);
   file.read(samples.get(), file.m_size);
   log_debug << "buffer: " << buffer << "\n"
             << "format: " << format << "\n"
@@ -178,7 +178,7 @@ SoundManager::preload(const std::string& filename)
     if (file->m_size >= 100000)
       return;
 
-    ALuint buffer = load_file_into_buffer(*file);
+    ALuint const buffer = load_file_into_buffer(*file);
     m_buffers.insert(std::make_pair(filename, buffer));
   } catch(std::exception& e) {
     log_warning << "Error while preloading sound file: " << e.what() << std::endl;
@@ -413,7 +413,7 @@ SoundManager::set_listener_position(const Vector& pos)
 {
   static Uint32 lastticks = SDL_GetTicks();
 
-  Uint32 current_ticks = SDL_GetTicks();
+  Uint32 const current_ticks = SDL_GetTicks();
   if (current_ticks - lastticks < 300)
     return;
   lastticks = current_ticks;
@@ -438,7 +438,7 @@ void
 SoundManager::update()
 {
   static Uint32 lasttime = SDL_GetTicks();
-  Uint32 now = SDL_GetTicks();
+  Uint32 const now = SDL_GetTicks();
 
   if (now - lasttime < 300)
     return;
@@ -511,7 +511,7 @@ SoundManager::print_openal_version()
 void
 SoundManager::check_alc_error(const char* message) const
 {
-  int err = alcGetError(m_device);
+  int const err = alcGetError(m_device);
   if (err != ALC_NO_ERROR) {
     std::stringstream msg;
     msg << message << alcGetString(m_device, err);
@@ -522,7 +522,7 @@ SoundManager::check_alc_error(const char* message) const
 void
 SoundManager::check_al_error(const char* message)
 {
-  int err = alGetError();
+  int const err = alGetError();
   if (err != AL_NO_ERROR) {
     std::stringstream msg;
     msg << message << alGetString(err);

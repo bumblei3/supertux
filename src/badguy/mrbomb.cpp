@@ -282,7 +282,7 @@ MrBomb::ungrab(MovingObject& object, Direction dir_)
     // Handle swimming state of the player.
     if (player && (player->is_swimming() || player->is_water_jumping()))
     {
-      float swimangle = player->get_swimming_angle();
+      float const swimangle = player->get_swimming_angle();
       m_physic.set_velocity(Vector(std::cos(swimangle) * 40.f, std::sin(swimangle) * 40.f) +
         player->get_physic().get_velocity());
     }

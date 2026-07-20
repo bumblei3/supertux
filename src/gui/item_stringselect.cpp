@@ -53,8 +53,8 @@ ItemStringSelect::~ItemStringSelect()
 void
 ItemStringSelect::draw(DrawingContext& context, const Vector& pos, int menu_width, bool active)
 {
-  float roff = static_cast<float>(Resources::arrow_left->get_width()) * 1.0f;
-  float sel_width = Resources::normal_font->get_text_width(m_items[*m_selected]);
+  float const roff = static_cast<float>(Resources::arrow_left->get_width()) * 1.0f;
+  float const sel_width = Resources::normal_font->get_text_width(m_items[*m_selected]);
   // Draw left side
   context.color().draw_text(Resources::normal_font, get_text(),
                               Vector(pos.x + 16.0f,

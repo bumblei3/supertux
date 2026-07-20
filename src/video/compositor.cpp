@@ -107,7 +107,7 @@ Compositor::render()
       const TexturePtr& texture = lightmap.get_texture();
       if (texture)
       {
-        DrawingTransform transform(m_video_system.get_viewport());
+        DrawingTransform const transform(m_video_system.get_viewport());
         DrawingRequest request(transform);
         auto&& req_var = std::get<TextureRequest>(request.request);
 

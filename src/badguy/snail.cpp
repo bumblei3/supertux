@@ -441,7 +441,7 @@ Snail::ungrab(MovingObject& object, Direction dir_)
       }
       else
       {
-        float swimangle = player->get_swimming_angle();
+        float const swimangle = player->get_swimming_angle();
         m_col.m_bbox.move(Vector(std::cos(swimangle) * 48.f, std::sin(swimangle) * 48.f));
         be_kicked(false);
         m_physic.set_velocity(SNAIL_KICK_SPEED * 1.5f * Vector(std::cos(swimangle), std::sin(swimangle)));

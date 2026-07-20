@@ -63,14 +63,14 @@ LevelTime::update(float dt_sec)
 {
   if (!running) return;
 
-  int players_alive = Sector::current() ? Sector::current()->get_object_count<Player>([](const Player& p) {
+  int const players_alive = Sector::current() ? Sector::current()->get_object_count<Player>([](const Player& p) {
     return p.is_active();
   }) : 0;
 
   if (!players_alive)
     return;
 
-  int prev_time = static_cast<int>(floorf(time_left*5));
+  int const prev_time = static_cast<int>(floorf(time_left*5));
   time_left -= dt_sec;
   if (time_left <= 0) {
     // Needed to avoid charging a player coins if they had a checkpoint
@@ -115,11 +115,11 @@ LevelTime::draw(DrawingContext& context)
   if ((time_left > TIME_WARNING) || (int(g_game_time * 2.5f) % 2)) {
     std::stringstream ss;
     ss << int(time_left);
-    std::string time_text = ss.str();
+    std::string const time_text = ss.str();
 
     if (time_surface)
     {
-      float all_width = static_cast<float>(time_surface->get_width()) + Resources::normal_font->get_text_width(time_text)
+      float const all_width = static_cast<float>(time_surface->get_width()) + Resources::normal_font->get_text_width(time_text)
           + (g_config->show_game_timer ? context.get_width() * 0.10f * 2 : 0.f);
       context.color().draw_surface(time_surface,
                                    Vector((context.get_width() - all_width) / 2.0f,

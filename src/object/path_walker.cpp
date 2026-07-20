@@ -121,14 +121,14 @@ PathWalker::get_pos(const Sizef& object_size, const Handle& handle) const
                           getEasingByName(current_node->easing) :
                           getEasingByName(get_reverse_easing(next_node->easing));
 
-  float progress = static_cast<float>(easeFunc(static_cast<double>(m_node_time)));
+  float const progress = static_cast<float>(easeFunc(static_cast<double>(m_node_time)));
 
   Vector p1 = current_node->position,
          p2 = m_walking_speed > 0 ? current_node->bezier_after : current_node->bezier_before,
          p3 = m_walking_speed > 0 ? next_node->bezier_before : next_node->bezier_after,
          p4 = next_node->position;
 
-  Vector position = path->m_adapt_speed ?
+  Vector const position = path->m_adapt_speed ?
                           Bezier::get_point(p1, p2, p3, p4, progress) :
                           Bezier::get_point_by_length(p1, p2, p3, p4, progress);
 
@@ -149,7 +149,7 @@ PathWalker::goto_node(int node_idx)
 void
 PathWalker::jump_to_node(int node_idx, bool instantaneous)
 {
-  Path* path = get_path();
+  Path const* path = get_path();
   if (!path) return;
 
   if (node_idx >= static_cast<int>(path->get_nodes().size())) return;
@@ -182,7 +182,7 @@ PathWalker::stop_moving()
 void
 PathWalker::advance_node()
 {
-  Path* path = get_path();
+  Path const* path = get_path();
   if (!path) return;
   if (!path->is_valid()) return;
 
@@ -221,7 +221,7 @@ PathWalker::advance_node()
 void
 PathWalker::goback_node()
 {
-  Path* path = get_path();
+  Path const* path = get_path();
   if (!path) return;
   if (!path->is_valid()) return;
 

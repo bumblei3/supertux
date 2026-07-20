@@ -27,18 +27,18 @@ OggSoundFile::OggSoundFile(PHYSFS_File* file_, double loop_begin_, double loop_a
   m_loop_begin(),
   m_loop_at()
 {
-  ov_callbacks callbacks = { cb_read, cb_seek, cb_close, cb_tell };
+  ov_callbacks const callbacks = { cb_read, cb_seek, cb_close, cb_tell };
   ov_open_callbacks(m_file, &m_vorbis_file, nullptr, 0, callbacks);
 
-  vorbis_info* vi = ov_info(&m_vorbis_file, -1);
+  vorbis_info const* vi = ov_info(&m_vorbis_file, -1);
 
   m_channels = vi->channels;
   m_rate = static_cast<int>(vi->rate);
   m_bits_per_sample = 16;
   m_size = static_cast<size_t> (ov_pcm_total(&m_vorbis_file, -1) * 2);
 
-  double samples_begin = loop_begin_ * m_rate;
-  double sample_loop   = loop_at_ * m_rate;
+  double const samples_begin = loop_begin_ * m_rate;
+  double const sample_loop   = loop_at_ * m_rate;
 
   m_loop_begin = static_cast<ogg_int64_t>(samples_begin);
   if (loop_begin_ < 0) {
@@ -64,15 +64,15 @@ OggSoundFile::read(void* _buffer, size_t buffer_size)
 #ifdef WORDS_BIGENDIAN
     int bigendian = 1;
 #else
-    int bigendian = 0;
+    int const bigendian = 0;
 #endif
 
     size_t bytes_to_read    = buffer_size;
     if (m_loop_at > 0) {
-      size_t      bytes_per_sample       = 2;
-      ogg_int64_t time                   = ov_pcm_tell(&m_vorbis_file);
-      ogg_int64_t samples_left_till_loop = m_loop_at - time;
-      ogg_int64_t bytes_left_till_loop = samples_left_till_loop * bytes_per_sample;
+      size_t      const bytes_per_sample       = 2;
+      ogg_int64_t const time                   = ov_pcm_tell(&m_vorbis_file);
+      ogg_int64_t const samples_left_till_loop = m_loop_at - time;
+      ogg_int64_t const bytes_left_till_loop = samples_left_till_loop * bytes_per_sample;
       if (bytes_left_till_loop <= 4)
         break;
 
@@ -81,7 +81,7 @@ OggSoundFile::read(void* _buffer, size_t buffer_size)
       }
     }
 
-    long bytesRead
+    long const bytesRead
       = ov_read(&m_vorbis_file, buffer, static_cast<int>(bytes_to_read), bigendian,
                 2, 1, &section);
     if (bytesRead == 0) {
@@ -106,7 +106,7 @@ OggSoundFile::cb_read(void* ptr, size_t size, size_t nmemb, void* source)
 {
   auto file = reinterpret_cast<PHYSFS_file*> (source);
 
-  PHYSFS_sint64 res
+  PHYSFS_sint64 const res
     = PHYSFS_readBytes(file, ptr, static_cast<PHYSFS_uint32> (size) * static_cast<PHYSFS_uint32> (nmemb));
   if (res <= 0)
     return 0;

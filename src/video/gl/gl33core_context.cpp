@@ -65,7 +65,7 @@ GL33CoreContext::bind()
   m_program->bind();
   m_vertex_arrays->bind();
 
-  GLTextureRenderer* back_renderer = static_cast<GLTextureRenderer*>(m_video_system.get_back_renderer());
+  GLTextureRenderer const* back_renderer = static_cast<GLTextureRenderer*>(m_video_system.get_back_renderer());
 
   GLTexture* texture;
   if (!back_renderer || back_renderer->is_rendering() || !back_renderer->get_texture())
@@ -188,7 +188,7 @@ GL33CoreContext::bind_texture(const Texture& texture, const Texture* displacemen
 {
   assert_gl();
 
-  GLTextureRenderer* back_renderer = static_cast<GLTextureRenderer*>(m_video_system.get_back_renderer());
+  GLTextureRenderer const* back_renderer = static_cast<GLTextureRenderer*>(m_video_system.get_back_renderer());
   
   /* if there's no back renderer (i.e. fancy fx disabled) then don't
      bother with displacement textures */

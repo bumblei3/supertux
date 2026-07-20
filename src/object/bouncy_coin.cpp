@@ -40,7 +40,7 @@ BouncyCoin::BouncyCoin(const Vector& pos, bool emerge, const std::string& sprite
 void
 BouncyCoin::update(float dt_sec)
 {
-  float dist = -200 * dt_sec;
+  float const dist = -200 * dt_sec;
   position.y += dist;
   emerge_distance += dist;
 
@@ -51,10 +51,10 @@ BouncyCoin::update(float dt_sec)
 void
 BouncyCoin::draw(DrawingContext& context)
 {
-  float time_left = timer.get_timeleft();
-  bool fading = time_left < FADE_TIME;
+  float const time_left = timer.get_timeleft();
+  bool const fading = time_left < FADE_TIME;
   if (fading) {
-    float alpha = time_left/FADE_TIME;
+    float const alpha = time_left/FADE_TIME;
     context.push_transform();
     context.set_alpha(alpha);
   }
