@@ -127,6 +127,8 @@ EditorSectorsMenu::menu_action(MenuItem& item)
       case -4:
         MenuManager::instance().clear_menu_stack();
         break;
+      default:
+        break;
     }
   }
 }

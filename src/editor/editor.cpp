@@ -1250,6 +1250,8 @@ Editor::event(const SDL_Event& ev)
         case SDL_BUTTON_X2:
           redo();
           break;
+        default:
+          break;
       }
     } else {
       // If properties sidebar controls are active and the mouse is hovering over the sidebar,

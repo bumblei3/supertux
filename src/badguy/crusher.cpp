@@ -873,6 +873,8 @@ Crusher::on_type_change(int old_type)
     case 5:
       m_ic_type = CORRUPTED;
       break;
+    default:
+      break;
   }
 
   MovingSprite::on_type_change(old_type);

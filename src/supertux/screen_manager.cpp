@@ -398,6 +398,7 @@ ScreenManager::process_events()
       }
 
       case SDL_EVENT_FINGER_MOTION:
+      {
         SDL_Event old_event = event;
 
         if (m_mobile_controller.process_finger_motion_event(event.tfinger))
@@ -409,6 +410,9 @@ ScreenManager::process_events()
         event.motion.xrel = Sint32(old_event.tfinger.dx * window_width);
         event.motion.yrel = Sint32(old_event.tfinger.dy * window_height);
         MouseCursor::current()->set_pos(event.motion.x, event.motion.y);
+        break;
+      }
+      default:
         break;
     }
     m_input_manager.process_event(event);
@@ -505,6 +509,8 @@ ScreenManager::process_events()
         {
           session->toggle_pause();
         }
+        break;
+      default:
         break;
     }
   }

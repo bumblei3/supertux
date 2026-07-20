@@ -152,6 +152,8 @@ WorldmapCheatMenu::menu_action(MenuItem& item)
       worldmap_sector->move_to_spawnpoint(DEFAULT_SPAWNPOINT_NAME);
       MenuManager::instance().clear_menu_stack();
       break;
+    default:
+      break;
   }
 }
 

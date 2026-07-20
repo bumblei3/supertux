@@ -156,5 +156,7 @@ MainMenu::menu_action(MenuItem& item)
       SoundManager::current()->stop_music(0.25);
       break;
     }
+    default:
+      break;
   }
 }

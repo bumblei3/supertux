@@ -203,6 +203,8 @@ Tile::draw_debug(Canvas& canvas, const Vector& pos, int z_pos, const Color& colo
         canvas.draw_filled_rect(Rectf(pos.x, pos.y, pos.x + 16.0f, pos.y + 32.0f), color, z_pos);
         canvas.draw_triangle({pos.x + 16.0f, pos.y}, {pos.x + 32.0f, pos.y}, {pos.x + 16.0f, pos.y + 32.0f}, color, z_pos);
         break;
+      default:
+        break;
     }
   }
 }
@@ -290,6 +292,8 @@ Tile::check_movement_unisolid (const Vector& movement) const
       mv_x *= (-1.0);           /* ! /  */
       mv_y *= (-1.0);           /* !/   */
       break;                    /* '    */
+    default:
+      break;
   }
 
   // Handle the easy cases first
@@ -445,6 +449,8 @@ Tile::check_position_unisolid (const Rectf& obj_bbox,
       obj_x = obj_bbox.get_right();
       obj_y = obj_bbox.get_top();
       break;
+    default:
+      break;
   }
 
   // Adapt the delta_x, delta_y and the gradient for the 26.6 deg and
@@ -468,6 +474,8 @@ Tile::check_position_unisolid (const Rectf& obj_bbox,
       delta_x *= .89442719099991587856f; // 2/sqrt(5)
       delta_y *= .44721359549995793928f; // 1/sqrt(5)
       gradient *= 2.f;
+      break;
+    default:
       break;
   }
 

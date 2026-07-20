@@ -422,6 +422,8 @@ Tarantula::get_default_sprite_name() const
   {
     case TARANTULA: return "images/creatures/tarantula/tarantula.sprite";
     case SPIDERMITE: return "images/creatures/spidermite/spidermite.sprite";
+    default:
+      break;
   }
   return "images/creatures/tarantula/tarantula.sprite";
 }

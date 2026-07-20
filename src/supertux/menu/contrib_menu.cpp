@@ -129,5 +129,7 @@ ContribMenu::menu_action(MenuItem& item)
     MenuManager::instance().push_menu(std::move(contrib_menu));
     break;
   }
+    default:
+      break;
   }
 }
