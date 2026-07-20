@@ -370,13 +370,13 @@ Config::load()
   if (config_mapping.get("control", config_control_mapping) && config_control_mapping)
   {
     std::optional<ReaderMapping> keymap_mapping;
-    if (config_control_mapping && config_control_mapping->get("keymap", keymap_mapping) && keymap_mapping)
+    if (config_control_mapping->get("keymap", keymap_mapping) && keymap_mapping)
     {
       keyboard_config.read(*keymap_mapping);
     }
 
     std::optional<ReaderMapping> joystick_mapping;
-    if (config_control_mapping && config_control_mapping->get("joystick", joystick_mapping) && joystick_mapping)
+    if (config_control_mapping->get("joystick", joystick_mapping) && joystick_mapping)
     {
       joystick_config.read(*joystick_mapping);
     }

@@ -143,13 +143,12 @@ ControlScrollbar::on_mouse_wheel(const SDL_MouseWheelEvent& wheel)
       The control's parent manager should check conditions, if needed,
       before calling this function. */
 
-  scroll(static_cast<float>(g_config->precise_scrolling ? -wheel.y :
 #if SDL_VERSION_ATLEAST(3, 2, 12)
-    -wheel.integer_y
+  const float wheel_delta = g_config->precise_scrolling ? -wheel.y : -wheel.integer_y;
 #else
-    -wheel.y
+  const float wheel_delta = -wheel.y;
 #endif
-  ));
+  scroll(static_cast<float>(wheel_delta));
   return true;
 }
 
