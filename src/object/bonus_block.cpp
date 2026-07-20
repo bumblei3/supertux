@@ -159,10 +159,9 @@ BonusBlock::add_object(std::unique_ptr<GameObject> object)
 void
 BonusBlock::set_object(std::unique_ptr<GameObject> object)
 {
-  m_object = object.get();
-
   m_objects.clear();
   m_objects.push_back(std::move(object));
+  m_object = m_objects.back().get();
 }
 
 GameObjectTypes

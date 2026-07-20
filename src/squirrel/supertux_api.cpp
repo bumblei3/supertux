@@ -486,8 +486,8 @@ static void grease()
 {
   if (!Sector::current()) return;
   // FIXME: This only has effect on the first player.
-  ::Player& tux = *(::Sector::get().get_players()[0]); // scripting::Player != ::Player
-  tux.get_physic().set_velocity_x(tux.get_physic().get_velocity_x()*3);
+  ::Player* tux = ::Sector::get().get_players()[0]; // scripting::Player != ::Player
+  tux->get_physic().set_velocity_x(tux->get_physic().get_velocity_x()*3);
 }
 /**
  * @scripting
@@ -497,8 +497,8 @@ static void invincible()
 {
   if (!Sector::current()) return;
   // FIXME: This only has effect on the first player.
-  ::Player& tux = *(::Sector::get().get_players()[0]);
-  tux.m_invincible_timer.start(10000);
+  ::Player* tux = ::Sector::get().get_players()[0];
+  tux->m_invincible_timer.start(10000);
 }
 /**
  * @scripting
@@ -508,8 +508,8 @@ static void ghost()
 {
   if (!Sector::current()) return;
   // FIXME: This only has effect on the first player.
-  ::Player& tux = *(::Sector::get().get_players()[0]);
-  tux.set_ghost_mode(true);
+  ::Player* tux = ::Sector::get().get_players()[0];
+  tux->set_ghost_mode(true);
 }
 /**
  * @scripting
@@ -519,9 +519,9 @@ static void mortal()
 {
   if (!Sector::current()) return;
   // FIXME: This only has effect on the first player.
-  ::Player& tux = *(::Sector::get().get_players()[0]);
-  tux.m_invincible_timer.stop();
-  tux.set_ghost_mode(false);
+  ::Player* tux = ::Sector::get().get_players()[0];
+  tux->m_invincible_timer.stop();
+  tux->set_ghost_mode(false);
 }
 /**
  * @scripting
@@ -545,10 +545,10 @@ static void gotoend()
 {
   if (!Sector::current()) return;
   // FIXME: This only has effect on the first player.
-  ::Player& tux = *(::Sector::get().get_players()[0]);
-  tux.set_pos(Vector((::Sector::get().get_width()) - (static_cast<float>(SCREEN_WIDTH) * 2.0f), 0));
+  ::Player* tux = ::Sector::get().get_players()[0];
+  tux->set_pos(Vector((::Sector::get().get_width()) - (static_cast<float>(SCREEN_WIDTH) * 2.0f), 0));
   ::Sector::get().get_camera().reset(
-    Vector(tux.get_pos().x, tux.get_pos().y));
+    Vector(tux->get_pos().x, tux->get_pos().y));
 }
 /**
  * @scripting
@@ -560,10 +560,10 @@ static void warp(float offset_x, float offset_y)
 {
   if (!Sector::current()) return;
   // FIXME: This only has effect on the first player.
-  ::Player& tux = *(::Sector::get().get_players()[0]);
-  tux.set_pos(Vector(tux.get_pos().x + (offset_x*32), tux.get_pos().y - (offset_y*32)));
+  ::Player* tux = ::Sector::get().get_players()[0];
+  tux->set_pos(Vector(tux->get_pos().x + (offset_x*32), tux->get_pos().y - (offset_y*32)));
   ::Sector::get().get_camera().reset(
-    Vector(tux.get_pos().x, tux.get_pos().y));
+    Vector(tux->get_pos().x, tux->get_pos().y));
 }
 
 /**
