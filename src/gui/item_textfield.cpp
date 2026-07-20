@@ -39,7 +39,7 @@ ItemTextField::ItemTextField(const std::string& text_, std::string* input_, int 
 void
 ItemTextField::draw(DrawingContext& context, const Vector& pos, int menu_width, bool active)
 {
-  const int index = active ? static_cast<int>(input->size()) - m_cursor_left_offset : -1;
+  const int index = std::max(0, active ? static_cast<int>(input->size()) - m_cursor_left_offset : 0);
   const std::string input_part_1 = active ? input->substr(0, index) : *input;
   const std::string input_part_2 = active ? input->substr(index) : "";
   const float input_part_2_width = Resources::normal_font->get_text_width(input_part_2);

@@ -629,7 +629,7 @@ private:
 
   bool m_should_fancy_idle;
   bool m_fancy_idle_active;
-  bool m_reset_action; /**< Attempts to reset tux back to the initial idle state */
+  bool m_reset_action = false; /**< Attempts to reset tux back to the initial idle state */
 
   Vector m_floor_normal;
 

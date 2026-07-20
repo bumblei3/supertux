@@ -57,8 +57,8 @@ private:
   SpritePtr sprite;
   SpritePtr lightsprite;
   BonusType type;
-  float angle;
-  float particle_time;
+  float angle = 0.0f;
+  float particle_time = 0.0f;
   /** If true, then gravity of bullet is affected by water (but not movement) */
   bool m_waterlogged;
 

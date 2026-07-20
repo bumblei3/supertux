@@ -136,8 +136,8 @@ public:
 
   std::unique_ptr<BaseObjectOption>& add_worldmap(const std::string& text, std::string* value_ptr, const std::string& key = {},
                     unsigned int flags = 0);
-  std::unique_ptr<BaseObjectOption>& add_level(const std::string& text, std::string* value_ptr, const std::string& basedir,
-                 const std::string& key = {}, unsigned int flags = 0);
+  std::unique_ptr<BaseObjectOption>& add_level(const std::string& text, std::string* value_ptr, const std::string& key = {},
+                 const std::string& basedir = {}, unsigned int flags = 0);
   std::unique_ptr<BaseObjectOption>& add_tiles(const std::string& text, TileMap* value_ptr, const std::string& key = {},
                  unsigned int flags = 0);
   std::unique_ptr<BaseObjectOption>& add_path(const std::string& text, Path* path, const std::string& key = {},

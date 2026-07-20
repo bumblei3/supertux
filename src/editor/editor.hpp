@@ -253,7 +253,7 @@ public:
 
   exit_cb_t m_on_exit_cb;
 
-  bool m_tilebox_something_selected;
+  bool m_tilebox_something_selected = false;
 
 private:
   Sector* m_sector;

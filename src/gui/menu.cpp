@@ -588,8 +588,8 @@ Menu::set_item(int index)
   // Attempt to skip all skippable items
   do
   {
-  	if (m_active_item > m_items.size())
-	  break;
+  	if (m_active_item >= m_items.size())
+  	  break;
 
     if (m_items[m_active_item]->skippable())
 	{

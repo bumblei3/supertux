@@ -68,7 +68,7 @@ private:
 
 private:
   float m_catch_pos;
-  float m_target_y;
+  float m_target_y = 0.0f;
   Timer m_timer;
   ZeeklingState m_state;
 

@@ -347,7 +347,7 @@ private:
   CollisionGroup m_colgroup_active;
 
   /** The alpha value at the time the Badguy begins to fadeout */
-  float m_alpha_before_fadeout;
+  float m_alpha_before_fadeout = 0.0f;
 
   Color m_flame_color;
   Timer m_flame_timer;
