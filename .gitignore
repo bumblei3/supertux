@@ -11,6 +11,10 @@ build-eng/
 build-sdl3/
 build-sdl3-asan/
 build-discord/
+build-dyntest/
+build-san-check/
+build-san-writer/
+build-san-writer2/
 **/__pycache__/
 *.pyc
 **/CMakeFiles/
