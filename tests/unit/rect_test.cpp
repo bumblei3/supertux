@@ -81,8 +81,8 @@ TEST(RectTest, SDL)
 TEST(RectTest, from_rectf_and_stream)
 {
   // Rect constructed from a Rectf truncates the fractional coordinates.
-  Rectf rf(10.5f, 20.5f, 110.5f, 220.5f);
-  Rect r(rf);
+  const Rectf rf(10.5f, 20.5f, 110.5f, 220.5f);
+  const Rect r(rf);
   ASSERT_EQ(r, Rect(10, 20, 110, 220));
 
   // Round-trip back to a Rectf preserves the truncated integer bounds.

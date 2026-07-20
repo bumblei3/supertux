@@ -84,15 +84,15 @@ TEST(RectfTest, set_p2)
 TEST(RectfTest, from_rect_and_stream)
 {
   // Rectf constructed from an integer Rect promotes coordinates to floats.
-  Rect r(10, 20, 110, 220);
-  Rectf rf(r);
+  const Rect r(10, 20, 110, 220);
+  const Rectf rf(r);
   ASSERT_FLOAT_EQ(rf.get_left(), 10.0f);
   ASSERT_FLOAT_EQ(rf.get_top(), 20.0f);
   ASSERT_FLOAT_EQ(rf.get_right(), 110.0f);
   ASSERT_FLOAT_EQ(rf.get_bottom(), 220.0f);
 
   // Round-trip back to a Rect truncates the (integer) bounds.
-  Rect back = rf.to_rect();
+  const Rect back = rf.to_rect();
   ASSERT_EQ(back, Rect(10, 20, 110, 220));
 
   // operator<< must render a parseable, correct representation.
