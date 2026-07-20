@@ -46,7 +46,7 @@ PathObject::init_path(const ReaderMapping& mapping, bool running_default)
   mapping.get("running", running);
 
   std::optional<ReaderMapping> handle_map;
-  if (mapping.get("handle", handle_map))
+  if (mapping.get("handle", handle_map) && handle_map)
   {
     handle_map->get("scale_x", m_path_handle.m_scalar_pos.x);
     handle_map->get("scale_y", m_path_handle.m_scalar_pos.y);
@@ -56,7 +56,7 @@ PathObject::init_path(const ReaderMapping& mapping, bool running_default)
 
   std::string path_ref;
   std::optional<ReaderMapping> path_mapping;
-  if (mapping.get("path", path_mapping))
+  if (mapping.get("path", path_mapping) && path_mapping)
   {
     auto& path_gameobject = d_gameobject_manager->add<PathGameObject>(*path_mapping, true);
     m_path_uid = path_gameobject.get_uid();

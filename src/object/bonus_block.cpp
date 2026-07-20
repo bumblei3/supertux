@@ -105,7 +105,7 @@ BonusBlock::BonusBlock(const ReaderMapping& mapping) :
     if (m_contents == Content::CUSTOM)
     {
       std::optional<ReaderCollection> content_collection;
-      if (mapping.get("custom-contents", content_collection))
+      if (mapping.get("custom-contents", content_collection) && content_collection)
       {
         const auto& object_specs = content_collection->get_objects();
         if (!object_specs.empty())

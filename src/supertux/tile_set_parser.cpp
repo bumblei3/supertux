@@ -287,13 +287,13 @@ TileSetParser::parse_tile(const ReaderMapping& reader)
 
   std::vector<SurfacePtr> editor_surfaces;
   std::optional<ReaderMapping> editor_images_mapping;
-  if (reader.get("editor-images", editor_images_mapping)) {
+  if (reader.get("editor-images", editor_images_mapping) && editor_images_mapping) {
     editor_surfaces = parse_imagespecs(*editor_images_mapping);
   }
 
   std::vector<SurfacePtr> surfaces;
   std::optional<ReaderMapping> images_mapping;
-  if (reader.get("images", images_mapping)) {
+  if (reader.get("images", images_mapping) && images_mapping) {
     surfaces = parse_imagespecs(*images_mapping);
   }
 

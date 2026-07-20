@@ -84,7 +84,7 @@ PathGameObject::PathGameObject(const ReaderMapping& mapping, bool backward_compa
   else
   {
     std::optional<ReaderMapping> path_mapping;
-    if (mapping.get("path", path_mapping))
+    if (mapping.get("path", path_mapping) && path_mapping)
     {
       m_path->read(*path_mapping);
     }

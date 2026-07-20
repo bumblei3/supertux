@@ -60,7 +60,7 @@ GameObject::GameObject(GameObject* obj) :
   m_version(obj->m_version),
   m_uid(obj->m_uid),
   m_scheduled_for_removal(obj->m_scheduled_for_removal),
-  m_last_state(&*obj->m_last_state),
+  m_last_state(obj->m_last_state ? &*obj->m_last_state : nullptr),
   m_components(),
   m_remove_listeners(obj->m_remove_listeners)
 {

@@ -242,7 +242,9 @@ Sprite::get_action_surfaces(const std::string& name) const
 const SurfacePtr
 Sprite::get_current_action_surface() const
 {
-  return get_action_surfaces(get_action()).value()[get_current_frame()];
+  auto surfaces = get_action_surfaces(get_action());
+  if (!surfaces) return {};
+  return (*surfaces)[get_current_frame()];
 }
 
 Rectf

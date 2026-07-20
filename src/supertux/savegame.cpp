@@ -189,7 +189,7 @@ Savegame::load(bool base_data)
         {
           /** Load Tux */
           std::optional<ReaderMapping> tux;
-          if (!mapping.get("tux", tux))
+          if (!mapping.get("tux", tux) || !tux)
           {
             throw std::runtime_error("No tux section in savegame");
           }
@@ -200,7 +200,7 @@ Savegame::load(bool base_data)
 
           /** Load "state" table */
           std::optional<ReaderMapping> state;
-          if (!mapping.get("state", state))
+          if (!mapping.get("state", state) || !state)
             throw std::runtime_error("No state section in savegame");
           else
             load_squirrel_table(m_state_table, *state);

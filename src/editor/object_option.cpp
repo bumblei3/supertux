@@ -730,7 +730,7 @@ void
 ObjectSelectObjectOption::parse(const ReaderMapping& reader)
 {
   std::optional<ReaderMapping> objects_mapping;
-  if (reader.get(get_key().c_str(), objects_mapping))
+  if (reader.get(get_key().c_str(), objects_mapping) && objects_mapping)
   {
     m_value_pointer->clear();
 
@@ -929,7 +929,7 @@ void
 PathObjectOption::parse(const ReaderMapping& reader)
 {
   std::optional<ReaderMapping> path_mapping;
-  if (reader.get("path", path_mapping))
+  if (reader.get("path", path_mapping) && path_mapping)
     m_value_pointer->read(*path_mapping);
 }
 
@@ -1054,7 +1054,7 @@ void
 PathHandleOption::parse(const ReaderMapping& reader)
 {
   std::optional<ReaderMapping> handle_mapping;
-  if (reader.get(get_key().c_str(), handle_mapping))
+  if (reader.get(get_key().c_str(), handle_mapping) && handle_mapping)
   {
     handle_mapping->get("scale_x", m_target.m_scalar_pos.x);
     handle_mapping->get("scale_y", m_target.m_scalar_pos.y);

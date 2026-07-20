@@ -742,10 +742,13 @@ OptionsMenu::menu_action(MenuItem& item)
           // do nothing, changes are only applied when toggling fullscreen mode
           g_config->fullscreen_size.width = width;
           g_config->fullscreen_size.height = height;
-          g_config->fullscreen_refresh_rate = mode->refresh_rate;
-          g_config->fullscreen_refresh_rate_numerator = mode->refresh_rate_numerator;
-          g_config->fullscreen_refresh_rate_denominator = mode->refresh_rate_denominator;
-          g_config->fullscreen_pixel_density = mode->pixel_density;
+          if (mode)
+          {
+            g_config->fullscreen_refresh_rate = mode->refresh_rate;
+            g_config->fullscreen_refresh_rate_numerator = mode->refresh_rate_numerator;
+            g_config->fullscreen_refresh_rate_denominator = mode->refresh_rate_denominator;
+            g_config->fullscreen_pixel_density = mode->pixel_density;
+          }
         }
         else if (sscanf(m_resolutions.list[m_resolutions.next].c_str(), "%dx%d",
                        &width, &height) == 2)
