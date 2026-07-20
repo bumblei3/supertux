@@ -32,6 +32,7 @@ Physic::reset()
 {
   ax = ay = vx = vy = 0;
   gravity_enabled_flag = true;
+  gravity_modifier = 1.0f;
 }
 
 void
