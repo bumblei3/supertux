@@ -54,6 +54,18 @@ make_unit_test(SizefTest SOURCE sizef_test.cpp
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
   EXTERNAL math/sizef.cpp)
 
+# Pure path-manipulation helpers. file_system.cpp references PhysFS only in
+# FileSystem::rename() (never called by this test), so a minimal link stub
+# (file_system_test_stub.cpp) provides the PHYSFS symbols without pulling in
+# the full library.
+make_unit_test(FileSystemTest SOURCE file_system_test.cpp file_system_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
+  EXTERNAL util/file_system.cpp video/color.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${CMAKE_BINARY_DIR})
+
 make_unit_test(RectfTest SOURCE rectf_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
