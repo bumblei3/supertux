@@ -511,18 +511,16 @@ Camera::update_scroll_normal(float dt_sec)
   if (dt_sec < CAMERA_EPSILON)
     return;
 
-  /****** Vertical Scrolling part. ******/
-  if (!player.is_dying())
-  {
-    m_cached_translation.y = math::clamp(m_cached_translation.y,
-                                         player_pos.y - m_screen_size.height * 0.67f,
-                                         player_pos.y - m_screen_size.height * 0.33f);
-  }
-
+  /****** Camera follow part (only while the player is alive). ******/
   m_translation.y = m_cached_translation.y;
 
   if (!player.is_dying())
   {
+    /****** Vertical Scrolling part. ******/
+    m_cached_translation.y = math::clamp(m_cached_translation.y,
+                                         player_pos.y - m_screen_size.height * 0.67f,
+                                         player_pos.y - m_screen_size.height * 0.33f);
+
     const float top_edge = m_screen_size.height * 0.3f;
     const float bottom_edge = m_screen_size.height * 0.7f;
     const float translation_compensation_y = player_pos.y - m_translation.y;
@@ -543,11 +541,8 @@ Camera::update_scroll_normal(float dt_sec)
     m_cached_translation.y = math::clamp(m_cached_translation.y,
                                          player_pos.y - m_screen_size.height * 0.7f,
                                          player_pos.y - m_screen_size.height * 0.3f);
-  }
 
-  /****** Horizontal scrolling part *******/
-  if (!player.is_dying())
-  {
+    /****** Horizontal scrolling part. ******/
     const float left_end = m_screen_size.width * 0.4f;
     const float right_end = m_screen_size.width * 0.6f;
 
@@ -563,12 +558,7 @@ Camera::update_scroll_normal(float dt_sec)
       m_lookahead_pos.x = right_end;
 
     m_cached_translation.x = player_pos.x - m_lookahead_pos.x;
-  }
 
-  m_translation.x = m_cached_translation.x;
-
-  if (!player.is_dying())
-  {
     const float left_edge = m_screen_size.width * 0.1666f;
     const float right_edge = m_screen_size.width * 0.8334f;
     const float translation_compensation_x = player_pos.x - m_translation.x;
@@ -589,6 +579,8 @@ Camera::update_scroll_normal(float dt_sec)
                                          player_pos.x - m_screen_size.width * 0.8334f,
                                          player_pos.x - m_screen_size.width * 0.1666f);
   }
+
+  m_translation.x = m_cached_translation.x;
 
   keep_in_bounds(m_translation);
   keep_in_bounds(m_cached_translation);
