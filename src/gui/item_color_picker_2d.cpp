@@ -16,6 +16,7 @@
 
 #include "gui/item_color_picker_2d.hpp"
 
+#include <cmath>
 #include <vector>
 
 #include "math/util.hpp"
@@ -40,12 +41,12 @@ get_pixel(const SDLSurfacePtr& surface, const Vector& pos)
   const SDL_PixelFormatDetails* format = SDL_GetPixelFormatDetails(surface->format);
   assert(format->bytes_per_pixel == 3);
   int x = math::clamp(
-    static_cast<int>(pos.x * static_cast<float>(surface->w - 1) + 0.5f),
+    static_cast<int>(std::lround(pos.x * static_cast<float>(surface->w - 1))),
     0,
     surface->w - 1
   );
   int y = math::clamp(
-    static_cast<int>(pos.y * static_cast<float>(surface->h - 1) + 0.5f),
+    static_cast<int>(std::lround(pos.y * static_cast<float>(surface->h - 1))),
     0,
     surface->h - 1
   );

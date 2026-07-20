@@ -36,7 +36,7 @@
 
 namespace {
 
-const std::string& get_fallback_path(const std::string& file_path);
+const std::string get_fallback_path(const std::string& file_path);
 
 ReaderDocument doc_from_file_fallback(std::string& filename)
 {
@@ -302,7 +302,7 @@ std::unordered_map<std::string, std::string> fallback_paths = {
   {"tropicalbreeze.ogg", "/music/tropical/tropicalbreeze.ogg"},
 };
 
-const std::string& get_fallback_path(const std::string& file_path)
+const std::string get_fallback_path(const std::string& file_path)
 {
   std::string file_name = FileSystem::basename(file_path);
   auto it = fallback_paths.find(file_name);

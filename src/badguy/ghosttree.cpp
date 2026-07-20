@@ -411,7 +411,7 @@ GhostTree::willowisp_suck_finished(TreeWillOWisp* willowisp)
       m_willowisps.erase(std::remove_if(m_willowisps.begin(), m_willowisps.end(),
                          [willowisp](const TreeWillOWisp* w) -> bool {
                            return w == willowisp;
-                         }));
+                         }), m_willowisps.end());
       break;
 
     default:
