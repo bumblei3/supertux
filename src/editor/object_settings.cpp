@@ -30,12 +30,12 @@
 
 ObjectSettings::ObjectSettings(std::string name, UID uid) :
   m_name(std::move(name)),
-  m_uid(std::move(uid)),
+  m_uid(uid),
   m_options()
 {
 }
 
-ObjectSettings::ObjectSettings(ObjectSettings&& other) :
+ObjectSettings::ObjectSettings(ObjectSettings&& other)  noexcept :
   m_name(other.m_name),
   m_uid(other.m_uid),
   m_options(std::move(other.m_options))
@@ -296,7 +296,7 @@ ObjectSettings::add_sprite(const std::string& text, std::string* value_ptr,
                            std::optional<std::string> default_value,
                            unsigned int flags)
 {
-  return add_file(text, value_ptr, key, std::move(default_value), {".jpg", ".png", ".surface", ".sprite"}, {}, true, flags);
+  return add_file(text, value_ptr, key, default_value, {".jpg", ".png", ".surface", ".sprite"}, {}, true, flags);
 }
 
 std::unique_ptr<BaseObjectOption>&
@@ -305,7 +305,7 @@ ObjectSettings::add_surface(const std::string& text, std::string* value_ptr,
                             std::optional<std::string> default_value,
                             unsigned int flags)
 {
-  return add_file(text, value_ptr, key, std::move(default_value), {".jpg", ".png", ".surface"}, {}, true, flags);
+  return add_file(text, value_ptr, key, default_value, {".jpg", ".png", ".surface"}, {}, true, flags);
 }
 
 std::unique_ptr<BaseObjectOption>&
@@ -314,7 +314,7 @@ ObjectSettings::add_sound(const std::string& text, std::string* value_ptr,
                           std::optional<std::string> default_value,
                           unsigned int flags)
 {
-  return add_file(text, value_ptr, key, std::move(default_value), {".wav", ".ogg"}, {}, true, flags);
+  return add_file(text, value_ptr, key, default_value, {".wav", ".ogg"}, {}, true, flags);
 }
 
 std::unique_ptr<BaseObjectOption>&
@@ -323,7 +323,7 @@ ObjectSettings::add_music(const std::string& text, std::string* value_ptr,
                           std::optional<std::string> default_value,
                           unsigned int flags)
 {
-  return add_file(text, value_ptr, key, std::move(default_value), {".music"}, {"/music"}, false, flags,
+  return add_file(text, value_ptr, key, default_value, {".music"}, {"/music"}, false, flags,
            [](MenuItem& menu_item, const std::string& file_path, bool in_basedir) {
              std::unique_ptr<SoundFile> sound_file;
              try {

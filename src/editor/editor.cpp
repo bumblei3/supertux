@@ -1643,7 +1643,7 @@ Editor::add_control(const std::string& name, std::unique_ptr<InterfaceControl> n
   new_control->set_rect(target_rect);
 
   auto dimensions = Rectf(3.f, height, 100.f, height + 20.f);
-  new_control->m_label = std::make_unique<InterfaceLabel>(dimensions, std::move(name), std::move(description));
+  new_control->m_label = std::make_unique<InterfaceLabel>(dimensions, name, description);
   m_controls.push_back(std::move(new_control));
 }
 

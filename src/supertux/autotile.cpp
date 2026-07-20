@@ -39,7 +39,7 @@ AutotileMask::matches(uint8_t mask, bool center) const
 Autotile::Autotile(uint32_t tile_id, const std::vector<std::pair<uint32_t, AltConditions>>& alt_tiles, const std::vector<AutotileMask>& masks, bool solid) :
   m_tile_id(tile_id),
   m_alt_tiles(alt_tiles),
-  m_masks(std::move(masks)),
+  m_masks(masks),
   m_solid(solid)
 {
 }

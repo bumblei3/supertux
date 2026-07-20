@@ -224,7 +224,7 @@ AutotileParser::parse_autotile(const ReaderMapping& reader, bool corner)
     }
   }
 
-  return new Autotile(tile_id, std::move(alt_ids), std::move(autotile_masks), solid);
+  return new Autotile(tile_id, alt_ids, autotile_masks, solid);
 }
 
 void

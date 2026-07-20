@@ -23,8 +23,8 @@
 ItemScript::ItemScript(UID uid, const std::string& key, const std::string& text, std::string* script_, int id) :
   MenuItem(text, id),
   script(script_),
-  m_key(std::move(key)),
-  m_uid(std::move(uid))
+  m_key(key),
+  m_uid(uid)
 {
 }
 

@@ -107,7 +107,7 @@ TileSetParser::parse(bool imported)
 
       if (has_valid_tile)
       {
-        m_tileset.add_tilegroup(std::move(tilegroup));
+        m_tileset.add_tilegroup(tilegroup);
       }
     }
     else if (iter.get_key() == "tiles")

@@ -45,7 +45,7 @@ class ObjectSettings final
 {
 public:
   ObjectSettings(std::string name, UID uid);
-  ObjectSettings(ObjectSettings&& other);
+  ObjectSettings(ObjectSettings&& other) noexcept ;
   ObjectSettings(ObjectSettings* obj);
 
   ObjectSettings& operator=(ObjectSettings&&) = default;

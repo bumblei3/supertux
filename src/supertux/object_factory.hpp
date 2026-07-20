@@ -81,7 +81,7 @@ protected:
     }
     m_objects_names.push_back(name);
     m_objects_params.push_back(obj_params);
-    factories[name] = std::move(functions);
+    factories[name] = functions;
   }
 
 private:
