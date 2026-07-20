@@ -41,6 +41,16 @@ make_unit_test(MD5Test SOURCE md5_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL addon/md5.cpp)
 
+make_unit_test(PhysicTest SOURCE physic_test.cpp physic_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL supertux/physic.cpp video/color.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
+
 # Lightweight pure-logic unit tests. These only need their single source file
 # (no engine / tinygettext / SDL renderer linkage) and were previously left
 # unwired in the tree.
