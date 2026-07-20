@@ -51,6 +51,17 @@ make_unit_test(PhysicTest SOURCE physic_test.cpp physic_test_stub.cpp
            ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
            ${CMAKE_BINARY_DIR})
 
+# PhysicTest only exercises Physic's header-inline state logic plus
+# Physic::Physic()/reset(); it never constructs a Sector. But physic.cpp also
+# holds the out-of-line Physic::get_movement(), whose inline call to
+# Sector::get() references `typeinfo for Sector`. Under UBSan the vptr check
+# keeps that reference live in the .o (a normal build DCEs it away), so the
+# link fails with "undefined reference to typeinfo for Sector". Sector is never
+# instantiated in this isolated logic test, so disabling just the vptr
+# sanitizer on physic.cpp is safe and keeps the rest of the sanitizers intact.
+target_compile_options(PhysicTest PRIVATE
+  $<$<COMPILE_LANGUAGE:CXX>:-fno-sanitize=vptr>)
+
 # Lightweight pure-logic unit tests. These only need their single source file
 # (no engine / tinygettext / SDL renderer linkage) and were previously left
 # unwired in the tree.

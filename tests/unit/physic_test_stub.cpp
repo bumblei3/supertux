@@ -18,7 +18,10 @@
 // Sector/engine stack. PhysicTest only exercises the header-inline state
 // logic plus Physic::Physic()/reset(); it never calls Physic::get_movement(),
 // so the only symbol we must satisfy is Sector's static current pointer
-// (referenced by the inline Sector::get() that get_movement() uses).
+// (referenced by the inline Sector::get()/get_gravity() that get_movement()
+// uses). Note: under UBSan the vptr check would still pull in `typeinfo for
+// Sector`; the PhysicTest target disables -fno-sanitize=vptr on physic.cpp to
+// avoid that (see tests/unit/CMakeLists.txt).
 #include "supertux/sector.hpp"
 
 Sector* Sector::s_current = nullptr;
