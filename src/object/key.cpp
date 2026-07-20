@@ -68,11 +68,11 @@ Key::update(float dt_sec)
 
   if (!m_owner || !m_owner->is_dead())
   {
-    float px = graphicsRandom.randf(get_bbox().get_left(), get_bbox().get_right());
-    float py = graphicsRandom.randf(get_bbox().get_top(), get_bbox().get_bottom());
-    Vector ppos = Vector(px, py);
-    int upper_limit = m_state == KeyState::NORMAL ? 20 : 50;
-    bool spawn_particle_now = (graphicsRandom.rand(0, upper_limit) == 5);
+    float const px = graphicsRandom.randf(get_bbox().get_left(), get_bbox().get_right());
+    float const py = graphicsRandom.randf(get_bbox().get_top(), get_bbox().get_bottom());
+    Vector const ppos = Vector(px, py);
+    int const upper_limit = m_state == KeyState::NORMAL ? 20 : 50;
+    bool const spawn_particle_now = (graphicsRandom.rand(0, upper_limit) == 5);
     if (spawn_particle_now)
     {
       Sector::get().add<SpriteParticle>(
@@ -84,7 +84,7 @@ Key::update(float dt_sec)
   if (!m_owner)
     return;
 
-  float distance = glm::length(get_pos() - m_owner->get_pos());
+  float const distance = glm::length(get_pos() - m_owner->get_pos());
 
   if (m_state != KeyState::NORMAL)
   {
@@ -92,7 +92,7 @@ Key::update(float dt_sec)
       Vector(get_bbox().get_width()/2.f, get_bbox().get_height()/2.f)-
       Vector(0.f, 10.f));
   }
-  Vector m_goal_pos = m_pos_list.back();
+  Vector const m_goal_pos = m_pos_list.back();
 
   while (m_pos_list.size() > unsigned(20 * m_chain_pos))
     m_pos_list.pop_back();
@@ -224,7 +224,7 @@ Key::spawn_use_particles()
 {
   for (int i = 1; i < 9; i++)
   {
-    Vector direction = glm::normalize(Vector(std::cos(float(i) * math::PI_4), std::sin(float(i) * math::PI_4)));
+    Vector const direction = glm::normalize(Vector(std::cos(float(i) * math::PI_4), std::sin(float(i) * math::PI_4)));
     Sector::get().add<SpriteParticle>("images/particles/sparkle.sprite", "small-key-collect",
       get_bbox().get_middle(),
       ANCHOR_MIDDLE, Vector(400.f * direction), -Vector(400.f * direction) * 2.8f, LAYER_OBJECTS + 6, false, 0, m_color);

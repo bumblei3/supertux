@@ -109,13 +109,13 @@ Firefly::collision(MovingObject& other, const CollisionHit& )
     // Spawn some particles.
     // TODO: provide convenience function in MovingSprite or MovingObject?
     for (int i = 0; i < 5; i++) {
-      Vector ppos = m_col.m_bbox.get_middle();
-      float angle = graphicsRandom.randf(-math::PI_2, math::PI_2);
-      float velocity = graphicsRandom.randf(450.0f, 900.0f);
-      float vx = sinf(angle)*velocity;
-      float vy = -cosf(angle)*velocity;
-      Vector pspeed = Vector(vx, vy);
-      Vector paccel = Vector(0.0f, 1000.0f);
+      Vector const ppos = m_col.m_bbox.get_middle();
+      float const angle = graphicsRandom.randf(-math::PI_2, math::PI_2);
+      float const velocity = graphicsRandom.randf(450.0f, 900.0f);
+      float const vx = sinf(angle)*velocity;
+      float const vy = -cosf(angle)*velocity;
+      Vector const pspeed = Vector(vx, vy);
+      Vector const paccel = Vector(0.0f, 1000.0f);
       Sector::get().add<SpriteParticle>("images/particles/reset.sprite", "default", ppos, ANCHOR_MIDDLE, pspeed, paccel, LAYER_OBJECTS-1);
     }
 

@@ -378,7 +378,7 @@ MrIceBlock::ungrab(MovingObject& object, Direction dir_)
   if (player && (player->is_swimming() || player->is_water_jumping()))
   {
     // Move the ice cube slightly away to avoid instantly killing Tux.
-    float swimangle = player->get_swimming_angle();
+    float const swimangle = player->get_swimming_angle();
     m_col.m_bbox.move(Vector(std::cos(swimangle) * 48.f, std::sin(swimangle) * 48.f));
   }
   if (dir_ == Direction::UP) {
@@ -393,7 +393,7 @@ MrIceBlock::ungrab(MovingObject& object, Direction dir_)
     }
   }
   else if (dir_ == Direction::DOWN) {
-    Vector mov(0, 32);
+    Vector const mov(0, 32);
     if (Sector::get().is_free_of_statics(get_bbox().moved(mov), this)) {
       // There is free space, so throw it down.
       SoundManager::current()->play("sounds/kick.wav", get_pos());

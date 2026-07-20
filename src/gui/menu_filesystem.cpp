@@ -76,7 +76,7 @@ FileSystemMenu::refresh_items()
     m_directories.push_back("..");
   }
   physfsutil::enumerate_files_alphabetical(m_directory, [this](const std::string& file) {
-    std::string filepath = FileSystem::join(m_directory, file);
+    std::string const filepath = FileSystem::join(m_directory, file);
     if (physfsutil::is_directory(filepath))
     {
       // Do not show directories, containing deprecated files

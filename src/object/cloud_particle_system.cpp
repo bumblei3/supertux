@@ -116,7 +116,7 @@ CloudParticleSystem::update(float dt_sec)
     }
     else
     {
-      float amount = dt_sec / m_speed_fade_time_remaining_x;
+      float const amount = dt_sec / m_speed_fade_time_remaining_x;
       m_current_speed_x += (m_target_speed_x - m_current_speed_x) * amount;
       m_speed_fade_time_remaining_x -= dt_sec;
     }
@@ -132,7 +132,7 @@ CloudParticleSystem::update(float dt_sec)
     }
     else
     {
-      float amount = dt_sec / m_speed_fade_time_remaining_y;
+      float const amount = dt_sec / m_speed_fade_time_remaining_y;
       m_current_speed_y += (m_target_speed_y - m_current_speed_y) * amount;
       m_speed_fade_time_remaining_y -= dt_sec;
     }
@@ -153,8 +153,8 @@ CloudParticleSystem::update(float dt_sec)
     cloud_particle->pos.x += cloud_particle->speed * dt_sec * m_current_speed_x;
     cloud_particle->pos.y += cloud_particle->speed * dt_sec * m_current_speed_y;
 
-    float texture_height = static_cast<float>(cloud_particle->texture->get_height());
-    float texture_width = static_cast<float>(cloud_particle->texture->get_width());
+    float const texture_height = static_cast<float>(cloud_particle->texture->get_height());
+    float const texture_width = static_cast<float>(cloud_particle->texture->get_width());
 
     while (cloud_particle->pos.x < cam.get_translation().x - texture_width)
       cloud_particle->pos.x += screen_width + texture_width * 2.f;
@@ -178,7 +178,7 @@ CloudParticleSystem::update(float dt_sec)
       }
       else
       {
-        float amount = dt_sec / cloud_particle->target_time_remaining;
+        float const amount = dt_sec / cloud_particle->target_time_remaining;
         cloud_particle->alpha += (cloud_particle->target_alpha - cloud_particle->alpha) * amount;
         cloud_particle->target_time_remaining -= dt_sec;
       }
@@ -200,7 +200,7 @@ CloudParticleSystem::update(float dt_sec)
 void
 CloudParticleSystem::apply_fog_effect(DrawingContext& context)
 {
-  float opacity = m_fog_opacity / 100.0f;
+  float const opacity = m_fog_opacity / 100.0f;
 
   context.push_transform();
   context.set_translation(Vector(0, 0));
@@ -213,8 +213,8 @@ CloudParticleSystem::apply_fog_effect(DrawingContext& context)
 int
 CloudParticleSystem::add_clouds(int amount, float fade_time)
 {
-  int target_amount = std::clamp(m_current_real_amount + amount, min_amount, max_amount);
-  int amount_to_add = target_amount - m_current_real_amount;
+  int const target_amount = std::clamp(m_current_real_amount + amount, min_amount, max_amount);
+  int const amount_to_add = target_amount - m_current_real_amount;
 
   for (int i = 0; i < amount_to_add; ++i)
   {
@@ -239,8 +239,8 @@ CloudParticleSystem::add_clouds(int amount, float fade_time)
 int
 CloudParticleSystem::remove_clouds(int amount, float fade_time)
 {
-  int target_amount = std::clamp(m_current_real_amount - amount, min_amount, max_amount);
-  int amount_to_remove = m_current_real_amount - target_amount;
+  int const target_amount = std::clamp(m_current_real_amount - amount, min_amount, max_amount);
+  int const amount_to_remove = m_current_real_amount - target_amount;
 
   int i = 0;
   for (; i < amount_to_remove && i < static_cast<int>(particles.size()); ++i)
@@ -283,7 +283,7 @@ CloudParticleSystem::fade_amount(int new_amount, float fade_time, float time_bet
 {
   // No check for enabled; change the fading even if it's disabled.
 
-  int delta = new_amount - m_current_real_amount;
+  int const delta = new_amount - m_current_real_amount;
 
   if (delta < 0)
   {

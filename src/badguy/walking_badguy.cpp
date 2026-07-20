@@ -131,7 +131,7 @@ WalkingBadguy::active_update(float dt_sec, float dest_x_velocity, float modifier
     m_physic.set_velocity_y((std::abs(m_physic.get_velocity_x()) * std::abs(m_floor_normal.x)) + 100.f);
   }
 
-  float current_x_velocity = m_physic.get_velocity_x ();
+  float const current_x_velocity = m_physic.get_velocity_x ();
 
   if (m_frozen)
     return;
@@ -148,7 +148,7 @@ WalkingBadguy::active_update(float dt_sec, float dest_x_velocity, float modifier
   {
     /* acceleration == walk-speed => it will take one second to get from zero
      * to full speed. */
-    float ice_multiplier = (m_on_ice && on_ground()) ? BADGUY_ICE_ACCELERATION_MULTIPLIER : 1.0f;
+    float const ice_multiplier = (m_on_ice && on_ground()) ? BADGUY_ICE_ACCELERATION_MULTIPLIER : 1.0f;
     m_physic.set_acceleration_x (dest_x_velocity * modifier * ice_multiplier);
   }
   /* Check if we're going too fast */
@@ -157,7 +157,7 @@ WalkingBadguy::active_update(float dt_sec, float dest_x_velocity, float modifier
   {
     /* acceleration == walk-speed => it will take one second to get twice the
      * speed to normal speed. */
-    float ice_multiplier = (m_on_ice && on_ground()) ? BADGUY_ICE_ACCELERATION_MULTIPLIER : 1.0f;
+    float const ice_multiplier = (m_on_ice && on_ground()) ? BADGUY_ICE_ACCELERATION_MULTIPLIER : 1.0f;
     m_physic.set_acceleration_x ((-1.f) * dest_x_velocity * ice_multiplier);
   }
   else

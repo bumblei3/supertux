@@ -66,7 +66,7 @@ double CubicEaseIn(double p)
 // Modeled after the cubic y = (x - 1)^3 + 1.
 double CubicEaseOut(double p)
 {
-	double f = (p - 1);
+	double const f = (p - 1);
 	return f * f * f + 1;
 }
 
@@ -81,7 +81,7 @@ double CubicEaseInOut(double p)
 	}
 	else
 	{
-		double f = ((2 * p) - 2);
+		double const f = ((2 * p) - 2);
 		return 0.5 * f * f * f + 1;
 	}
 }
@@ -95,7 +95,7 @@ double QuarticEaseIn(double p)
 // Modeled after the quartic y = 1 - (x - 1)^4.
 double QuarticEaseOut(double p)
 {
-	double f = (p - 1);
+	double const f = (p - 1);
 	return f * f * f * (1 - p) + 1;
 }
 
@@ -110,7 +110,7 @@ double QuarticEaseInOut(double p)
 	}
 	else
 	{
-		double f = (p - 1);
+		double const f = (p - 1);
 		return -8 * f * f * f * f + 1;
 	}
 }
@@ -124,7 +124,7 @@ double QuinticEaseIn(double p)
 // Modeled after the quintic y = (x - 1)^5 + 1.
 double QuinticEaseOut(double p)
 {
-	double f = (p - 1);
+	double const f = (p - 1);
 	return f * f * f * f * f + 1;
 }
 
@@ -139,7 +139,7 @@ double QuinticEaseInOut(double p)
 	}
 	else
 	{
-		double f = ((2 * p) - 2);
+		double const f = ((2 * p) - 2);
 		return  0.5 * f * f * f * f * f + 1;
 	}
 }
@@ -254,7 +254,7 @@ double BackEaseIn(double p)
 // Modeled after overshooting cubic y = 1-((1-x)^3-(1-x)*sin((1-x)*pi)).
 double BackEaseOut(double p)
 {
-	double f = (1 - p);
+	double const f = (1 - p);
 	return 1 - (f * f * f - f * sin(f * M_PI));
 }
 
@@ -265,12 +265,12 @@ double BackEaseInOut(double p)
 {
 	if(p < 0.5)
 	{
-		double f = 2 * p;
+		double const f = 2 * p;
 		return 0.5 * (f * f * f - f * sin(f * M_PI));
 	}
 	else
 	{
-		double f = (1 - (2*p - 1));
+		double const f = (1 - (2*p - 1));
 		return 0.5 * (1 - (f * f * f - f * sin(f * M_PI))) + 0.5;
 	}
 }

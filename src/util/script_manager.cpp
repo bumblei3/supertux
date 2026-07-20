@@ -49,7 +49,7 @@ ScriptManager::clear_tmp()
   m_watcher.clear();
   char** files = PHYSFS_enumerateFiles(TMP_DIR);
 
-  for (char** f = files; *f; ++f)
+  for (char* const* f = files; *f; ++f)
   {
     log_debug << "Deleting leftover tmp file \"" << *f << "\"\n";
     PHYSFS_delete(FileSystem::join(TMP_DIR, *f).c_str());
@@ -116,7 +116,7 @@ ScriptManager::is_script_registered(UID uid, const std::string& key)
 void
 ScriptManager::register_script(UID uid, const std::string& key, std::string* script)
 {
-  std::string full_filename = abspath_filename_from_key(uid, key);
+  std::string const full_filename = abspath_filename_from_key(uid, key);
 
   log_debug << "Registering script \"" << filename_from_key(uid, key) << "\"" << std::endl;
   log_debug << "Full path \"" << full_filename << "\"" << std::endl;

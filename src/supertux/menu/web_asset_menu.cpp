@@ -55,7 +55,7 @@ WebAssetMenu::menu_action(MenuItem& item)
   {
     case MNID_ADDFILES:
     {
-      std::regex regex("'");
+      std::regex const regex("'");
       m_add_path = std::regex_replace(m_add_path, regex, "\\'");
 
 #ifdef __EMSCRIPTEN__
@@ -66,10 +66,10 @@ WebAssetMenu::menu_action(MenuItem& item)
 
     case MNID_DOWNLOADFILES:
     {
-      std::vector<std::string> empty_vec;
+      std::vector<std::string> const empty_vec;
       MenuManager::instance().push_menu(
         std::make_unique<FileSystemMenu>(nullptr, empty_vec, "", false, [](const std::string& file) {
-          std::string fullpath(std::string(PHYSFS_getRealDir(file.c_str())) + "/" + file);
+          std::string const fullpath(std::string(PHYSFS_getRealDir(file.c_str())) + "/" + file);
           FileSystem::open_path(fullpath);
         })
       );

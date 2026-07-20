@@ -80,15 +80,15 @@ DownloadDialog::update_text()
   std::ostringstream out;
   out << m_title << "\n";
 
-  int dltotal = m_complete ? m_download_total : m_status->get_download_total();
+  int const dltotal = m_complete ? m_download_total : m_status->get_download_total();
   if (dltotal == 0)
   {
     out << "---\n---";
   }
   else
   {
-    int dlnow = m_complete ? m_download_total : m_status->get_download_now();
-    int percent = (100.f * dlnow) / static_cast<float>(dltotal);
+    int const dlnow = m_complete ? m_download_total : m_status->get_download_now();
+    int const percent = (100.f * dlnow) / static_cast<float>(dltotal);
     out << dlnow / 1000 << "/"
         << dltotal / 1000 << " kB\n" << percent << "%";
   }

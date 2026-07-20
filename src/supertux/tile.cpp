@@ -34,7 +34,7 @@ namespace {
 bool is_above_line (float l_x, float l_y, float m,
                     float p_x, float p_y)
 {
-  float interp_y = (l_y + (m * (p_x - l_x)));
+  float const interp_y = (l_y + (m * (p_x - l_x)));
   return (interp_y >= p_y);
 }
 
@@ -108,7 +108,7 @@ Tile::draw_debug(Canvas& canvas, const Vector& pos, int z_pos, const Color& colo
   }
   else
   {
-    int slope_info = get_data();
+    int const slope_info = get_data();
 
     switch (slope_info)
     {
@@ -215,7 +215,7 @@ Tile::get_current_surface() const
   // Check for editor's "Render animations" setting in case we call this method from the `get_current_editor_surface` method.
   auto display_animations = ((Editor::is_active() && g_config->editor_render_animations) || !Editor::is_active());
   if (display_animations && m_images.size() > 1) {
-    size_t frame = size_t(g_game_time * m_fps) % m_images.size();
+    size_t const frame = size_t(g_game_time * m_fps) % m_images.size();
     return m_images[frame];
   } else if ((!display_animations && m_images.size() != 0) || m_images.size() == 1) {
     return m_images[0];
@@ -228,7 +228,7 @@ SurfacePtr
 Tile::get_current_editor_surface() const
 {
   if (g_config->editor_render_animations && m_editor_images.size() > 1) {
-    size_t frame = size_t(g_game_time * m_fps) % m_editor_images.size();
+    size_t const frame = size_t(g_game_time * m_fps) % m_editor_images.size();
     return m_editor_images[frame];
   } else if (m_editor_images.size() == 1) {
     return m_editor_images[0];
@@ -255,7 +255,7 @@ Tile::check_movement_unisolid (const Vector& movement) const
   //If the tile is not a slope, this is very easy.
   if (!is_slope())
   {
-    int dir = get_data() & Tile::UNI_DIR_MASK;
+    int const dir = get_data() & Tile::UNI_DIR_MASK;
 
     return ((dir == Tile::UNI_DIR_NORTH) && (movement.y > -EPSILON)) /* moving down */
         || ((dir == Tile::UNI_DIR_SOUTH) && (movement.y < EPSILON))  /* moving up */
@@ -355,7 +355,7 @@ Tile::check_position_unisolid (const Rectf& obj_bbox,
   // If this is not a slope, this is - again - easy
   if (!is_slope())
   {
-    int dir = get_data() & Tile::UNI_DIR_MASK;
+    int const dir = get_data() & Tile::UNI_DIR_MASK;
 
     return ((dir == Tile::UNI_DIR_NORTH) && ((obj_bbox.get_bottom() - SHIFT_DELTA) <= tile_bbox.get_top()   ))
         || ((dir == Tile::UNI_DIR_SOUTH) && ((obj_bbox.get_top()    + SHIFT_DELTA) >= tile_bbox.get_bottom()))

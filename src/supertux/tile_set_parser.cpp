@@ -80,7 +80,7 @@ TileSetParser::parse(bool imported)
     else if (iter.get_key() == "tilegroup")
     {
       /* tilegroups are only interesting for the editor */
-      ReaderMapping reader = iter.as_mapping();
+      ReaderMapping const reader = iter.as_mapping();
       Tilegroup tilegroup;
       reader.get("name", tilegroup.name);
       reader.get("tiles", tilegroup.tiles);
@@ -116,7 +116,7 @@ TileSetParser::parse(bool imported)
     }
     else if (iter.get_key() == "autotileset")
     {
-      ReaderMapping reader = iter.as_mapping();
+      ReaderMapping const reader = iter.as_mapping();
       std::string autotile_filename;
       if (!reader.get("source", autotile_filename))
       {
@@ -134,7 +134,7 @@ TileSetParser::parse(bool imported)
     }
     else if (iter.get_key() == "import-tileset")
     {
-      ReaderMapping reader = iter.as_mapping();
+      ReaderMapping const reader = iter.as_mapping();
       std::string import_filename;
       if (!reader.get("file", import_filename))
       {
@@ -174,7 +174,7 @@ TileSetParser::parse(bool imported)
     }
     else if (iter.get_key() == "additional")
     {
-      ReaderMapping reader = iter.as_mapping();
+      ReaderMapping const reader = iter.as_mapping();
       auto additional_iter = reader.get_iter();
       while (additional_iter.next())
       {
@@ -326,9 +326,9 @@ TileSetParser::parse_tiles(const ReaderMapping& reader)
   unsigned int width  = 0;
   unsigned int height = 0;
 
-  bool has_ids = reader.get("ids",        ids);
-  bool has_attributes = reader.get("attributes", attributes);
-  bool has_datas = reader.get("datas", datas);
+  bool const has_ids = reader.get("ids",        ids);
+  bool const has_attributes = reader.get("attributes", attributes);
+  bool const has_datas = reader.get("datas", datas);
 
   reader.get("width", width);
   reader.get("height", height);
@@ -439,8 +439,8 @@ TileSetParser::parse_tiles(const ReaderMapping& reader)
         if(!ids[i] || (ids[i] < static_cast<uint32_t>(m_start) || (m_end && ids[i] > static_cast<uint32_t>(m_end)))) continue;
         ids[i] += m_offset + tiles_offset;
 
-        int x = static_cast<int>(32 * (i % width));
-        int y = static_cast<int>(32 * (i / width));
+        int const x = static_cast<int>(32 * (i % width));
+        int const y = static_cast<int>(32 * (i / width));
 
         std::vector<SurfacePtr> surfaces;
         std::optional<ReaderMapping> surfaces_mapping;
@@ -480,7 +480,7 @@ std::vector<SurfacePtr>
   {
     if (iter.is_string())
     {
-      std::string file = iter.as_string_item();
+      std::string const file = iter.as_string_item();
       surfaces.push_back(Surface::from_file(FileSystem::join(m_tiles_path, file), surface_region));
     }
     else if (iter.is_pair() && iter.get_key() == "surface")

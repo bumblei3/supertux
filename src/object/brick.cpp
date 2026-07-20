@@ -132,7 +132,7 @@ Brick::try_break(Player* player, bool slider)
   if (m_coin_counter > 0 ) {
     Sector::get().add<BouncyCoin>(get_pos(), true);
     m_coin_counter--;
-    Player* player_one = Sector::get().get_players()[0];
+    Player const* player_one = Sector::get().get_players()[0];
     player_one->get_status().add_coins(1);
     if (m_coin_counter == 0)
       set_action("empty");
@@ -154,8 +154,8 @@ void
 Brick::break_for_crusher(Crusher* crusher)
 {
   // FIXME: This function shouldn't even exist
-   float shake_vel_x = crusher->is_sideways() ? crusher->get_physic().get_velocity_x() >= 0.f ? 6.f : -6.f : 0.f;
-   float shake_vel_y = crusher->is_sideways() ? 0.f : 6.f;
+   float const shake_vel_x = crusher->is_sideways() ? crusher->get_physic().get_velocity_x() >= 0.f ? 6.f : -6.f : 0.f;
+   float const shake_vel_y = crusher->is_sideways() ? 0.f : 6.f;
    Sector::get().get_camera().shake(0.1f, shake_vel_x, shake_vel_y);
    try_break(nullptr);
    start_break(crusher);

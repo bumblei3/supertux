@@ -138,7 +138,7 @@ SortedContribMenu::SortedContribMenu(std::vector<std::unique_ptr<World>>& worlds
 void
 SortedContribMenu::menu_action(MenuItem& item)
 {
-  int index = item.get_id();
+  int const index = item.get_id();
   if (index >= 0)
   {
     std::unique_ptr<World> world = World::from_directory(m_world_folders[index]);

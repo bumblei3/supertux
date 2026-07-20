@@ -116,9 +116,9 @@ BigSnowball::update(float dt_sec)
     spawn_particles();
   }
 
-  bool in_water = !Sector::get().is_free_of_tiles(get_bbox(), true, Tile::WATER);
+  bool const in_water = !Sector::get().is_free_of_tiles(get_bbox(), true, Tile::WATER);
 
-  Vector movement = m_physic.get_movement(dt_sec) * Vector(in_water ? 0.4f : 1.f, in_water ? 0.6f : 1.f);
+  Vector const movement = m_physic.get_movement(dt_sec) * Vector(in_water ? 0.4f : 1.f, in_water ? 0.6f : 1.f);
   m_sprite->set_angle(m_sprite->get_angle() + movement.x * 3.141592653898f / 2.f);
   m_col.set_movement(movement);
   //m_col.propagate_movement(movement);

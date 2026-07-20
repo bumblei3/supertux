@@ -349,7 +349,7 @@ BonusBlock::try_open(Player* player)
   if (player == nullptr)
     return;
 
-  Direction direction = (player->get_bbox().get_middle().x > m_col.m_bbox.get_middle().x) ? Direction::LEFT : Direction::RIGHT;
+  Direction const direction = (player->get_bbox().get_middle().x > m_col.m_bbox.get_middle().x) ? Direction::LEFT : Direction::RIGHT;
 
   bool play_upgrade_sound = false;
   switch (m_contents) {
@@ -516,7 +516,7 @@ BonusBlock::try_drop(Player *player)
   if (player == nullptr)
     return;
 
-  Direction direction = (player->get_bbox().get_middle().x > m_col.m_bbox.get_middle().x) ? Direction::LEFT : Direction::RIGHT;
+  Direction const direction = (player->get_bbox().get_middle().x > m_col.m_bbox.get_middle().x) ? Direction::LEFT : Direction::RIGHT;
 
   bool countdown = false;
   bool play_upgrade_sound = false;
@@ -696,7 +696,7 @@ BonusBlock::draw(DrawingContext& context)
   // Draw the light if the bonus block is in the "on" state.
   if (m_sprite->get_action() == "on")
   {
-    Vector pos = get_pos() + (m_col.m_bbox.get_size().as_vector() - Vector(static_cast<float>(m_lightsprite->get_width()),
+    Vector const pos = get_pos() + (m_col.m_bbox.get_size().as_vector() - Vector(static_cast<float>(m_lightsprite->get_width()),
                                                                    static_cast<float>(m_lightsprite->get_height()))) / 2.0f;
     context.light().draw_surface(m_lightsprite, pos, 10);
   }

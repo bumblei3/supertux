@@ -113,17 +113,17 @@ GLTexture::reload(const SDL_Surface& image)
     }
 
     if (m_image_width != m_texture_width) {
-      SDL_Rect srcrect{m_image_width - 1, 0, 1, m_image_height};
+      SDL_Rect const srcrect{m_image_width - 1, 0, 1, m_image_height};
       for (int x = m_image_width; x < m_texture_width; ++x) {
-        SDL_Rect dstrect{x, 0, 1, m_image_height};
+        SDL_Rect const dstrect{x, 0, 1, m_image_height};
         SDL_BlitSurface(const_cast<SDL_Surface*>(&image), &srcrect, convert.get(), &dstrect);
       }
     }
 
     if (m_image_height != m_texture_height) {
-      SDL_Rect srcrect{0, m_image_height - 1, m_image_width, 1};
+      SDL_Rect const srcrect{0, m_image_height - 1, m_image_width, 1};
       for (int y = m_image_height; y < m_texture_height; ++y) {
-        SDL_Rect dstrect{0, y, m_image_width, 1};
+        SDL_Rect const dstrect{0, y, m_image_width, 1};
         SDL_BlitSurface(const_cast<SDL_Surface*>(&image), &srcrect, convert.get(), &dstrect);
       }
     }
@@ -135,7 +135,7 @@ GLTexture::reload(const SDL_Surface& image)
       const int y = m_image_height - 1;
       Uint32 color = 0;
       memcpy(&color, static_cast<uint8_t*>(convert->pixels) + y * convert->pitch + x * bpp, bpp);
-      SDL_Rect dstrect{m_image_width, m_image_height, m_texture_width, m_texture_height};
+      SDL_Rect const dstrect{m_image_width, m_image_height, m_texture_width, m_texture_height};
       SDL_FillSurfaceRect(convert.get(), &dstrect, color);
     }
 

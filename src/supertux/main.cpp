@@ -168,7 +168,7 @@ Main::init_tinygettext()
   {
     FL_Locale *locale;
     FL_FindLocale(&locale);
-    tinygettext::Language language = tinygettext::Language::from_spec( locale->lang?locale->lang:"", locale->country?locale->country:"", locale->variant?locale->variant:"");
+    tinygettext::Language const language = tinygettext::Language::from_spec( locale->lang?locale->lang:"", locale->country?locale->country:"", locale->variant?locale->variant:"");
     FL_FreeLocale(&locale);
     g_dictionary_manager->set_language(language);
   }
@@ -226,7 +226,7 @@ void PhysfsSubsystem::find_mount_datadir()
   {
     // check if we run from source dir
     const char* basepath_c = SDL_GetBasePath();
-    std::string basepath = basepath_c ? basepath_c : "./";
+    std::string const basepath = basepath_c ? basepath_c : "./";
 
     if (FileSystem::exists(FileSystem::join(BUILD_DATA_DIR, "credits.stxt")))
     {
@@ -312,7 +312,7 @@ void PhysfsSubsystem::find_mount_userdir()
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
-std::string physfs_userdir = PHYSFS_getUserDir();
+std::string const physfs_userdir = PHYSFS_getUserDir();
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
@@ -330,10 +330,10 @@ else
   olduserdir = FileSystem::join(physfs_userdir, "." PACKAGE_NAME);
 #endif
 if (FileSystem::is_directory(olduserdir)) {
-  std::filesystem::path olduserpath(olduserdir);
-  std::filesystem::path userpath(m_userdir);
+  std::filesystem::path const olduserpath(olduserdir);
+  std::filesystem::path const userpath(m_userdir);
 
-  std::filesystem::directory_iterator end_itr;
+  std::filesystem::directory_iterator const end_itr;
 
   bool success = true;
 
@@ -405,7 +405,7 @@ void PhysfsSubsystem::print_search_path()
   log_info << "PhysfsWriteDir: " << (writedir ? writedir : "(null)") << std::endl;
   log_info << "PhysfsSearchPath:" << std::endl;
   char** searchpath = PHYSFS_getSearchPath();
-  for (char** i = searchpath; *i != nullptr; ++i)
+  for (char* const* i = searchpath; *i != nullptr; ++i)
   {
     log_info << "  " << *i << std::endl;
   }
@@ -422,7 +422,7 @@ PhysfsSubsystem::setup_android_datadir() const
   2. Physfs mounts that new data zip
   */
 
-  std::string zippath = "data.zip";
+  std::string const zippath = "data.zip";
   std::string newzip = m_forced_userdir.value_or("");
   newzip.append("/");
   newzip.append(zippath);
@@ -467,7 +467,7 @@ PhysfsSubsystem::~PhysfsSubsystem()
 
 SDLSubsystem::SDLSubsystem()
 {
-  Uint32 flags = SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD;
+  Uint32 const flags = SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD;
 
 #ifdef HAVE_EPOXY
   SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL, "1");
@@ -683,12 +683,12 @@ Main::launch_game(const CommandLineArguments& args)
 
         if (args.sector || args.spawnpoint)
         {
-          std::string sectorname = args.sector.value_or(DEFAULT_SECTOR_NAME);
+          std::string const sectorname = args.sector.value_or(DEFAULT_SECTOR_NAME);
 
           const auto& spawnpoints = session->get_current_sector().get_objects_by_type<SpawnPointMarker>();
-          std::string default_spawnpoint = (spawnpoints.begin() != spawnpoints.end()) ?
+          std::string const default_spawnpoint = (spawnpoints.begin() != spawnpoints.end()) ?
             "" : spawnpoints.begin()->get_name();
-          std::string spawnpointname = args.spawnpoint.value_or(default_spawnpoint);
+          std::string const spawnpointname = args.spawnpoint.value_or(default_spawnpoint);
 
           session->set_start_point(sectorname, spawnpointname);
         }
@@ -851,7 +851,7 @@ Main::release_check()
 
   // Detect a potential new release of SuperTux. If a release, other than
   // the current one is indicated on the given web file, show a notification on the main menu screen.
-  TransferStatusPtr status = m_downloader->request_string_download(
+  TransferStatusPtr const status = m_downloader->request_string_download(
     "https://raw.githubusercontent.com/SuperTux/addons/master/ver_info.nfo",
     m_version_info
   );

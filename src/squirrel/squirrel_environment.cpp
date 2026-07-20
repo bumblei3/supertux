@@ -65,7 +65,7 @@ SquirrelEnvironment::expose(ExposableClass& object, const std::string& name)
 
   try
   {
-    ssq::Class sq_class = m_vm.findClass(class_name.c_str());
+    ssq::Class const sq_class = m_vm.findClass(class_name.c_str());
     m_vm.newInstancePtr(m_table, sq_class, name.c_str(), &object);
   }
   catch (const std::exception& err)

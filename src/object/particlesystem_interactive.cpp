@@ -107,10 +107,10 @@ ParticleSystem_Interactive::collision(Particle* object, const Vector& movement)
   bool water = false;
 
   // test with all tiles in this rectangle
-  int starttilex = int(x1-1) / 32;
-  int starttiley = int(y1-1) / 32;
-  int max_x = int(x2+1);
-  int max_y = int(y2+1);
+  int const starttilex = int(x1-1) / 32;
+  int const starttiley = int(y1-1) / 32;
+  int const max_x = int(x2+1);
+  int const max_y = int(y2+1);
 
   Rectf dest(x1, y1, x2, y2);
   dest.move(movement);
@@ -126,9 +126,9 @@ ParticleSystem_Interactive::collision(Particle* object, const Vector& movement)
         if (! (tile.get_attributes() & (Tile::WATER | Tile::SOLID)))
           continue;
 
-        Rectf rect = solids->get_tile_bbox(x, y);
+        Rectf const rect = solids->get_tile_bbox(x, y);
         if (tile.is_slope ()) { // slope tile
-          AATriangle triangle = AATriangle(rect, tile.get_data());
+          AATriangle const triangle = AATriangle(rect, tile.get_data());
 
           if (rectangle_aatriangle(&constraints, dest, triangle)) {
             if (tile.get_attributes() & Tile::WATER)

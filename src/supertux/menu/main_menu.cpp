@@ -113,7 +113,7 @@ MainMenu::menu_action(MenuItem& item)
   {
     case MNID_WORLDSET_STORY:
     {
-      std::unique_ptr<World> world = World::from_directory("levels/world1");
+      std::unique_ptr<World> const world = World::from_directory("levels/world1");
       GameManager::current()->start_worldmap(*world);
       break;
     }
@@ -125,7 +125,7 @@ MainMenu::menu_action(MenuItem& item)
     case MNID_CREDITS:
     {
       SoundManager::current()->stop_music(0.2f);
-      std::unique_ptr<World> world = World::from_directory("levels/misc");
+      std::unique_ptr<World> const world = World::from_directory("levels/misc");
       GameManager::current()->start_level(*world, "credits.stl"); // Credits Level
       break;
     }

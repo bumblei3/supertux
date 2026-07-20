@@ -287,7 +287,7 @@ TileMap::get_icon_path() const
 void
 TileMap::float_channel(float target, float &current, float remaining_time, float dt_sec)
 {
-  float amt = (target - current) / (remaining_time / dt_sec);
+  float const amt = (target - current) / (remaining_time / dt_sec);
   if (amt > 0) current = std::min(current + amt, target);
   if (amt < 0) current = std::max(current + amt, target);
 }
@@ -299,7 +299,7 @@ TileMap::apply_offset_x(int fill_id, int xoffset)
     return;
   for (int y = 0; y < m_height; y++) {
     for (int x = 0; x < m_width; x++) {
-      int X = (xoffset < 0) ? x : (m_width - x - 1);
+      int const X = (xoffset < 0) ? x : (m_width - x - 1);
       if (X - xoffset < 0 || X - xoffset >= m_width) {
         m_tiles[y * m_width + X] = fill_id;
       } else {
@@ -315,7 +315,7 @@ TileMap::apply_offset_y(int fill_id, int yoffset)
   if (!yoffset)
     return;
   for (int y = 0; y < m_height; y++) {
-    int Y = (yoffset < 0) ? y : (m_height - y - 1);
+    int const Y = (yoffset < 0) ? y : (m_height - y - 1);
     for (int x = 0; x < m_width; x++) {
       if (Y - yoffset < 0 || Y - yoffset >= m_height) {
         m_tiles[Y * m_width + x] = fill_id;
@@ -403,7 +403,7 @@ TileMap::after_editor_set()
 
   if (Editor::is_active())
   {
-    if (Editor* editor = Editor::current())
+    if (Editor const* editor = Editor::current())
     {
       editor->get_layers_widget()->refresh();
     }
@@ -456,7 +456,7 @@ TileMap::update(float dt_sec)
   if (get_walker()) {
     m_movement = Vector(0, 0);
     get_walker()->update(dt_sec);
-    Vector v = get_walker()->get_pos(get_size() * 32, m_path_handle);
+    Vector const v = get_walker()->get_pos(get_size() * 32, m_path_handle);
     if (get_path() && get_path()->is_valid()) {
       m_movement = v - get_offset();
       set_offset(v);
@@ -502,9 +502,9 @@ TileMap::on_flip(float height)
   for (int x = 0; x < get_width(); ++x) {
     for (int y = 0; y < get_height()/2; ++y) {
       // swap tiles
-      int y2 = get_height() - 1 - y;
-      uint32_t t1 = get_tile_id(x, y);
-      uint32_t t2 = get_tile_id(x, y2);
+      int const y2 = get_height() - 1 - y;
+      uint32_t const t1 = get_tile_id(x, y);
+      uint32_t const t2 = get_tile_id(x, y2);
       change(x, y, t2);
       change(x, y2, t1);
     }
@@ -547,9 +547,9 @@ TileMap::draw(DrawingContext& context)
   const float trans_y = context.get_translation().y;
   context.set_translation(Vector(trans_x * speed_x, trans_y * speed_y));
 
-  Rectf draw_rect = context.get_cliprect();
-  Rect t_draw_rect = get_tiles_overlapping(draw_rect);
-  Vector start = get_tile_position(t_draw_rect.left, t_draw_rect.top);
+  Rectf const draw_rect = context.get_cliprect();
+  Rect const t_draw_rect = get_tiles_overlapping(draw_rect);
+  Vector const start = get_tile_position(t_draw_rect.left, t_draw_rect.top);
 
   Vector pos(0.0f, 0.0f);
   int tx, ty;
@@ -560,7 +560,7 @@ TileMap::draw(DrawingContext& context)
 
   for (pos.x = start.x, tx = t_draw_rect.left; tx < t_draw_rect.right; pos.x += 32, ++tx) {
     for (pos.y = start.y, ty = t_draw_rect.top; ty < t_draw_rect.bottom; pos.y += 32, ++ty) {
-      int index = ty*m_width + tx;
+      int const index = ty*m_width + tx;
       assert (index >= 0);
       assert (index < (m_width * m_height));
 
@@ -695,10 +695,10 @@ TileMap::get_tiles_overlapping(const Rectf &rect) const
   Rectf rect2 = rect;
   rect2.move(-get_offset());
 
-  int t_left   = std::max(0     , int(floorf(rect2.get_left  () / 32)));
-  int t_right  = std::min(m_width , int(ceilf (rect2.get_right () / 32)));
-  int t_top    = std::max(0     , int(floorf(rect2.get_top   () / 32)));
-  int t_bottom = std::min(m_height, int(ceilf (rect2.get_bottom() / 32)));
+  int const t_left   = std::max(0     , int(floorf(rect2.get_left  () / 32)));
+  int const t_right  = std::min(m_width , int(ceilf (rect2.get_right () / 32)));
+  int const t_top    = std::max(0     , int(floorf(rect2.get_top   () / 32)));
+  int const t_bottom = std::min(m_height, int(ceilf (rect2.get_bottom() / 32)));
   return Rect(t_left, t_top, t_right, t_bottom);
 }
 
@@ -747,22 +747,22 @@ bool
 TileMap::is_outside_bounds(const Vector& pos) const
 {
   auto pos_ = (pos - get_offset()) / 32.0f;
-  float width = static_cast<float>(m_width);
-  float height = static_cast<float>(m_height);
+  float const width = static_cast<float>(m_width);
+  float const height = static_cast<float>(m_height);
   return pos_.x < 0 || pos_.x >= width || pos_.y < 0 || pos_.y >= height;
 }
 
 const Tile&
 TileMap::get_tile(int x, int y) const
 {
-  uint32_t id = get_tile_id(x, y);
+  uint32_t const id = get_tile_id(x, y);
   return m_tileset->get(id);
 }
 
 uint32_t
 TileMap::get_tile_id_at(const Vector& pos) const
 {
-  Vector xy = (pos - get_offset()) / 32.0f;
+  Vector const xy = (pos - get_offset()) / 32.0f;
   return get_tile_id(static_cast<int>(xy.x), static_cast<int>(xy.y));
 }
 
@@ -775,7 +775,7 @@ TileMap::get_tile_id_at(float x, float y) const
 const Tile&
 TileMap::get_tile_at(const Vector& pos) const
 {
-  uint32_t id = get_tile_id_at(pos);
+  uint32_t const id = get_tile_id_at(pos);
   return m_tileset->get(id);
 }
 
@@ -797,7 +797,7 @@ TileMap::change(int idx, uint32_t newtile)
 void
 TileMap::change_at(const Vector& pos, uint32_t newtile)
 {
-  Vector xy = (pos - get_offset()) / 32.0f;
+  Vector const xy = (pos - get_offset()) / 32.0f;
   change(int(xy.x), int(xy.y), newtile);
 }
 

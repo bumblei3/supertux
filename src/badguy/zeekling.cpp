@@ -137,7 +137,7 @@ Zeekling::should_we_dive()
   const Vector& playermiddle = player->get_bbox().get_middle();
 
   // Do not dive if we are too close to the player.
-  float height = player->get_bbox().get_top() - get_bbox().get_top();
+  float const height = player->get_bbox().get_top() - get_bbox().get_top();
   if (height <= MIN_DETECT_RANGE_Y)
     return false;
 
@@ -145,7 +145,7 @@ Zeekling::should_we_dive()
   if (height > MAX_DETECT_RANGE_Y)
     return false;
 
-  float xdist = std::abs(eye.x - playermiddle.x);
+  float const xdist = std::abs(eye.x - playermiddle.x);
   if (!math::in_bounds(xdist, MIN_DETECT_RANGE_X, MAX_DETECT_RANGE_X))
     return false;
 

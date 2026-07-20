@@ -59,8 +59,8 @@ Surface::from_file(const std::string& filename, const std::optional<Rect>& rect)
 {
   if (StringUtil::has_suffix(filename, ".surface"))
   {
-    ReaderDocument doc = ReaderDocument::from_file(filename);
-    ReaderObject object = doc.get_root();
+    ReaderDocument const doc = ReaderDocument::from_file(filename);
+    ReaderObject const object = doc.get_root();
     if (object.get_name() != "supertux-surface")
     {
       std::ostringstream msg;
@@ -75,7 +75,7 @@ Surface::from_file(const std::string& filename, const std::optional<Rect>& rect)
   else
   {
     auto textureManager = TextureManager::current();
-    TexturePtr texture = rect ?
+    TexturePtr const texture = rect ?
       textureManager->get(filename, *rect) : textureManager->get(filename);
 
     return SurfacePtr(new Surface(texture, TexturePtr(), NO_FLIP, filename));

@@ -39,8 +39,8 @@ EditorDeleteLevelMenu::EditorDeleteLevelMenu(World* world, Levelset* levelset,
 {
   for (int i = 0; i < levelset->get_num_levels(); i++)
   {
-    std::string filename = levelset->get_level_filename(i);
-    std::string fullpath = FileSystem::join(world->get_basedir(), filename);
+    std::string const filename = levelset->get_level_filename(i);
+    std::string const fullpath = FileSystem::join(world->get_basedir(), filename);
     m_level_full_paths.push_back(fullpath);
     const std::string& level_name = LevelParser::get_level_name(fullpath);
     m_level_names.push_back(level_name);
@@ -71,7 +71,7 @@ EditorDeleteLevelMenu::refresh()
 void
 EditorDeleteLevelMenu::menu_action(MenuItem& item)
 {
-  int id = item.get_id();
+  int const id = item.get_id();
   // Cast to avoid compilation warning
   if (id >= 0 && id < static_cast<int>(m_level_full_paths.size()))
   {

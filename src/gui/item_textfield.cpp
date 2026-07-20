@@ -289,7 +289,7 @@ ItemTextField::paste()
   update_undo();
 
   char* clipboard_content = SDL_GetClipboardText();
-  std::string clipboard_text = std::string(clipboard_content);
+  std::string const clipboard_text = std::string(clipboard_content);
   SDL_free(clipboard_content);
   StringUtil::replace_all(clipboard_text, "\n", " "); // Replace any newlines with spaces.
 

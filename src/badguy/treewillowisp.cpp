@@ -116,8 +116,8 @@ TreeWillOWisp::active_update(float dt_sec)
 
     case STATE_SUCKED:
     {
-      Vector dir = m_suck_target - m_suck_start;
-      double mult = QuinticEaseOut(static_cast<double>(m_suck_timer.get_progress()));
+      Vector const dir = m_suck_target - m_suck_start;
+      double const mult = QuinticEaseOut(static_cast<double>(m_suck_timer.get_progress()));
       set_pos(m_suck_start + (dir * mult));
 
       if (m_suck_timer.check())
@@ -134,9 +134,9 @@ TreeWillOWisp::active_update(float dt_sec)
     case STATE_DEFAULT:
     {
       m_angle = fmodf(m_angle + dt_sec * m_speed, math::TAU);
-      Vector newpos(m_start_position + Vector(sinf(m_angle) * m_radius, 0));
+      Vector const newpos(m_start_position + Vector(sinf(m_angle) * m_radius, 0));
       m_col.set_movement(newpos - get_pos());
-      float sizemod = cosf(m_angle) * 0.8f;
+      float const sizemod = cosf(m_angle) * 0.8f;
       /* TODO: Modify sprite size using the 'sizeMod' value. */
 
       if (sizemod < 0) {

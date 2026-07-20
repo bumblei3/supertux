@@ -166,7 +166,7 @@ SectorParser::parse(const ReaderMapping& reader)
       {
         // for backward compatibilty
         std::vector<float> vColor;
-        bool hasColor = reader.get("ambient-light", vColor);
+        bool const hasColor = reader.get("ambient-light", vColor);
         if (vColor.size() < 3 || !hasColor) {
           log_warning << "(ambient-light) requires a color as argument" << std::endl;
         } else {
@@ -277,7 +277,7 @@ SectorParser::parse_old_format(const ReaderMapping& reader)
     // replace tile id 112 (old invisible tile) with 1311 (new invisible tile)
     for (int x=0; x < tilemap.get_width(); ++x) {
       for (int y=0; y < tilemap.get_height(); ++y) {
-        uint32_t id = tilemap.get_tile_id(x, y);
+        uint32_t const id = tilemap.get_tile_id(x, y);
         if (id == 112)
           tilemap.change(x, y, 1311);
       }

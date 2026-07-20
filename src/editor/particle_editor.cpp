@@ -572,7 +572,7 @@ ParticleEditor::save(const std::string& filepath_, bool retry)
   //  Note: I remember writing this but I have no clue what I meant.  ~Semphris
   try {
     { // make sure the level directory exists
-      std::string dirname = FileSystem::dirname(filepath);
+      std::string const dirname = FileSystem::dirname(filepath);
       if (!PHYSFS_exists(dirname.c_str()))
       {
         if (!PHYSFS_mkdir(dirname.c_str()))
@@ -605,7 +605,7 @@ ParticleEditor::save(const std::string& filepath_, bool retry)
     } else {
       log_warning << "Failed to save the particle configuration, retrying..." << std::endl;
       { // create the level directory again
-        std::string dirname = FileSystem::dirname(filepath);
+        std::string const dirname = FileSystem::dirname(filepath);
         if (!PHYSFS_mkdir(dirname.c_str()))
         {
           std::ostringstream msg;

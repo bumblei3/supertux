@@ -72,7 +72,7 @@ EditorTempSaveAs::menu_action(MenuItem& item)
   {
     case MNID_SAVE:
     {
-      Level* level = editor->get_level();
+      Level const* level = editor->get_level();
 
       if (level->m_name.empty())
       {

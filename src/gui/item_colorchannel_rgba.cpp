@@ -95,7 +95,7 @@ void
 ItemColorChannelRGBA::event(const SDL_Event& ev)
 {
   if (ev.type == SDL_EVENT_TEXT_INPUT) {
-    std::string txt = ev.text.text;
+    std::string const txt = ev.text.text;
     for (auto& c : txt) {
       add_char(c);
     }
@@ -129,7 +129,7 @@ ItemColorChannelRGBA::add_char(char c)
     return;
   }
 
-  float number = std::stof(text);
+  float const number = std::stof(text);
   if (0.0f <= number && number <= 1.0f) {
     *m_number = number;
     set_text(text);

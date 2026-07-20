@@ -74,7 +74,7 @@ Block::collision(MovingObject& other, const CollisionHit& hit_)
   auto player = dynamic_cast<Player*> (&other);
   if (player)
   {
-    bool in_line_with_player = ((player->get_physic().get_velocity_x() > 0.f &&
+    bool const in_line_with_player = ((player->get_physic().get_velocity_x() > 0.f &&
       player->get_bbox().get_right() < get_bbox().get_left()) ||
       (player->get_physic().get_velocity_x() < 0.f &&
       player->get_bbox().get_left() > get_bbox().get_right()));
@@ -85,7 +85,7 @@ Block::collision(MovingObject& other, const CollisionHit& hit_)
     }
     else if (!player->is_water_jumping() && !player->is_swimming())
     {
-      bool x_coordinates_intersect =
+      bool const x_coordinates_intersect =
         player->get_bbox().get_right() >= m_col.m_bbox.get_left() &&
         player->get_bbox().get_left() <= m_col.m_bbox.get_right();
       if (player->get_bbox().get_top() > m_col.m_bbox.get_bottom() - SHIFT_DELTA &&
@@ -102,8 +102,8 @@ Block::collision(MovingObject& other, const CollisionHit& hit_)
   //   3) the object is being hit from below (baguys don't get killed for activating boxes).
   auto badguy = dynamic_cast<BadGuy*> (&other);
   auto portable = dynamic_cast<Portable*> (&other);
-  bool is_portable = ((portable != nullptr) && portable->is_portable());
-  bool hit_mo_from_below = other.get_bbox().get_bottom() < m_col.m_bbox.get_top() + SHIFT_DELTA;
+  bool const is_portable = ((portable != nullptr) && portable->is_portable());
+  bool const hit_mo_from_below = other.get_bbox().get_bottom() < m_col.m_bbox.get_top() + SHIFT_DELTA;
   if (m_bouncing && (!is_portable || badguy) && hit_mo_from_below) {
 
     // Badguys get killed.
@@ -135,7 +135,7 @@ Block::update(float dt_sec)
   if (!m_bouncing)
     return;
 
-  float offset = m_original_y - get_pos().y;
+  float const offset = m_original_y - get_pos().y;
   if (offset > BOUNCY_BRICK_MAX_OFFSET) {
     m_bounce_dir = BOUNCY_BRICK_SPEED;
     m_col.set_movement(Vector(0, m_bounce_dir * dt_sec));
@@ -164,7 +164,7 @@ Block::start_bounce(MovingObject* hitter)
 
   if (!hitter) return;
 
-  float center_of_hitter = hitter->get_bbox().get_middle().x;
+  float const center_of_hitter = hitter->get_bbox().get_middle().x;
   float offset = (m_col.m_bbox.get_middle().x - center_of_hitter)*2 / m_col.m_bbox.get_width();
 
   // Without this, hitting a multi-coin bonus block from the side (e. g. with
@@ -186,11 +186,11 @@ void
 Block::break_me()
 {
   const auto gravity = Sector::get().get_gravity() * 100;
-  Vector pos = get_pos() + Vector(16.0f, 16.0f);
+  Vector const pos = get_pos() + Vector(16.0f, 16.0f);
 
   for (const char* action : {"piece1", "piece2", "piece3", "piece4", "piece5", "piece6"})
   {
-    Vector velocity(graphicsRandom.randf(-100, 100),
+    Vector const velocity(graphicsRandom.randf(-100, 100),
                     graphicsRandom.randf(-400, -300));
     Sector::get().add<SpriteParticle>(m_sprite->clone(), action,
                                 pos, ANCHOR_MIDDLE,

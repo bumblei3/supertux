@@ -96,7 +96,7 @@ PlayerStatusHUD::draw(DrawingContext& context)
   if (!m_show_tuxdolls)
     displayed_stat = std::min(std::max(displayed_stat, 0), m_player_status.get_max_coins());
 
-  float hudpos = BORDER_Y + 1.0f;
+  float const hudpos = BORDER_Y + 1.0f;
   const std::string stat_text = std::to_string(displayed_stat);
 
   context.push_transform();
@@ -125,8 +125,8 @@ PlayerStatusHUD::draw(DrawingContext& context)
     {
       constexpr float POCKET_FADE_AT = .7f;
       constexpr float POCKET_FADE_MULT = 1.4f;
-      float prog = m_item_pocket_fade.started() ? m_item_pocket_fade.get_progress() : 1.f;
-      float fade = 1.f - std::fabs(POCKET_FADE_AT - prog) * POCKET_FADE_MULT;
+      float const prog = m_item_pocket_fade.started() ? m_item_pocket_fade.get_progress() : 1.f;
+      float const fade = 1.f - std::fabs(POCKET_FADE_AT - prog) * POCKET_FADE_MULT;
       if (m_item_pocket_fade.started())
       {
         context.set_alpha(prog < POCKET_FADE_AT ? 1.f : fade);
@@ -140,7 +140,7 @@ PlayerStatusHUD::draw(DrawingContext& context)
           (GameSession::current() && !GameSession::current()->is_active()))
         context.set_alpha(1.f);
 
-      float ypos = static_cast<float>(m_item_pocket_border->get_height() * i);
+      float const ypos = static_cast<float>(m_item_pocket_border->get_height() * i);
       Vector pos(BORDER_X, BORDER_Y + ypos);
       context.color().draw_surface(m_item_pocket_border, pos, LAYER_HUD);
 

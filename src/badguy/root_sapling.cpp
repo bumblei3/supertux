@@ -111,10 +111,10 @@ RootSapling::active_update(float dt_sec)
 
   BadGuy::active_update(dt_sec);
 
-  Player* player = get_nearest_player();
+  Player const* player = get_nearest_player();
   if (!player) return;
 
-  float distance = std::abs(get_pos().x - player->get_pos().x);
+  float const distance = std::abs(get_pos().x - player->get_pos().x);
   if (distance > ROOT_SAPLING_RANGE) return;
 
   if (!m_root_timer.started() || m_root_timer.check())
@@ -136,8 +136,8 @@ RootSapling::get_tile_spawn_pos_offset(const Tile& tile)
   if (!tile.is_slope())
     return 0.f;
 
-  AATriangle slope(tile.get_data());
-  int deform = slope.dir & AATriangle::DEFORM_MASK;
+  AATriangle const slope(tile.get_data());
+  int const deform = slope.dir & AATriangle::DEFORM_MASK;
 
   switch (m_dir)
   {
@@ -184,7 +184,7 @@ RootSapling::get_tile_spawn_pos_offset(const Tile& tile)
 void
 RootSapling::summon_root()
 {
-  for (Player* player : Sector::get().get_players())
+  for (Player const* player : Sector::get().get_players())
   {
     Vector pos;
     float* axis = nullptr;
@@ -210,7 +210,7 @@ RootSapling::summon_root()
       (*axis) = player->get_bbox().get_bottom() + 1;
 
       bool should_summon = false;
-      for (TileMap* tilemap : Sector::get().get_solid_tilemaps())
+      for (TileMap const* tilemap : Sector::get().get_solid_tilemaps())
       {
         const Tile& tile = tilemap->get_tile_at(pos);
         if (tile.is_solid())
@@ -312,7 +312,7 @@ RootSapling::summon_root()
 
       // Check if the hitbox of the root is entirely
       // occupied by solid tiles.
-      Rectf space(bboxpos, size);
+      Rectf const space(bboxpos, size);
       if (!should_summon_root(space.grown(-1)))
         continue;
 
@@ -361,7 +361,7 @@ RootSapling::should_summon_root(const Rectf& bbox)
   }
 
   // Check if the root spawns in the root sapling, and if so, prevent it.
-  Rectf selfcheck(groundpos, get_bbox().get_size());
+  Rectf const selfcheck(groundpos, get_bbox().get_size());
   if (selfcheck.grown(10.f).overlaps(bbox))
     return false;
 

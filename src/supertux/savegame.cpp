@@ -45,7 +45,7 @@ std::vector<LevelState> get_level_states(ssq::Table& levels)
   {
     try
     {
-      ssq::Table table = value.toTable();
+      ssq::Table const table = value.toTable();
 
       LevelState level_state;
       level_state.filename = key;
@@ -278,7 +278,7 @@ Savegame::save(bool initial)
     // We can't move an initial, empty save!
     if (!initial && WorldMap::current()->get_save_version() != m_save_version)
     {
-      std::string writedir = PHYSFS_getWriteDir();
+      std::string const writedir = PHYSFS_getWriteDir();
 
       log_debug << "Backing up old save "
         << FileSystem::join(writedir, filename) << " to "
@@ -341,7 +341,7 @@ Savegame::get_worldmaps()
 
   try
   {
-    ssq::Table worlds_table = m_state_table.getOrCreateTable("worlds");
+    ssq::Table const worlds_table = m_state_table.getOrCreateTable("worlds");
     worlds = worlds_table.getKeys();
   }
   catch(const std::exception& err)
@@ -370,7 +370,7 @@ Savegame::get_worldmap_state(const std::string& name)
     // if a non-canonical entry is present, replace them with a canonical one
     if (name != "/levels/world2/worldmap.stwm")
     {
-      std::string old_map_filename = name.substr(1);
+      std::string const old_map_filename = name.substr(1);
       if (worlds.hasEntry(old_map_filename.c_str()))
         worlds.rename(old_map_filename.c_str(), name.c_str());
     }
@@ -393,7 +393,7 @@ Savegame::get_levelsets()
 
   try
   {
-    ssq::Table levelsets = m_state_table.getOrCreateTable("levelsets");
+    ssq::Table const levelsets = m_state_table.getOrCreateTable("levelsets");
     results = levelsets.getKeys();
   }
   catch(const std::exception& err)
@@ -432,7 +432,7 @@ Savegame::set_levelset_state(const std::string& basedir,
                              const std::string& level_filename,
                              bool solved)
 {
-  LevelsetState state = get_levelset_state(basedir);
+  LevelsetState const state = get_levelset_state(basedir);
 
   if (Editor::current())
     log_warning << "Savegame::set_levelset_state called while the editor is active" << std::endl;

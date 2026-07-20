@@ -110,7 +110,7 @@ StreamSoundSource::update()
   }
 
   if (m_fade_state == FadingOn || m_fade_state == FadingResume) {
-    float time = g_real_time - m_fade_start_time;
+    float const time = g_real_time - m_fade_start_time;
     if (time >= m_fade_time) {
       set_gain(1.0);
       m_fade_state = NoFading;
@@ -118,7 +118,7 @@ StreamSoundSource::update()
       set_gain(time / m_fade_time);
     }
   } else if (m_fade_state == FadingOff || m_fade_state == FadingPause) {
-    float time = g_real_time - m_fade_start_time;
+    float const time = g_real_time - m_fade_start_time;
     if (time >= m_fade_time) {
       if (m_fade_state == FadingOff)
         stop();
@@ -143,7 +143,7 @@ bool
 StreamSoundSource::fillBufferAndQueue(ALuint buffer)
 {
   // fill buffer
-  std::unique_ptr<char[]> bufferdata(new char[STREAMFRAGMENTSIZE]);
+  std::unique_ptr<char[]> const bufferdata(new char[STREAMFRAGMENTSIZE]);
   size_t bytesread = 0;
   do {
     bytesread += m_file->read(static_cast<char *>(bufferdata.get()) + bytesread,
@@ -158,7 +158,7 @@ StreamSoundSource::fillBufferAndQueue(ALuint buffer)
   } while(bytesread < STREAMFRAGMENTSIZE);
 
   if (bytesread > 0) {
-    ALenum format = SoundManager::get_sample_format(*m_file);
+    ALenum const format = SoundManager::get_sample_format(*m_file);
     try
     {
       alBufferData(buffer, format, bufferdata.get(), static_cast<ALsizei>(bytesread), m_file->m_rate);

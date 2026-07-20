@@ -180,11 +180,11 @@ TextObject::draw(DrawingContext& context)
     return;
   }
 
-  float width  = m_font->get_text_width(m_wrapped_text) + 20.0f;
-  float height = m_font->get_text_height(m_wrapped_text) + 20.0f;
-  Vector spos = m_pos + get_anchor_pos(context.get_rect(),
+  float const width  = m_font->get_text_width(m_wrapped_text) + 20.0f;
+  float const height = m_font->get_text_height(m_wrapped_text) + 20.0f;
+  Vector const spos = m_pos + get_anchor_pos(context.get_rect(),
                                        width, height, m_anchor) + m_anchor_offset;
-  Vector sizepos = spos + (Vector(width / 2.f, height / 2.f)) - (Vector(width / 2.f, height / 2.f) * (m_fade_progress));
+  Vector const sizepos = spos + (Vector(width / 2.f, height / 2.f)) - (Vector(width / 2.f, height / 2.f) * (m_fade_progress));
 
   if (m_fade_progress > 0.f)
   {

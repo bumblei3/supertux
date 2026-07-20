@@ -149,9 +149,9 @@ JoystickMenu::refresh_menu_item(Control id)
     return;
   }
 
-  int button  = g_config->joystick_config.reversemap_joybutton(id);
-  int axis    = g_config->joystick_config.reversemap_joyaxis(id);
-  int hat_dir = g_config->joystick_config.reversemap_joyhat(id);
+  int const button  = g_config->joystick_config.reversemap_joybutton(id);
+  int const axis    = g_config->joystick_config.reversemap_joyaxis(id);
+  int const hat_dir = g_config->joystick_config.reversemap_joyhat(id);
 
   if (button != -1)
   {

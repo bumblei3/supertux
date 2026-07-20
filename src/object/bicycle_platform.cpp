@@ -43,8 +43,8 @@ BicyclePlatformChild::update(float dt_sec)
   float angle = m_parent.m_angle + m_angle_offset;
   angle = math::positive_fmodf(angle, math::TAU);
 
-  Vector dest = m_parent.m_center + Vector(cosf(angle), sinf(angle)) * m_parent.m_radius - (m_col.m_bbox.get_size().as_vector() * 0.5f);
-  Vector movement = dest - get_pos();
+  Vector const dest = m_parent.m_center + Vector(cosf(angle), sinf(angle)) * m_parent.m_radius - (m_col.m_bbox.get_size().as_vector() * 0.5f);
+  Vector const movement = dest - get_pos();
   m_col.set_movement(movement);
   m_col.propagate_movement(movement);
 }

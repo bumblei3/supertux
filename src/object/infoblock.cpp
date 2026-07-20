@@ -109,7 +109,7 @@ InfoBlock::hit(Player& player)
       }
     }
 
-    Camera& cam = Sector::get().get_singleton_by_type<Camera>();
+    Camera const& cam = Sector::get().get_singleton_by_type<Camera>();
     if (m_original_y - m_lines_height - 10.f < cam.get_translation().y)
       m_initial_y = cam.get_translation().y + 10.0f;
     else
@@ -152,17 +152,17 @@ InfoBlock::update(float dt_sec)
   // hide message if player is too far away
   if (m_dest_pct > 0) {
     if (auto* player = get_nearest_player()) {
-      Vector p1 = m_col.m_bbox.get_middle();
-      Vector p2 = player->get_bbox().get_middle();
-      Vector dist = (p2 - p1);
-      float d = glm::length(dist);
+      Vector const p1 = m_col.m_bbox.get_middle();
+      Vector const p2 = player->get_bbox().get_middle();
+      Vector const dist = (p2 - p1);
+      float const d = glm::length(dist);
       if (d > 128) m_dest_pct = 0;
     }
   }
 
   // handle soft fade-in and fade-out
   if (m_shown_pct != m_dest_pct) {
-    float transitionspeed = m_fadetransition ? 1.f : 2.5f;
+    float const transitionspeed = m_fadetransition ? 1.f : 2.5f;
     if (m_dest_pct > m_shown_pct) m_shown_pct = std::min(m_shown_pct + 2 * dt_sec * transitionspeed, m_dest_pct);
     if (m_dest_pct < m_shown_pct) m_shown_pct = std::max(m_shown_pct - 2 * dt_sec * transitionspeed, m_dest_pct);
   }
@@ -182,12 +182,12 @@ InfoBlock::draw(DrawingContext& context)
 
   //float x1 = SCREEN_WIDTH/2-200;
   //float y1 = SCREEN_HEIGHT/2-200;
-  float border = 8;
-  float width = 400; // this is the text width only
-  float height = m_lines_height; // this is the text height only
+  float const border = 8;
+  float const width = 400; // this is the text width only
+  float const height = m_lines_height; // this is the text height only
   float x1 = (m_col.m_bbox.get_left() + m_col.m_bbox.get_right())/2 - width/2;
   float x2 = (m_col.m_bbox.get_left() + m_col.m_bbox.get_right())/2 + width/2;
-  float y1 = m_initial_y;
+  float const y1 = m_initial_y;
 
   if (x1 < 0) {
     x1 = 0;
@@ -199,8 +199,8 @@ InfoBlock::draw(DrawingContext& context)
     x1 = x2 - width;
   }
 
-  float growposx = (x1 - border) + (((width + 2 * border) / 2) - (((width + 2 * border) / 2) * m_shown_pct));
-  float growposy = (y1 - border) + ((height + 2 * border - 4) / 2) - (((height + 2 * border - 4) / 2) * m_shown_pct);
+  float const growposx = (x1 - border) + (((width + 2 * border) / 2) - (((width + 2 * border) / 2) * m_shown_pct));
+  float const growposy = (y1 - border) + ((height + 2 * border - 4) / 2) - (((height + 2 * border - 4) / 2) * m_shown_pct);
 
   // lines_height includes one ITEMS_SPACE too much, so the bottom border is reduced by 4px
   context.color().draw_filled_rect(Rectf(Vector(m_fadetransition ? x1 - border : growposx,

@@ -84,8 +84,8 @@ EditorTilebox::draw(DrawingContext& context)
 
   // Shadow
   constexpr float SCROLL_SHADOW_MAX = 10.f;
-  float scroll_shadow_size = std::clamp<float>(m_scroll_progress * 0.1, 0.f, SCROLL_SHADOW_MAX);
-  float scroll_shadow_normal = scroll_shadow_size / SCROLL_SHADOW_MAX;
+  float const scroll_shadow_size = std::clamp<float>(m_scroll_progress * 0.1, 0.f, SCROLL_SHADOW_MAX);
+  float const scroll_shadow_normal = scroll_shadow_size / SCROLL_SHADOW_MAX;
   context.color().draw_gradient(Color(0.0f, 0.0f, 0.0f, scroll_shadow_normal * 0.3),
                                 Color(0.0f, 0.0f, 0.0f, 0.0f),
                                 LAYER_GUI + 1,
@@ -190,12 +190,12 @@ EditorTilebox::update_selection()
   m_tiles->m_width = static_cast<int>(select.get_width() + 1);
   m_tiles->m_height = static_cast<int>(select.get_height() + 1);
 
-  int size = static_cast<int>(m_active_tilegroup->tiles.size());
+  int const size = static_cast<int>(m_active_tilegroup->tiles.size());
   for (int y = static_cast<int>(select.get_top()); y <= static_cast<int>(select.get_bottom()); y++)
   {
     for (int x = static_cast<int>(select.get_left()); x <= static_cast<int>(select.get_right()); x++)
     {
-      int tile_pos = (y + static_cast<int>(m_scroll_progress / 32.f)) * 4 + x;
+      int const tile_pos = (y + static_cast<int>(m_scroll_progress / 32.f)) * 4 + x;
       if (tile_pos < size && tile_pos >= 0)
         m_tiles->m_tiles.push_back(m_active_tilegroup->tiles[tile_pos]);
       else
@@ -235,7 +235,7 @@ EditorTilebox::on_mouse_button_down(const SDL_MouseButtonEvent& button)
             m_drag_start = Vector(static_cast<float>(m_hovered_tile % 4),
                                   static_cast<float>(m_hovered_tile / 4)); // NOLINT
 
-            int size = static_cast<int>(m_active_tilegroup->tiles.size());
+            int const size = static_cast<int>(m_active_tilegroup->tiles.size());
             if (m_hovered_tile < size && m_hovered_tile >= 0)
               m_tiles->set_tile(m_active_tilegroup->tiles[m_hovered_tile]);
             else
@@ -245,7 +245,7 @@ EditorTilebox::on_mouse_button_down(const SDL_MouseButtonEvent& button)
 
         case InputType::OBJECT:
           {
-            int size = static_cast<int>(m_active_objectgroup->get_icons().size());
+            int const size = static_cast<int>(m_active_objectgroup->get_icons().size());
             if (m_hovered_tile < size && m_hovered_tile >= 0)
             {
               m_object = m_active_objectgroup->get_icons()[m_hovered_tile].get_object_class();
@@ -365,8 +365,8 @@ EditorTilebox::get_tile_coords(int pos, bool relative) const
 int
 EditorTilebox::get_tile_pos(const Vector& coords) const
 {
-  int x = static_cast<int>((coords.x - m_rect.get_left()) / 32.0f);
-  int y = static_cast<int>((coords.y - m_rect.get_top() + m_scroll_progress) / 32.0f);
+  int const x = static_cast<int>((coords.x - m_rect.get_left()) / 32.0f);
+  int const y = static_cast<int>((coords.y - m_rect.get_top() + m_scroll_progress) / 32.0f);
   return y * 4 + x;
 }
 
@@ -427,7 +427,7 @@ EditorTilebox::change_tilegroup(int dir)
     return;
   }
 
-  size_t tilegroups_size = m_editor.get_tileset()->get_tilegroups().size();
+  size_t const tilegroups_size = m_editor.get_tileset()->get_tilegroups().size();
   m_tilegroup_id += dir;
   if (m_tilegroup_id < 0)
     m_tilegroup_id = tilegroups_size - 1;
@@ -446,7 +446,7 @@ EditorTilebox::change_objectgroup(int dir)
     return;
   }
 
-  size_t objectgroups_size = m_object_info->m_groups.size();
+  size_t const objectgroups_size = m_object_info->m_groups.size();
   // We also need to skip worldmap groups if we aren't a worldmap here
   do
   {

@@ -83,7 +83,7 @@ KamikazeSnowball::collision_player(Player& player, const CollisionHit& hit)
   // Methodology to determine necessity of death.
   if (!m_frozen)
   {
-    HitResponse response = BadGuy::collision_player(player, hit);
+    HitResponse const response = BadGuy::collision_player(player, hit);
     if (response == FORCE_MOVE) {
       kill_collision();
     }

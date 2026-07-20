@@ -104,7 +104,7 @@ void MD5::update(std::istream& stream) {
 
   while (stream.good()) {
     stream.read(reinterpret_cast<char*>(buffer_), 1024); // note that return value of read is unusable.
-    size_t len = stream.gcount();
+    size_t const len = stream.gcount();
     update(buffer_, static_cast<unsigned int>(len));
   }
 }
@@ -114,7 +114,7 @@ void MD5::update(std::ifstream& stream) {
 
   while (stream.good()) {
     stream.read(reinterpret_cast<char*>(buffer_), 1024); // note that return value of read is unusable.
-    size_t len = stream.gcount();
+    size_t const len = stream.gcount();
     update(buffer_, static_cast<unsigned int>(len));
   }
 }

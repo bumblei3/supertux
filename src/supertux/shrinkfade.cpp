@@ -38,7 +38,7 @@ ShrinkFade::ShrinkFade(const Vector& dest, float fade_time, int draw_layer, Dire
 void
 ShrinkFade::update(float dt_sec)
 {
-  float progress = m_accum_time / m_fade_time;
+  float const progress = m_accum_time / m_fade_time;
   m_accum_time += dt_sec + ((m_direction == FADEOUT ? (1.0f - progress) : progress) * m_speedup * (1.0f/60.0f));
   if (m_accum_time > m_fade_time)
     m_accum_time = m_fade_time;
@@ -49,11 +49,11 @@ ShrinkFade::update(float dt_sec)
 void
 ShrinkFade::draw(DrawingContext& context)
 {
-  float progress = m_accum_time / m_fade_time;
+  float const progress = m_accum_time / m_fade_time;
   if (m_force_fade)
     context.set_alpha((m_direction == FADEIN ? (1.0f - progress) : progress));
 
-  float diameter = 2 * m_initial_size * (m_direction == FADEOUT ? (1.0f - progress) : progress);
+  float const diameter = 2 * m_initial_size * (m_direction == FADEOUT ? (1.0f - progress) : progress);
   context.color().draw_inverse_ellipse(m_dest, Vector(1.1f * diameter, diameter),
                                        Color(0, 0, 0), m_draw_layer);
 

@@ -297,7 +297,7 @@ Crusher::is_recovery_path_clear_of_crushers() const
 
   for (Crusher& other_crusher : Sector::get().get_objects_by_type<Crusher>())
   {
-    Crusher* other_crusher_ptr = &other_crusher;
+    Crusher const* other_crusher_ptr = &other_crusher;
 
     if (other_crusher_ptr == this)
     {
@@ -317,7 +317,7 @@ Crusher::has_recovered()
 {
   const float current_top = get_bbox().get_top();
   const float current_left = get_bbox().get_left();
-  Vector current_pos = get_pos();
+  Vector const current_pos = get_pos();
 
   // Defines the zone around m_start_position to consider recovered.
   const float tolerance = 2.0f;
@@ -772,7 +772,7 @@ Crusher::eye_position(bool right) const
   {
     case IDLE:
     {
-      Player* player = Sector::get().get_nearest_player(get_bbox());
+      Player const* player = Sector::get().get_nearest_player(get_bbox());
       if (!player)
         break;
 
@@ -1173,7 +1173,7 @@ Crusher::update(float dt_sec)
     m_physic.set_velocity(Vector(0.0f, 0.0f));
   }
 
-  bool in_water = !Sector::get().is_free_of_tiles(get_bbox(), true, Tile::WATER);
+  bool const in_water = !Sector::get().is_free_of_tiles(get_bbox(), true, Tile::WATER);
   if (in_water)
     frame_movement *= 0.6f;
 

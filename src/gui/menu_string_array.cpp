@@ -32,7 +32,7 @@ StringArrayMenu::StringArrayMenu(std::vector<std::string>& items) :
 void
 StringArrayMenu::menu_action(MenuItem& item)
 {
-  int id = item.get_id();
+  int const id = item.get_id();
   if (id >= 0)
   {
     m_text = m_array_items[id];

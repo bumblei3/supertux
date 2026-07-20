@@ -43,7 +43,7 @@ CheatApplyMenu::CheatApplyMenu(std::function<void(Player&)> callback) :
 void
 CheatApplyMenu::menu_action(MenuItem& item)
 {
-  int id = item.get_id();
+  int const id = item.get_id();
 
   if (id < -1)
     return;

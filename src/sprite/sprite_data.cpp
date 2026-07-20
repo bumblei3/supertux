@@ -453,7 +453,7 @@ SpriteData::parse_action(const ReaderMapping& mapping)
 const SpriteData::Action*
 SpriteData::get_action(const std::string& act) const
 {
-  Actions::const_iterator i = actions.find(act);
+  Actions::const_iterator const i = actions.find(act);
   if (i == actions.end()) {
     return nullptr;
   }

@@ -40,10 +40,10 @@ CaptainSnowball::might_climb(int width, int height) const
 
   float x1;
   float x2;
-  float y1a = m_col.m_bbox.get_top() + 1;
-  float y2a = m_col.m_bbox.get_bottom() - 1;
-  float y1b = m_col.m_bbox.get_top() + 1 - static_cast<float>(height);
-  float y2b = m_col.m_bbox.get_bottom() - 1 - static_cast<float>(height);
+  float const y1a = m_col.m_bbox.get_top() + 1;
+  float const y2a = m_col.m_bbox.get_bottom() - 1;
+  float const y1b = m_col.m_bbox.get_top() + 1 - static_cast<float>(height);
+  float const y2b = m_col.m_bbox.get_bottom() - 1 - static_cast<float>(height);
   if (m_dir == Direction::LEFT) {
     x1 = m_col.m_bbox.get_left() - static_cast<float>(width);
     x2 = m_col.m_bbox.get_left() - 1;

@@ -64,8 +64,8 @@ MouseCursor::set_cursor_action(const std::string& action)
     auto surfaces = m_sprite->get_action_surfaces(action);
     if (!surfaces || surfaces->empty())
       return;
-    std::string filename = (*surfaces)[0]->get_filename();
-    SDLSurfacePtr surface = SDLSurface::from_file(filename);
+    std::string const filename = (*surfaces)[0]->get_filename();
+    SDLSurfacePtr const surface = SDLSurface::from_file(filename);
     m_cursors[action] =
       std::move(std::shared_ptr<SDL_Cursor>(SDL_CreateColorCursor(surface.get(), 0, 0), &SDL_DestroyCursor));
     if (m_cursors[action])
@@ -160,7 +160,7 @@ MouseCursor::draw(DrawingContext& context)
   if (m_state != MouseCursorState::HIDE && m_visible)
   {
     float x, y;
-    Uint32 ispressed = SDL_GetMouseState(&x, &y);
+    Uint32 const ispressed = SDL_GetMouseState(&x, &y);
 
     if (g_config->custom_system_cursor && !SDL_CursorVisible())
     {
@@ -182,7 +182,7 @@ MouseCursor::draw(DrawingContext& context)
       apply_state(m_state);
     }
 
-    Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(x, y);
+    Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(x, y);
 
     if (!g_config->custom_system_cursor)
       m_sprite->draw(context.color(), mouse_pos, LAYER_GUI + 100);

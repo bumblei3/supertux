@@ -51,7 +51,7 @@ Particles::Particles(const Vector& epicenter, int min_angle, int max_angle,
     auto particle = std::make_unique<Particle>();
     particle->pos = epicenter;
 
-    float angle = math::radians(graphicsRandom.randf(static_cast<float>(min_angle), static_cast<float>(max_angle)));
+    float const angle = math::radians(graphicsRandom.randf(static_cast<float>(min_angle), static_cast<float>(max_angle)));
     particle->vel.x = /*fabs*/(sinf(angle)) * initial_velocity.x;
     //    if(angle >= math::PI && angle < math::TAU)
     //      particle->vel.x *= -1;  // work around to fix signal
@@ -89,9 +89,9 @@ Particles::Particles(const Vector& epicenter, int min_angle, int max_angle,
     auto particle = std::make_unique<Particle>();
     particle->pos = epicenter;
 
-    float velocity = (min_initial_velocity == max_initial_velocity) ? min_initial_velocity :
+    float const velocity = (min_initial_velocity == max_initial_velocity) ? min_initial_velocity :
                      graphicsRandom.randf(min_initial_velocity, max_initial_velocity);
-    float angle = (min_angle == max_angle) ?
+    float const angle = (min_angle == max_angle) ?
       math::radians(static_cast<float>(min_angle)) :
       math::radians(graphicsRandom.randf(static_cast<float>(min_angle), static_cast<float>(max_angle)));
     // Note that angle defined as clockwise from vertical (up is zero degrees, right is 90 degrees)
@@ -105,7 +105,7 @@ Particles::Particles(const Vector& epicenter, int min_angle, int max_angle,
 void
 Particles::update(float dt_sec)
 {
-  Camera& camera = Sector::get().get_camera();
+  Camera const& camera = Sector::get().get_camera();
 
   // update particles
   for (auto i = particles.begin(); i != particles.end(); ) {

@@ -259,7 +259,7 @@ CollisionSystem::collision_tilemap(collision::Constraints* constraints,
         // Skip non-solid tiles.
         if (tile.is_solid())
         {
-          Rectf tile_bbox = solids->get_tile_bbox(x, y);
+          Rectf const tile_bbox = solids->get_tile_bbox(x, y);
           bool is_relatively_solid = true;
 
           /* If the tile is a unisolid tile, the "is_solid()" function above
@@ -268,7 +268,7 @@ CollisionSystem::collision_tilemap(collision::Constraints* constraints,
           * solid with regard to those parameters. */
           if (tile.is_unisolid())
           {
-            Vector relative_movement = movement
+            Vector const relative_movement = movement
               - solids->get_movement(/* actual = */ true);
 
             if (!tile.is_solid(tile_bbox, object.get_bbox(), relative_movement))
@@ -289,7 +289,7 @@ CollisionSystem::collision_tilemap(collision::Constraints* constraints,
               hits_bottom |= triangle_hits_bottom;
             }
             else { // Normal rectangular tile.
-              collision::Constraints new_constraints = check_collisions(movement, dest, tile_bbox, nullptr, nullptr);
+              collision::Constraints const new_constraints = check_collisions(movement, dest, tile_bbox, nullptr, nullptr);
               hits_bottom |= new_constraints.hit.bottom;
               constraints->merge_constraints(new_constraints);
             }
@@ -416,10 +416,10 @@ CollisionSystem::collision_object(CollisionObject* object1, CollisionObject* obj
     std::swap(hit.left, hit.right);
     std::swap(hit.top, hit.bottom);
 
-    HitResponse response1 = object1->collision(*object2, hit);
+    HitResponse const response1 = object1->collision(*object2, hit);
     std::swap(hit.left, hit.right);
     std::swap(hit.top, hit.bottom);
-    HitResponse response2 = object2->collision(*object1, hit);
+    HitResponse const response2 = object2->collision(*object1, hit);
     if (response1 == CONTINUE && response2 == CONTINUE) {
       normal *= (0.5f + EPSILON);
       object1->m_dest.move(-normal);
@@ -454,7 +454,7 @@ CollisionSystem::collision_static(collision::Constraints* constraints,
       static_object != &object)
     {
 
-      collision::Constraints new_constraints = check_collisions(
+      collision::Constraints const new_constraints = check_collisions(
         movement, dest, static_object->m_dest, &object, static_object);
 
       if (new_constraints.hit.bottom)
@@ -486,7 +486,7 @@ CollisionSystem::collision_static_constrains(CollisionObject& object)
 
     // Apply calculated horizontal constraints.
     if (constraints.get_position_bottom() < infinity) {
-      float height = constraints.get_height();
+      float const height = constraints.get_height();
       if (height < object.get_bbox().get_height()) {
         // We're crushed, but ignore this for now, we'll get this again
         // later if we're really crushed or things will solve itself when
@@ -531,7 +531,7 @@ CollisionSystem::collision_static_constrains(CollisionObject& object)
         object.m_pressure.x = pressure.x;
       }
       else {
-        float xmid = constraints.get_x_midpoint();
+        float const xmid = constraints.get_x_midpoint();
         dest.set_left(xmid - object.get_bbox().get_width() / 2);
         dest.set_right(xmid + object.get_bbox().get_width() / 2);
       }
@@ -575,7 +575,7 @@ CollisionSystem::collision_static_constrains(CollisionObject& object)
     constraints = Constraints();
     collision_static(&constraints, movement, dest, object);
     if (constraints.get_position_right() < infinity) {
-      float width = constraints.get_width();
+      float const width = constraints.get_width();
       if (width + SHIFT_DELTA < object.get_bbox().get_width()) {
         CollisionHit h;
         h.top = true;
@@ -636,7 +636,7 @@ CollisionSystem::update()
       || !object->is_valid())
       continue;
 
-    uint32_t tile_attributes = collision_tile_attributes(object->m_dest, object->get_movement());
+    uint32_t const tile_attributes = collision_tile_attributes(object->m_dest, object->get_movement());
     if (tile_attributes >= Tile::FIRST_INTERESTING_FLAG) {
       object->collision_tile(tile_attributes);
     }
@@ -845,8 +845,8 @@ finish_tiles:
 
   if (tileresult.is_valid && objresult.is_valid)
   {
-    float tiledist = glm::distance(tileresult.box.get_middle(), line_start);
-    float objdist = glm::distance(objresult.box.get_middle(), line_start);
+    float const tiledist = glm::distance(tileresult.box.get_middle(), line_start);
+    float const objdist = glm::distance(objresult.box.get_middle(), line_start);
     return tiledist < objdist ? tileresult : objresult;
   }
   else if (tileresult.is_valid)
@@ -872,7 +872,7 @@ CollisionSystem::get_nearby_objects(const Vector& center, float max_distance) co
   std::vector<CollisionObject*> ret;
 
   for (const auto& object : m_objects) {
-    float distance = object->get_bbox().distance(center);
+    float const distance = object->get_bbox().distance(center);
     if (distance <= max_distance)
       ret.push_back(object);
   }

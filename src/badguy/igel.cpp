@@ -77,7 +77,7 @@ Igel::active_update(float dt_sec)
     case STATE_ROLLING:
       if (m_ease_timer.started())
       {
-        float vel = (m_ease_timer.get_progress() * (ROLL_SPEED - get_normal_walk_speed())) + get_normal_walk_speed();
+        float const vel = (m_ease_timer.get_progress() * (ROLL_SPEED - get_normal_walk_speed())) + get_normal_walk_speed();
         set_walk_speed(vel);
         m_physic.set_velocity_x(vel * (m_dir == Direction::LEFT ? -1 : 1));
       }
@@ -107,7 +107,7 @@ Igel::active_update(float dt_sec)
 
       if (m_ease_timer.started())
       {
-        float vel = (m_ease_timer.get_progress() * (get_normal_walk_speed() - ROLL_SPEED)) + ROLL_SPEED;
+        float const vel = (m_ease_timer.get_progress() * (get_normal_walk_speed() - ROLL_SPEED)) + ROLL_SPEED;
         set_walk_speed(vel);
         m_physic.set_velocity_x(vel * (m_dir == Direction::LEFT ? -1 : 1));
       }
@@ -179,7 +179,7 @@ Igel::unfreeze(bool melt)
 
   set_action(m_dir);
 
-  float vel = get_normal_walk_speed();
+  float const vel = get_normal_walk_speed();
   set_walk_speed(vel);
   m_physic.set_velocity_x(vel * (m_dir == Direction::LEFT ? -1 : 1));
 
@@ -211,19 +211,19 @@ Igel::get_default_sprite_name() const
 bool
 Igel::should_roll() const
 {
-  Player* player = get_nearest_player();
+  Player const* player = get_nearest_player();
   if (!player) return false;
 
   Rectf player_box = player->get_bbox();
 
-  bool in_reach_left = (player_box.get_right() >= get_bbox().get_right()-((m_dir == Direction::LEFT) ? ROLL_RANGE : 0));
-  bool in_reach_right = (player_box.get_left() <= get_bbox().get_left()+((m_dir == Direction::RIGHT) ? ROLL_RANGE : 0));
-  bool in_reach_top = (player_box.get_bottom() >= get_bbox().get_top());
-  bool in_reach_bottom = (player_box.get_top() <= get_bbox().get_bottom());
+  bool const in_reach_left = (player_box.get_right() >= get_bbox().get_right()-((m_dir == Direction::LEFT) ? ROLL_RANGE : 0));
+  bool const in_reach_right = (player_box.get_left() <= get_bbox().get_left()+((m_dir == Direction::RIGHT) ? ROLL_RANGE : 0));
+  bool const in_reach_top = (player_box.get_bottom() >= get_bbox().get_top());
+  bool const in_reach_bottom = (player_box.get_top() <= get_bbox().get_bottom());
 
   Rectf box = get_bbox().grown(1.f);
-  Vector eye = {m_dir == Direction::LEFT ? box.get_left() : box.get_right(), box.get_middle().y};
-  bool can_see_player = Sector::get().free_line_of_sight(eye, player_box.get_middle(), true);
+  Vector const eye = {m_dir == Direction::LEFT ? box.get_left() : box.get_right(), box.get_middle().y};
+  bool const can_see_player = Sector::get().free_line_of_sight(eye, player_box.get_middle(), true);
 
   return in_reach_left && in_reach_right && in_reach_top && in_reach_bottom && can_see_player;
 }

@@ -98,7 +98,7 @@ ControlScrollbar::on_mouse_button_down(const SDL_MouseButtonEvent& button)
     return false;
 
   if (button.button == SDL_BUTTON_LEFT) {
-    Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(button.x, button.y);
+    Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(button.x, button.y);
     if (get_bar_rect().contains(mouse_pos)) {
       m_scrolling = true;
       return true;
@@ -116,7 +116,7 @@ ControlScrollbar::on_mouse_motion(const SDL_MouseMotionEvent& motion)
   if (!is_active())
     return false;
 
-  Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(motion.x, motion.y);
+  Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(motion.x, motion.y);
   m_hovering = get_bar_rect().contains(mouse_pos);
 
   if (m_scrolling)

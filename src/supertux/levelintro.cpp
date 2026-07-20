@@ -113,7 +113,7 @@ void LevelIntro::draw_stats_line(DrawingContext& context, int& py, const std::st
 {
   std::stringstream ss;
   ss << name << ": " << stat;
-  Color tcolor = isPerfect ? s_stat_perfect_color : s_stat_color;
+  Color const tcolor = isPerfect ? s_stat_perfect_color : s_stat_color;
   context.color().draw_center_text(Resources::normal_font, ss.str(), Vector(0, static_cast<float>(py)),
                                    LAYER_FOREGROUND1, tcolor);
   py += static_cast<int>(Resources::normal_font->get_height());
@@ -137,7 +137,7 @@ LevelIntro::draw(Compositor& compositor)
 
   std::string author = m_level.get_author();
   if ((!author.empty()) && (author != "SuperTux Team")) {
-    std::string author_text = fmt::format(fmt::runtime(_("contributed by {}")), author);
+    std::string const author_text = fmt::format(fmt::runtime(_("contributed by {}")), author);
     context.color().draw_center_text(Resources::small_font, author_text, Vector(0, static_cast<float>(py)), LAYER_FOREGROUND1, s_author_color);
     py += static_cast<int>(Resources::small_font->get_height());
   }
@@ -150,12 +150,12 @@ LevelIntro::draw(Compositor& compositor)
         && !InputManager::current()->m_uses_keyboard[i] && i != 0)
       context.transform().alpha = 0.25f;
 
-    float offset = (static_cast<float>(i) - static_cast<float>(m_player_sprite.size()) / 2.f + 0.5f) * 64.f;
+    float const offset = (static_cast<float>(i) - static_cast<float>(m_player_sprite.size()) / 2.f + 0.5f) * 64.f;
 
     m_player_sprite[i]->draw(context.color(), Vector((context.get_width() - m_player_sprite[i]->get_current_hitbox_width()) / 2 - offset,
                                                 static_cast<float>(py) + m_player_sprite_py[i] - m_player_sprite[i]->get_current_hitbox_height()), LAYER_FOREGROUND1);
 
-    Color power_color = (m_player_status.bonus[i] == BONUS_FIRE ? Color(1.f, 0.7f, 0.5f) :
+    Color const power_color = (m_player_status.bonus[i] == BONUS_FIRE ? Color(1.f, 0.7f, 0.5f) :
       m_player_status.bonus[i] == BONUS_ICE ? Color(0.7f, 1.f, 1.f) :
       m_player_status.bonus[i] == BONUS_AIR ? Color(0.7f, 1.f, 0.5f) :
       m_player_status.bonus[i] == BONUS_EARTH ? Color(1.f, 0.9f, 0.6f) :
@@ -195,7 +195,7 @@ LevelIntro::draw(Compositor& compositor)
                       m_best_level_statistics->get_secrets() >= stats.m_total_secrets);
     }
 
-    bool targetTimeBeaten = m_level.m_target_time == 0.0f || (m_best_level_statistics->get_time() != 0.0f && m_best_level_statistics->get_time() < m_level.m_target_time);
+    bool const targetTimeBeaten = m_level.m_target_time == 0.0f || (m_best_level_statistics->get_time() != 0.0f && m_best_level_statistics->get_time() < m_level.m_target_time);
     draw_stats_line(context, py, _("Best time"),
                     Statistics::time_to_string(m_best_level_statistics->get_time()), targetTimeBeaten);
 
@@ -223,7 +223,7 @@ LevelIntro::get_status() const
 void
 LevelIntro::push_player()
 {
-  int i = static_cast<int>(m_player_sprite.size());
+  int const i = static_cast<int>(m_player_sprite.size());
 
   if (i > InputManager::current()->get_num_users())
   {

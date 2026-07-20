@@ -94,12 +94,12 @@ Dialog::get_button_at(const Vector& mouse_pos) const
 
   for (int i = 0; i < static_cast<int>(m_buttons.size()); ++i)
   {
-    float segment_width = bg_rect.get_width() / static_cast<float>(m_buttons.size());
-    float button_width = segment_width;
-    float button_height = 24.0f;
-    Vector pos(bg_rect.get_left() + segment_width/2.0f + static_cast<float>(i) * segment_width,
+    float const segment_width = bg_rect.get_width() / static_cast<float>(m_buttons.size());
+    float const button_width = segment_width;
+    float const button_height = 24.0f;
+    Vector const pos(bg_rect.get_left() + segment_width/2.0f + static_cast<float>(i) * segment_width,
                bg_rect.get_bottom() - 12);
-    Rectf button_rect(Vector(pos.x - button_width/2, pos.y - button_height/2),
+    Rectf const button_rect(Vector(pos.x - button_width/2, pos.y - button_height/2),
                       Vector(pos.x + button_width/2, pos.y + button_height/2));
     if (button_rect.contains(mouse_pos))
     {
@@ -119,8 +119,8 @@ Dialog::event(const SDL_Event& ev)
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
     if (ev.button.button == SDL_BUTTON_LEFT)
     {
-      Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
-      int new_button = get_button_at(mouse_pos);
+      Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
+      int const new_button = get_button_at(mouse_pos);
       if (new_button != -1)
       {
         m_selected_button = new_button;
@@ -131,8 +131,8 @@ Dialog::event(const SDL_Event& ev)
 
     case SDL_EVENT_MOUSE_MOTION:
     {
-      Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
-      int new_button = get_button_at(mouse_pos);
+      Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
+      int const new_button = get_button_at(mouse_pos);
       if (new_button != -1)
       {
         m_selected_button = new_button;
@@ -226,15 +226,15 @@ Dialog::draw(DrawingContext& context)
   // Draw buttons.
   for (int i = 0; i < static_cast<int>(m_buttons.size()); ++i)
   {
-    float segment_width = bg_rect.get_width() / static_cast<float>(m_buttons.size());
-    Vector pos(bg_rect.get_left() + segment_width/2.0f + static_cast<float>(i) * segment_width,
+    float const segment_width = bg_rect.get_width() / static_cast<float>(m_buttons.size());
+    Vector const pos(bg_rect.get_left() + segment_width/2.0f + static_cast<float>(i) * segment_width,
                bg_rect.get_bottom() - 12);
 
     if (i == m_selected_button)
     {
-      float button_width = segment_width;
-      float button_height = 24.0f;
-      float blink = (sinf(g_real_time * math::PI * 1.0f)/2.0f + 0.5f) * 0.5f + 0.25f;
+      float const button_width = segment_width;
+      float const button_height = 24.0f;
+      float const blink = (sinf(g_real_time * math::PI * 1.0f)/2.0f + 0.5f) * 0.5f + 0.25f;
       context.color().draw_filled_rect(Rectf(Vector(pos.x - button_width/2, pos.y - button_height/2),
                                                Vector(pos.x + button_width/2, pos.y + button_height/2)).grown(2.0f),
                                          Color(1.0f, 1.0f, 1.0f, blink),

@@ -23,7 +23,7 @@
 
 inline void check_gl_error(const char* filename, int line)
 {
-  GLenum error = glGetError();
+  GLenum const error = glGetError();
   if (error != GL_NO_ERROR) {
     std::ostringstream msg;
     msg << filename << ":" << line << ": " << "glGetError: ";

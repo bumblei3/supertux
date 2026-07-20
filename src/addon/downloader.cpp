@@ -45,7 +45,7 @@ namespace {
 size_t my_curl_string_append(void* ptr, size_t size, size_t nmemb, void* userdata)
 {
   std::string& s = *static_cast<std::string*>(userdata);
-  std::string buf(static_cast<char*>(ptr), size * nmemb);
+  std::string const buf(static_cast<char*>(ptr), size * nmemb);
   s += buf;
   log_debug << "read " << size * nmemb << " bytes of data..." << std::endl;
   return size * nmemb;
@@ -55,7 +55,7 @@ size_t my_curl_string_append(void* ptr, size_t size, size_t nmemb, void* userdat
 size_t my_curl_physfs_write(void* ptr, size_t size, size_t nmemb, void* userdata)
 {
   PHYSFS_file* f = static_cast<PHYSFS_file*>(userdata);
-  PHYSFS_sint64 written = PHYSFS_writeBytes(f, ptr, size * nmemb);
+  PHYSFS_sint64 const written = PHYSFS_writeBytes(f, ptr, size * nmemb);
   log_debug << "read " << size * nmemb << " bytes of data..." << std::endl;
   if (written < 0)
   {
@@ -110,7 +110,7 @@ TransferStatusList::TransferStatusList(const std::vector<TransferStatusPtr>& lis
   m_callbacks(),
   m_error_msg()
 {
-  for (TransferStatusPtr status : list)
+  for (TransferStatusPtr const status : list)
   {
     push(status);
   }
@@ -119,7 +119,7 @@ TransferStatusList::TransferStatusList(const std::vector<TransferStatusPtr>& lis
 void
 TransferStatusList::abort()
 {
-  for (TransferStatusPtr status : m_transfer_statuses)
+  for (TransferStatusPtr const status : m_transfer_statuses)
   {
     status->abort();
   }
@@ -147,7 +147,7 @@ TransferStatusList::push(TransferStatusPtr status)
 void
 TransferStatusList::push(TransferStatusListPtr statuses)
 {
-  for (TransferStatusPtr status : statuses->m_transfer_statuses)
+  for (TransferStatusPtr const status : statuses->m_transfer_statuses)
   {
     push(status);
   }
@@ -202,7 +202,7 @@ int
 TransferStatusList::get_download_now() const
 {
   int dlnow = 0;
-  for (TransferStatusPtr status : m_transfer_statuses)
+  for (TransferStatusPtr const status : m_transfer_statuses)
   {
     dlnow += status->dlnow;
   }
@@ -213,7 +213,7 @@ int
 TransferStatusList::get_download_total() const
 {
   int dltotal = 0;
-  for (TransferStatusPtr status : m_transfer_statuses)
+  for (TransferStatusPtr const status : m_transfer_statuses)
   {
     dltotal += status->dltotal;
   }
@@ -507,12 +507,12 @@ Downloader::download(const std::string& url,
   curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
   curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0);
 
-  CURLcode result = curl_easy_perform(curl_handle);
+  CURLcode const result = curl_easy_perform(curl_handle);
   curl_easy_cleanup(curl_handle);
 
   if (result != CURLE_OK)
   {
-    std::string why = error_buffer[0] ? error_buffer : "unhandled error";
+    std::string const why = error_buffer[0] ? error_buffer : "unhandled error";
     throw std::runtime_error(url + ": download failed: " + why);
   }
 #elif defined(__EMSCRIPTEN__)
@@ -543,7 +543,7 @@ Downloader::download(const std::string& url, const std::string& filename)
 
 #ifdef NETWORKING
   log_info << "download: " << url << " to " << filename << std::endl;
-  std::unique_ptr<PHYSFS_file, int(*)(PHYSFS_File*)> fout(PHYSFS_openWrite(filename.c_str()),
+  std::unique_ptr<PHYSFS_file, int(*)(PHYSFS_File*)> const fout(PHYSFS_openWrite(filename.c_str()),
                                                           PHYSFS_close);
   download(url, my_curl_physfs_write, fout.get());
 #elif defined(__EMSCRIPTEN__)
@@ -565,7 +565,7 @@ Downloader::abort(TransferId id)
   }
   else
   {
-    TransferStatusPtr status = (it->second)->get_status();
+    TransferStatusPtr const status = (it->second)->get_status();
 
 #ifdef NETWORKING
     curl_multi_remove_handle(m_multi_handle, it->second->get_curl_handle());
@@ -596,7 +596,7 @@ Downloader::update()
     // Remove any on-going transfers
     for (const auto& transfer_data : m_transfers)
     {
-      TransferStatusPtr status = transfer_data.second->get_status();
+      TransferStatusPtr const status = transfer_data.second->get_status();
       status->error_msg = "Networking is disabled";
       for (const auto& callback : status->callbacks)
       {
@@ -638,7 +638,7 @@ Downloader::update()
     {
       case CURLMSG_DONE:
         {
-          CURLcode resultfromcurl = msg->data.result;
+          CURLcode const resultfromcurl = msg->data.result;
           log_info << "Download completed with " << resultfromcurl << std::endl;
           curl_multi_remove_handle(m_multi_handle, msg->easy_handle);
 
@@ -647,7 +647,7 @@ Downloader::update()
                                    return rhs.second->get_curl_handle() == msg->easy_handle;
                                  });
           assert(it != m_transfers.end());
-          TransferStatusPtr status = it->second->get_status();
+          TransferStatusPtr const status = it->second->get_status();
           status->error_msg = it->second->get_error_buffer();
           m_transfers.erase(it);
 

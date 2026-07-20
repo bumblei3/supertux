@@ -30,7 +30,7 @@ Timelog::Timelog() :
 void
 Timelog::log(const char* component)
 {
-  Uint32 current_ticks = SDL_GetTicks();
+  Uint32 const current_ticks = SDL_GetTicks();
 
   if (m_last_component != nullptr) {
     log_info << "Component '" << m_last_component <<  "' finished after "

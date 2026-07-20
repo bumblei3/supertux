@@ -73,7 +73,7 @@ LanguageMenu::menu_action(MenuItem& item)
   {
     FL_Locale *locale;
     FL_FindLocale(&locale);
-    tinygettext::Language language = tinygettext::Language::from_spec( locale->lang?locale->lang:"", locale->country?locale->country:"", locale->variant?locale->variant:"");
+    tinygettext::Language const language = tinygettext::Language::from_spec( locale->lang?locale->lang:"", locale->country?locale->country:"", locale->variant?locale->variant:"");
     FL_FreeLocale(&locale);
 
     g_dictionary_manager->set_language(language); // set currently detected language
@@ -91,7 +91,7 @@ LanguageMenu::menu_action(MenuItem& item)
   else
   {
     int mnid = MNID_LANGUAGE_NEXT;
-    std::set<tinygettext::Language> languages = g_dictionary_manager->get_languages();
+    std::set<tinygettext::Language> const languages = g_dictionary_manager->get_languages();
 
     for (auto& lang : languages)
     {

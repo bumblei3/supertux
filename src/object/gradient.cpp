@@ -142,7 +142,7 @@ Gradient::update(float delta)
     return;
   }
 
-  float progress = m_fade_time / m_fade_total_time;
+  float const progress = m_fade_time / m_fade_total_time;
   m_gradient_top =
     (m_fade_gradient_top + (m_start_gradient_top - m_fade_gradient_top) * progress).validate();
   m_gradient_bottom =

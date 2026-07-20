@@ -73,7 +73,7 @@ FlyingSnowBall::active_update(float dt_sec)
 {
   total_time_elapsed = fmodf(total_time_elapsed + dt_sec, math::TAU / GLOBAL_SPEED_MULT);
 
-  float delta = total_time_elapsed * GLOBAL_SPEED_MULT;
+  float const delta = total_time_elapsed * GLOBAL_SPEED_MULT;
 
   // Put that function in a graphing calculator :
   // sin(x)^3 + sin(3(x - pi/3))/3
@@ -94,9 +94,9 @@ FlyingSnowBall::active_update(float dt_sec)
 
   // Spawn smoke puffs.
   if (puff_timer.check()) {
-    Vector ppos = m_col.m_bbox.get_middle();
-    Vector pspeed = Vector(graphicsRandom.randf(-10, 10), 150);
-    Vector paccel = Vector(0,0);
+    Vector const ppos = m_col.m_bbox.get_middle();
+    Vector const pspeed = Vector(graphicsRandom.randf(-10, 10), 150);
+    Vector const paccel = Vector(0,0);
     Sector::get().add<SpriteParticle>("images/particles/smoke.sprite",
                                            "default",
                                            ppos, ANCHOR_MIDDLE, pspeed, paccel,

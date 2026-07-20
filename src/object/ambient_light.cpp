@@ -61,7 +61,7 @@ AmbientLight::update(float dt_sec)
   if (m_ambient_light_fading)
   {
     m_ambient_light_fade_accum += dt_sec;
-    float percent_done = m_ambient_light_fade_accum / m_ambient_light_fade_duration * 1.0f;
+    float const percent_done = m_ambient_light_fade_accum / m_ambient_light_fade_duration * 1.0f;
     float r = (1.0f - percent_done) * m_source_ambient_light.red + percent_done * m_target_ambient_light.red;
     float g = (1.0f - percent_done) * m_source_ambient_light.green + percent_done * m_target_ambient_light.green;
     float b = (1.0f - percent_done) * m_source_ambient_light.blue + percent_done * m_target_ambient_light.blue;

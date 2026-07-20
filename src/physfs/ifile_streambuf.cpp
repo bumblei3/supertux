@@ -53,7 +53,7 @@ IFileStreambuf::underflow()
     return traits_type::eof();
   }
 
-  PHYSFS_sint64 bytesread = PHYSFS_readBytes(file, buf, sizeof(buf));
+  PHYSFS_sint64 const bytesread = PHYSFS_readBytes(file, buf, sizeof(buf));
   if (bytesread <= 0) {
     return traits_type::eof();
   }
@@ -79,7 +79,7 @@ IFileStreambuf::seekoff(off_type off, std::ios_base::seekdir dir,
                         std::ios_base::openmode mode)
 {
   off_type pos = off;
-  PHYSFS_sint64 ptell = PHYSFS_tell(file);
+  PHYSFS_sint64 const ptell = PHYSFS_tell(file);
 
   switch (dir) {
     case std::ios_base::beg:

@@ -42,7 +42,7 @@ ObjectMenu::refresh()
 {
   clear();
 
-  ObjectSettings os = m_object->get_settings();
+  ObjectSettings const os = m_object->get_settings();
   add_label(os.get_name());
   add_hl();
   for (const auto& oo_ptr : os.get_options())

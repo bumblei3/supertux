@@ -122,10 +122,10 @@ MagicBlock::update(float dt_sec)
 {
   // Check if center of this block is on screen.
   // Don't update if not, because there is no light off screen.
-  float screen_left = Sector::get().get_camera().get_translation().x;
-  float screen_top = Sector::get().get_camera().get_translation().y;
-  float screen_right = screen_left + static_cast<float>(SCREEN_WIDTH);
-  float screen_bottom = screen_top + static_cast<float>(SCREEN_HEIGHT);
+  float const screen_left = Sector::get().get_camera().get_translation().x;
+  float const screen_top = Sector::get().get_camera().get_translation().y;
+  float const screen_right = screen_left + static_cast<float>(SCREEN_WIDTH);
+  float const screen_bottom = screen_top + static_cast<float>(SCREEN_HEIGHT);
   if ((m_center.x > screen_right ) || (m_center.y > screen_bottom) ||
       (m_center.x < screen_left) || (m_center.y < screen_top)) {
     m_switch_delay = SWITCH_DELAY;

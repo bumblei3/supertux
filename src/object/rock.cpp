@@ -107,7 +107,7 @@ Rock::update(float dt_sec)
     icebox.set_bottom(get_bbox().get_bottom() + 8.f);
     m_on_ice = !Sector::get().is_free_of_tiles(icebox, true, Tile::ICE);
 
-    bool in_water = !Sector::get().is_free_of_tiles(get_bbox(), true, Tile::WATER);
+    bool const in_water = !Sector::get().is_free_of_tiles(get_bbox(), true, Tile::WATER);
     m_physic.set_gravity_modifier(in_water ? 0.2f : 1.f);
 
     Rectf trampolinebox = get_bbox().grown(-1.f);
@@ -166,7 +166,7 @@ Rock::collision_solid(const CollisionHit& hit)
 
   if (hit.left || hit.right) {
     // Bounce back slightly when hitting a wall
-    float velx = m_physic.get_velocity_x();
+    float const velx = m_physic.get_velocity_x();
     m_physic.set_velocity_x(-0.1f * velx);
   }
   if (hit.crush)
@@ -225,7 +225,7 @@ Rock::collision(MovingObject& other, const CollisionHit& hit)
     return ABORT_MOVE;
   }
 
-  float sector_gravity = Sector::get().get_gravity();
+  float const sector_gravity = Sector::get().get_gravity();
 
   if ((hit.bottom && sector_gravity >= 0.f) || (hit.top && sector_gravity <= 0.f)) {
     auto player = dynamic_cast<Player*> (&other);
@@ -270,7 +270,7 @@ void
 Rock::grab(MovingObject& object, const Vector& pos, Direction dir_)
 {
   Portable::grab(object, pos, dir_);
-  Vector movement = pos - get_pos();
+  Vector const movement = pos - get_pos();
   m_col.set_movement(movement);
   m_last_movement = movement;
   set_group(COLGROUP_DISABLED);
@@ -296,7 +296,7 @@ Rock::ungrab(MovingObject& object, Direction dir)
   {
     if (player->is_swimming() || player->is_water_jumping())
     {
-      float swimangle = player->get_swimming_angle();
+      float const swimangle = player->get_swimming_angle();
       m_physic.set_velocity(player->get_velocity() + Vector(std::cos(swimangle), std::sin(swimangle)));
     }
     else
@@ -320,7 +320,7 @@ Rock::ungrab(MovingObject& object, Direction dir)
 void
 Rock::draw(DrawingContext& context)
 {
-  Vector offset = m_physic.get_velocity() * context.get_time_offset();
+  Vector const offset = m_physic.get_velocity() * context.get_time_offset();
   m_sprite->draw(context.color(), get_pos() + offset, m_layer, m_flip);
 }
 

@@ -106,7 +106,7 @@ EditorLayersWidget::draw(DrawingContext& context)
 
     case HoveredItem::LAYERS:
       {
-        Vector coords = get_layer_coords(m_hovered_layer);
+        Vector const coords = get_layer_coords(m_hovered_layer);
         target_rect = Rectf(coords, coords + Vector(32, 32));
       }
       break;
@@ -280,9 +280,9 @@ EditorLayersWidget::on_mouse_button_down(const SDL_MouseButtonEvent& button)
 bool
 EditorLayersWidget::on_mouse_motion(const SDL_MouseMotionEvent& motion)
 {
-  Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(motion.x, motion.y);
-  float x = mouse_pos.x - static_cast<float>(m_Xpos);
-  float y = mouse_pos.y - static_cast<float>(m_Ypos);
+  Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(motion.x, motion.y);
+  float const x = mouse_pos.x - static_cast<float>(m_Xpos);
+  float const y = mouse_pos.y - static_cast<float>(m_Ypos);
 
 #if 0
   if (g_config->editor_show_properties_sidebar)
@@ -336,7 +336,7 @@ EditorLayersWidget::on_mouse_motion(const SDL_MouseMotionEvent& motion)
       m_scroll_speed = 0;
     }
 
-    unsigned int new_hovered_layer = get_layer_pos(mouse_pos);
+    unsigned int const new_hovered_layer = get_layer_pos(mouse_pos);
     if (m_hovered_layer != new_hovered_layer || m_hovered_item != HoveredItem::LAYERS) {
       m_hovered_layer = new_hovered_layer;
       update_tip();
@@ -470,7 +470,7 @@ EditorLayersWidget::add_layer(GameObject* object, bool initial)
     return;
 
   auto icon = std::make_unique<LayerIcon>(layer);
-  int z_pos = icon->get_zpos();
+  int const z_pos = icon->get_zpos();
 
   // Newly added tilemaps shouldn't be active
   if (auto layer_tilemap = icon->get_layer_tilemap())

@@ -57,7 +57,7 @@ WavSoundFile::WavSoundFile(PHYSFS_file* file_) :
     throw SoundError("file is not a RIFF wav file");
   }
 
-  uint32_t wavelen = read32LE(m_file);
+  uint32_t const wavelen = read32LE(m_file);
   (void) wavelen;
 
   if (PHYSFS_readBytes(m_file, magic, sizeof(magic)) < static_cast<std::make_signed<size_t>::type>(sizeof(magic)))
@@ -91,14 +91,14 @@ WavSoundFile::WavSoundFile(PHYSFS_file* file_) :
     throw SoundError("Format chunk too short");
 
   // parse format
-  uint16_t encoding = read16LE(m_file);
+  uint16_t const encoding = read16LE(m_file);
   if (encoding != 1)
     throw SoundError("only PCM encoding supported");
   m_channels = read16LE(m_file);
   m_rate = read32LE(m_file);
-  uint32_t byterate = read32LE(m_file);
+  uint32_t const byterate = read32LE(m_file);
   (void) byterate;
-  uint16_t blockalign = read16LE(m_file);
+  uint16_t const blockalign = read16LE(m_file);
   (void) blockalign;
   m_bits_per_sample = read16LE(m_file);
 
@@ -140,12 +140,12 @@ WavSoundFile::reset()
 size_t
 WavSoundFile::read(void* buffer, size_t buffer_size)
 {
-  PHYSFS_sint64 end = m_datastart + m_size;
-  PHYSFS_sint64 cur = PHYSFS_tell(m_file);
+  PHYSFS_sint64 const end = m_datastart + m_size;
+  PHYSFS_sint64 const cur = PHYSFS_tell(m_file);
   if (cur >= end)
     return 0;
 
-  size_t readsize = std::min(static_cast<size_t> (end - cur), buffer_size);
+  size_t const readsize = std::min(static_cast<size_t> (end - cur), buffer_size);
   if (PHYSFS_readBytes(m_file, buffer, readsize) != static_cast<std::make_signed<size_t>::type>(readsize))
     throw SoundError("read error while reading samples");
 

@@ -40,7 +40,7 @@ CollisionGroundMovementManager::apply_all_ground_movement()
 {
   for (auto movements_for_target : m_movements_per_target)
   {
-    TargetMovementData& movements = movements_for_target.second;
+    TargetMovementData const& movements = movements_for_target.second;
 
     const auto& objects_map = movements.get_objects_map();
     const auto& tilemaps_map = movements.get_tilemaps_map();

@@ -89,25 +89,25 @@ Explosion::explode()
     SoundManager::current()->play("sounds/explosion.wav", get_pos(), 0.98f);
   else
     SoundManager::current()->play("sounds/firecracker.ogg", get_pos(), 0.7f);
-  bool does_push = push_strength > 0;
+  bool const does_push = push_strength > 0;
 
   // Spawn some particles.
-  Vector accel = Vector(0, Sector::get().get_gravity()*100);
+  Vector const accel = Vector(0, Sector::get().get_gravity()*100);
   Sector::get().add<Particles>(
     m_col.m_bbox.get_middle(), -360, 360, 450.0f, 900.0f, accel, num_particles,
     Color(.4f, .4f, .4f), 3, .8f, LAYER_OBJECTS-1);
 
   if (does_push) {
-    Vector center = m_col.m_bbox.get_middle ();
+    Vector const center = m_col.m_bbox.get_middle ();
     auto near_objects = Sector::get().get_nearby_objects (center, 128.0 * 32.0);
 
     for (auto& obj: near_objects) {
       if(!Sector::current()->free_line_of_sight(center, obj->get_pos(), true))
         continue;
 
-      Vector obj_vector = obj->get_bbox ().get_middle ();
-      Vector direction = obj_vector - center;
-      float distance = glm::length(direction);
+      Vector const obj_vector = obj->get_bbox ().get_middle ();
+      Vector const direction = obj_vector - center;
+      float const distance = glm::length(direction);
 
       /* If the distance is very small, for example because "obj" is the badguy
        * causing the explosion, skip this object. */
@@ -117,13 +117,13 @@ Explosion::explode()
       /* The force decreases with the distance squared. In the distance of one
        * tile (32 pixels) you will have a speed increase of 150 pixels/s. */
       float force = push_strength / (distance * distance);
-      float force_limit = short_fuse ? 400.f : 200.f;
+      float const force_limit = short_fuse ? 400.f : 200.f;
       // If we somehow get a force of over the limit, keep it at the limit because
       // unexpected behaviour could result otherwise.
       if (force > force_limit)
         force = force_limit;
 
-      Vector add_speed = glm::normalize(direction) * force;
+      Vector const add_speed = glm::normalize(direction) * force;
 
       auto player = dynamic_cast<Player*>(obj);
       if (player && !player->is_stone()) {
@@ -135,8 +135,8 @@ Explosion::explode()
         badguy->add_velocity(add_speed);
       }
 
-      bool in_break_range = distance <= 60.f;
-      bool in_shake_range = distance <= 100.f;
+      bool const in_break_range = distance <= 60.f;
+      bool const in_shake_range = distance <= 100.f;
 
       auto bonusblock = dynamic_cast<BonusBlock*>(obj);
       if (bonusblock && in_shake_range && hurts()) {

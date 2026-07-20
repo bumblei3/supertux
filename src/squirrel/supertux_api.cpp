@@ -163,7 +163,7 @@ static bool check_cutscene()
  */
 static SQInteger wait(HSQUIRRELVM vm, float seconds, bool forced = false)
 {
-  ssq::VM* ssq_vm = ssq::VM::get(vm);
+  ssq::VM const* ssq_vm = ssq::VM::get(vm);
   if (ssq_vm && !ssq_vm->isThread()) return 0;
 
   if (!forced)

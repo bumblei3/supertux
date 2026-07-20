@@ -59,7 +59,7 @@ Toad::set_state(ToadState newState)
       SoundManager::current()->play( HOP_SOUND, get_pos());
     } else
       if (newState == FALLING) {
-        Player* player = get_nearest_player();
+        Player const* player = get_nearest_player();
         // Face the player.
         if (player && (player->get_bbox().get_right() < m_col.m_bbox.get_left()) && (m_dir == Direction::RIGHT)) m_dir = Direction::LEFT;
         if (player && (player->get_bbox().get_left() > m_col.m_bbox.get_right()) && (m_dir == Direction::LEFT)) m_dir = Direction::RIGHT;

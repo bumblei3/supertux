@@ -44,23 +44,23 @@ VerticalStripes::update(float dt_sec)
 void
 VerticalStripes::draw(DrawingContext& context)
 {
-  float screen_width = context.get_width();
-  float level_width = Sector::get().get_width();
+  float const screen_width = context.get_width();
+  float const level_width = Sector::get().get_width();
   if (m_visible && level_width < screen_width)
   {
     // Drawing two black stripes at each side of a screen
-    float screen_height = context.get_height();
-    float level_height = Sector::get().get_height();
+    float const screen_height = context.get_height();
+    float const level_height = Sector::get().get_height();
 
     Canvas& canvas = context.get_canvas(DrawingTarget::COLORMAP);
 
-    float screen_left = (level_width - screen_width) / 2;
-    float screen_right = level_width - screen_left;
+    float const screen_left = (level_width - screen_width) / 2;
+    float const screen_right = level_width - screen_left;
     // Level can still be scrolled vertically!
-    float rect_top = -screen_height;
-    float rect_bottom = level_height + screen_height;
-    Rectf left_stripe = Rectf(screen_left, rect_top, 0, rect_bottom);
-    Rectf right_stripe = Rectf(level_width, rect_top, screen_right, rect_bottom);
+    float const rect_top = -screen_height;
+    float const rect_bottom = level_height + screen_height;
+    Rectf const left_stripe = Rectf(screen_left, rect_top, 0, rect_bottom);
+    Rectf const right_stripe = Rectf(level_width, rect_top, screen_right, rect_bottom);
     canvas.draw_filled_rect(left_stripe, Color(0,0,0), m_layer);
     canvas.draw_filled_rect(right_stripe, Color(0,0,0), m_layer);
   }

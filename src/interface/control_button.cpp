@@ -52,7 +52,7 @@ ControlButton::on_mouse_button_up(const SDL_MouseButtonEvent& button)
   if (button.button != SDL_BUTTON_LEFT)
     return false;
 
-  Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(button.x, button.y);
+  Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(button.x, button.y);
   if (!m_rect.contains(mouse_pos) || !m_mouse_down) {
     m_mouse_down = false;
     return false;
@@ -71,7 +71,7 @@ bool
 ControlButton::on_mouse_button_down(const SDL_MouseButtonEvent& button)
 {
   if (button.button == SDL_BUTTON_LEFT) {
-    Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(button.x, button.y);
+    Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(button.x, button.y);
     if (!m_rect.contains(mouse_pos)) {
       m_has_focus = false;
     } else {

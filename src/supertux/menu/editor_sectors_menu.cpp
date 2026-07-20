@@ -78,7 +78,7 @@ EditorSectorsMenu::create_sector()
 void
 EditorSectorsMenu::delete_sector()
 {
-  Level* level = Editor::current()->get_level();
+  Level const* level = Editor::current()->get_level();
   auto dialog = std::make_unique<Dialog>();
 
   // Do not delete sector when there would be no left.
@@ -104,8 +104,8 @@ EditorSectorsMenu::menu_action(MenuItem& item)
 {
   if (item.get_id() >= 0)
   {
-    Level* level = Editor::current()->get_level();
-    Sector* sector = level->get_sector(item.get_id());
+    Level const* level = Editor::current()->get_level();
+    Sector const* sector = level->get_sector(item.get_id());
     Editor::current()->load_sector(sector->get_name());
     MenuManager::instance().clear_menu_stack();
   }

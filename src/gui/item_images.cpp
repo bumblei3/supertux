@@ -64,7 +64,7 @@ ItemImages::draw(DrawingContext& drawing_context, const Vector& pos, int menu_wi
 {
   if (m_images.empty())
     return;
-  SurfacePtr surface = m_images[m_selected_image];
+  SurfacePtr const surface = m_images[m_selected_image];
   if (m_max_image_width > 0 && m_max_image_height > 0 && (surface->get_width() > m_max_image_width || surface->get_height() > m_max_image_height))
     drawing_context.color().draw_surface_scaled(surface, Rectf(pos + Vector((menu_width - m_max_image_width)/2 - 2, -m_max_image_height/2),
                                                                Sizef(static_cast<float>(m_max_image_width), static_cast<float>(m_max_image_height))), LAYER_GUI);
@@ -72,9 +72,9 @@ ItemImages::draw(DrawingContext& drawing_context, const Vector& pos, int menu_wi
     drawing_context.color().draw_surface(surface, pos + Vector((menu_width - surface->get_width())/2 - 2, -surface->get_height()/2), LAYER_GUI);
   if (m_gallery_mode)
   {
-    float left_arrow_width = Resources::big_font->get_text_width("<");
-    float right_arrow_width  = Resources::big_font->get_text_width(">");
-    float arrow_height = Resources::big_font->get_text_height("<");
+    float const left_arrow_width = Resources::big_font->get_text_width("<");
+    float const right_arrow_width  = Resources::big_font->get_text_width(">");
+    float const arrow_height = Resources::big_font->get_text_height("<");
     drawing_context.color().draw_text(Resources::big_font, "<", pos + Vector(left_arrow_width/2 + 2, -arrow_height/2), FontAlignment::ALIGN_LEFT, LAYER_GUI);
     drawing_context.color().draw_text(Resources::big_font, ">", pos + Vector(static_cast<float>(menu_width) - right_arrow_width*1.5f, -arrow_height/2), FontAlignment::ALIGN_LEFT, LAYER_GUI);
   }

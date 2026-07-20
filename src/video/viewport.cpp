@@ -49,7 +49,7 @@ inline void
 apply_pixel_aspect_ratio_post(const Size& real_window_size, const Size& window_size, float scale,
                               Rect& out_viewport, Vector& out_scale)
 {
-  Vector transform(static_cast<float>(real_window_size.width) / static_cast<float>(window_size.width),
+  Vector const transform(static_cast<float>(real_window_size.width) / static_cast<float>(window_size.width),
                    static_cast<float>(real_window_size.height) / static_cast<float>(window_size.height));
 
   out_viewport.left = static_cast<int>(static_cast<float>(out_viewport.left) * transform.x);
@@ -99,9 +99,9 @@ calculate_viewport(const Size& max_size, const Size& window_size, float scale, f
 {
   if (::force_full_viewport && magnification == 0.f)
     return {0, 0, window_size};
-  int viewport_width = std::min(window_size.width,
+  int const viewport_width = std::min(window_size.width,
                                 static_cast<int>(scale * static_cast<float>(max_size.width)));
-  int viewport_height = std::min(window_size.height,
+  int const viewport_height = std::min(window_size.height,
                                  static_cast<int>(scale * static_cast<float>(max_size.height)));
 
   // Center the viewport in the window
@@ -156,7 +156,7 @@ float calculate_pixel_aspect_ratio(const Size& source, const Size& target)
       static_cast<float>(source.height);
   }
 
-  float target_aspect =
+  float const target_aspect =
     static_cast<float>(target.width) /
     static_cast<float>(target.height);
 

@@ -40,7 +40,7 @@ TTFSurface::create(const TTFFont& font, const std::string& text)
   }
 
   // FIXME: handle shadow offset
-  int grow = std::max(font.get_border() * 2, font.get_shadow_size() * 2);
+  int const grow = std::max(font.get_border() * 2, font.get_shadow_size() * 2);
 
   SDLSurfacePtr target = SDLSurface::create_rgba(text_surface->w + grow, text_surface->h + grow);
 
@@ -58,10 +58,10 @@ TTFSurface::create(const TTFFont& font, const std::string& text)
        P{-1, -1}, P{1, -1}, P{-1, 1}, P{1, 1}}
     };
 
-    int shadow_size = std::min(2, font.get_shadow_size());
+    int const shadow_size = std::min(2, font.get_shadow_size());
     for (const auto& p : positions[shadow_size])
     {
-      SDL_Rect dstrect{std::get<0>(p) + 2, std::get<1>(p) + 2, text_surface->w, text_surface->h};
+      SDL_Rect const dstrect{std::get<0>(p) + 2, std::get<1>(p) + 2, text_surface->w, text_surface->h};
       SDL_BlitSurface(text_surface.get(), nullptr,
                       target.get(), &dstrect);
     }
@@ -80,10 +80,10 @@ TTFSurface::create(const TTFFont& font, const std::string& text)
        P{-1, -1}, P{1, -1}, P{-1, 1}, P{1, 1}}
     };
 
-    int border = std::min(2, font.get_border());
+    int const border = std::min(2, font.get_border());
     for (const auto& p : positions[border])
     {
-      SDL_Rect dstrect{std::get<0>(p), std::get<1>(p), text_surface->w, text_surface->h};
+      SDL_Rect const dstrect{std::get<0>(p), std::get<1>(p), text_surface->w, text_surface->h};
       SDL_BlitSurface(text_surface.get(), nullptr,
                       target.get(), &dstrect);
     }
@@ -94,12 +94,12 @@ TTFSurface::create(const TTFFont& font, const std::string& text)
     SDL_SetSurfaceColorMod(text_surface.get(), 255, 255, 255);
     SDL_SetSurfaceBlendMode(text_surface.get(), SDL_BLENDMODE_BLEND);
 
-    SDL_Rect dstrect{0, 0, text_surface->w, text_surface->h};
+    SDL_Rect const dstrect{0, 0, text_surface->w, text_surface->h};
 
     SDL_BlitSurface(text_surface.get(), nullptr, target.get(), &dstrect);
   }
 
-  SurfacePtr result = Surface::from_texture(VideoSystem::current()->new_texture(*target));
+  SurfacePtr const result = Surface::from_texture(VideoSystem::current()->new_texture(*target));
   return std::make_shared<TTFSurface>(result, Vector(0, 0));
 }
 

@@ -110,9 +110,9 @@ Candle::collision(MovingObject&, const CollisionHit& )
 void
 Candle::puff_smoke()
 {
-  Vector ppos = m_col.m_bbox.get_middle();
-  Vector pspeed = Vector(0, -150);
-  Vector paccel = Vector(0,0);
+  Vector const ppos = m_col.m_bbox.get_middle();
+  Vector const pspeed = Vector(0, -150);
+  Vector const paccel = Vector(0,0);
   Sector::get().add<SpriteParticle>("images/particles/smoke.sprite",
                                          "default",
                                          ppos, ANCHOR_MIDDLE,

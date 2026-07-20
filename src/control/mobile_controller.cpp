@@ -88,8 +88,8 @@ MobileController::draw(DrawingContext& context)
   {
     m_screen_width = static_cast<int>(context.get_width());
     m_screen_height = static_cast<int>(context.get_height());
-    float width = static_cast<float>(m_screen_width);
-    float height = static_cast<float>(m_screen_height);
+    float const width = static_cast<float>(m_screen_width);
+    float const height = static_cast<float>(m_screen_height);
     m_mobile_controls_scale = g_config->m_mobile_controls_scale;
     // Buttons on Android are bigger, and direction buttons are extra wide
     // Use screen height to calculate button size, because 20:9 screen ratios are common
@@ -214,7 +214,7 @@ MobileController::apply(Controller& controller) const
 bool
 MobileController::process_finger_down_event(const SDL_TouchFingerEvent& event)
 {
-  Vector pos(event.x * float(m_screen_width), event.y * float(m_screen_height));
+  Vector const pos(event.x * float(m_screen_width), event.y * float(m_screen_height));
   m_fingers[event.fingerID] = pos;
   return m_rect_jump.contains(pos) ||
     m_rect_action.contains(pos) ||
@@ -228,7 +228,7 @@ MobileController::process_finger_down_event(const SDL_TouchFingerEvent& event)
 bool
 MobileController::process_finger_up_event(const SDL_TouchFingerEvent& event)
 {
-  Vector pos(event.x * float(m_screen_width), event.y * float(m_screen_height));
+  Vector const pos(event.x * float(m_screen_width), event.y * float(m_screen_height));
   m_fingers.erase(event.fingerID);
   return m_rect_jump.contains(pos) ||
     m_rect_action.contains(pos) ||
@@ -242,7 +242,7 @@ MobileController::process_finger_up_event(const SDL_TouchFingerEvent& event)
 bool
 MobileController::process_finger_motion_event(const SDL_TouchFingerEvent& event)
 {
-  Vector pos(event.x * float(m_screen_width), event.y * float(m_screen_height));
+  Vector const pos(event.x * float(m_screen_width), event.y * float(m_screen_height));
   m_fingers[event.fingerID] = pos;
   return m_rect_jump.contains(pos) ||
     m_rect_action.contains(pos) ||
@@ -259,7 +259,7 @@ MobileController::activate_widget_at_pos(float x, float y)
   if (!g_config->mobile_controls)
     return;
 
-  Vector pos(x, y);
+  Vector const pos(x, y);
 
   if (m_rect_jump.contains(pos))
     m_input.set(CONTROL_INT(JUMP), true);

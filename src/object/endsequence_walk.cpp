@@ -51,7 +51,7 @@ EndSequenceWalk::running(float dt_sec)
 
   for (auto* player : Sector::get().get_players())
   {
-    int dir = player->get_ending_direction();
+    int const dir = player->get_ending_direction();
     if (dir && !m_tux_is_stopped[player->get_id()]) {
       get_code_controller(player->get_id())->press(dir > 0 ? Control::RIGHT : Control::LEFT);
       if (int(last_x_pos) == int(player->get_pos().x)) {

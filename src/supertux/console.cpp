@@ -170,7 +170,7 @@ Console::execute_script(const std::string& command)
   const SQInteger old_top = m_vm.getTop();
   try
   {
-    ssq::Object ret = m_vm.runAndReturn(m_vm.compileSource(command.c_str()));
+    ssq::Object const ret = m_vm.runAndReturn(m_vm.compileSource(command.c_str()));
 
     if (ret.getType() != ssq::Type::NULLPTR)
       m_buffer.addLines(squirrel_to_string(ret));
@@ -342,7 +342,7 @@ Console::autocomplete()
   } else {
     autocompleteFrom = 0;
   }
-  std::string prefix = m_inputBuffer.substr(autocompleteFrom, m_inputBufferPosition - autocompleteFrom);
+  std::string const prefix = m_inputBuffer.substr(autocompleteFrom, m_inputBufferPosition - autocompleteFrom);
   m_buffer.addLines("> " + prefix);
 
   std::list<std::string> cmds;
@@ -374,7 +374,7 @@ Console::autocomplete()
   if (cmds.size() == 1)
   {
     // One match: just replace input buffer with full command.
-    std::string replaceWith = cmds.front();
+    std::string const replaceWith = cmds.front();
     m_inputBuffer.replace(autocompleteFrom, prefix.length(), replaceWith);
     m_inputBufferPosition += static_cast<int>(replaceWith.length() - prefix.length());
   }
@@ -384,14 +384,14 @@ Console::autocomplete()
     // Multiple matches: show all matches and set input buffer to longest common prefix.
     std::string commonPrefix = cmds.front();
     while (cmds.begin() != cmds.end()) {
-      std::string cmd = cmds.front();
+      std::string const cmd = cmds.front();
       cmds.pop_front();
       m_buffer.addLines(cmd);
       for (int n = static_cast<int>(commonPrefix.length()); n >= 1; n--) {
         if (cmd.compare(0, n, commonPrefix) != 0) commonPrefix.resize(n-1); else break;
       }
     }
-    std::string replaceWith = commonPrefix;
+    std::string const replaceWith = commonPrefix;
     m_inputBuffer.replace(autocompleteFrom, prefix.length(), replaceWith);
     m_inputBufferPosition += static_cast<int>(replaceWith.length() - prefix.length());
   }
@@ -411,7 +411,7 @@ Console::parse(const std::string& s)
   std::vector<std::string> args;
   size_t end = 0;
   while (1) {
-    size_t start = s.find_first_not_of(" ,", end);
+    size_t const start = s.find_first_not_of(" ,", end);
     end = s.find_first_of(" ,", start);
     if (start == s.npos) break;
     args.push_back(s.substr(start, end-start));
@@ -419,7 +419,7 @@ Console::parse(const std::string& s)
 
   // Command is args[0].
   if (args.size() == 0) return;
-  std::string command = args.front();
+  std::string const command = args.front();
   args.erase(args.begin());
 
   // Ignore if it's an internal command.
@@ -539,12 +539,12 @@ Console::draw(DrawingContext& context) const
 
   if (m_focused) {
     lineNo++;
-    float py = m_height-4-1 * m_font->get_height();
-    std::string line = "> " + m_inputBuffer;
+    float const py = m_height-4-1 * m_font->get_height();
+    std::string const line = "> " + m_inputBuffer;
     context.color().draw_text(m_font, line, Vector(4, py), ALIGN_LEFT, layer);
 
     if (SDL_GetTicks() % 500 < 250) {
-      std::string::size_type p = 2 + m_inputBufferPosition;
+      std::string::size_type const p = 2 + m_inputBufferPosition;
       float cursor_x;
       if (p >= line.size())
       {
@@ -566,7 +566,7 @@ Console::draw(DrawingContext& context) const
   {
     if (skipLines-- > 0) continue;
     lineNo++;
-    float py = static_cast<float>(m_height - 4.0f - static_cast<float>(lineNo) * m_font->get_height());
+    float const py = static_cast<float>(m_height - 4.0f - static_cast<float>(lineNo) * m_font->get_height());
     if (py < -m_font->get_height()) break;
     context.color().draw_text(m_font, *i, Vector(4.0f, py), ALIGN_LEFT, layer);
   }

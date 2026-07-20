@@ -438,7 +438,7 @@ StringSelectObjectOption::save(Writer& writer) const
 std::string
 StringSelectObjectOption::to_string() const
 {
-  int& selected_id = *m_value_pointer;
+  int const& selected_id = *m_value_pointer;
   if (selected_id >= int(m_select.size()) || selected_id < 0) {
     return _("invalid"); //Test whether the selected ID is valid
   } else {

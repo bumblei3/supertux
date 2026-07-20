@@ -266,7 +266,7 @@ GLVideoSystem::create_gl_context()
   log_info << "Using glbinding" << std::endl;
   log_info << "ARB_texture_non_power_of_two: " << static_cast<int>(extensions.find(GLextension::GL_ARB_texture_non_power_of_two) != extensions.end()) << std::endl;
 #else // Glew
-  GLenum err = glewInit();
+  GLenum const err = glewInit();
 #  ifdef GLEW_ERROR_NO_GLX_DISPLAY
   // Glew can't open glx display when it's running on wayland session
   // and thus returns an error. But glXGetProcAddress is fully usable
@@ -305,7 +305,7 @@ GLVideoSystem::apply_config()
 {
   apply_video_mode();
 
-  Size target_size = g_config->use_fullscreen ?
+  Size const target_size = g_config->use_fullscreen ?
     ((g_config->fullscreen_size == Size(0, 0)) ? m_desktop_size : g_config->fullscreen_size) :
     g_config->window_size;
 
@@ -433,7 +433,7 @@ GLVideoSystem::make_screenshot()
   SDL_LockSurface(surface.get());
   for (int i = 0; i < viewport_height; i++)
   {
-    char* src = &pixels[3 * viewport_width * (viewport_height - i - 1)];
+    char const* src = &pixels[3 * viewport_width * (viewport_height - i - 1)];
     char* dst = (static_cast<char*>(surface->pixels)) + i * surface->pitch;
     memcpy(dst, src, 3 * viewport_width);
   }

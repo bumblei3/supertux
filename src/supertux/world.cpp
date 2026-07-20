@@ -32,7 +32,7 @@ World::from_directory(const std::string& directory)
 {
   std::unique_ptr<World> world(new World(directory));
 
-  std::string info_filename = FileSystem::join(directory, "info");
+  std::string const info_filename = FileSystem::join(directory, "info");
 
   try
   {
@@ -127,12 +127,12 @@ World::get_basename() const
 void
 World::save(bool retry)
 {
-  std::string filepath = FileSystem::join(m_basedir, "/info");
+  std::string const filepath = FileSystem::join(m_basedir, "/info");
 
   try
   {
     { // make sure the levelset directory exists
-      std::string dirname = FileSystem::dirname(filepath);
+      std::string const dirname = FileSystem::dirname(filepath);
       if (!PHYSFS_exists(dirname.c_str()))
       {
         if (!PHYSFS_mkdir(dirname.c_str()))
@@ -175,7 +175,7 @@ World::save(bool retry)
     } else {
       log_warning << "Failed to save the levelset info, retrying..." << std::endl;
       { // create the levelset directory again
-        std::string dirname = FileSystem::dirname(filepath);
+        std::string const dirname = FileSystem::dirname(filepath);
         if (!PHYSFS_mkdir(dirname.c_str()))
         {
           std::ostringstream msg;

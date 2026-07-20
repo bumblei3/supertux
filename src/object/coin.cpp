@@ -163,7 +163,7 @@ Coin::collect()
   static float last_pitch = 1;
   float pitch = 1;
 
-  int tile = static_cast<int>(get_pos().y / 32);
+  int const tile = static_cast<int>(get_pos().y / 32);
 
   if (!is_valid())
     return;
@@ -282,7 +282,7 @@ HeavyCoin::update(float dt_sec)
   static const float WATER_GRAVITY_MODIFIER = 0.1f;
   static const float WATER_MAX_DROP_SPEED = 100.f;
 
-  bool in_water = !Sector::get().is_free_of_tiles(get_bbox(), true, Tile::WATER);
+  bool const in_water = !Sector::get().is_free_of_tiles(get_bbox(), true, Tile::WATER);
   m_physic.set_gravity_modifier(in_water ? WATER_GRAVITY_MODIFIER : 1.f);
   if (in_water)
     m_physic.set_velocity_y(std::min(m_physic.get_velocity_y(), WATER_MAX_DROP_SPEED));
@@ -292,7 +292,7 @@ HeavyCoin::update(float dt_sec)
 void
 HeavyCoin::collision_solid(const CollisionHit& hit)
 {
-  float clink_threshold = 100.0f; // Sets the minimum speed needed to result in collision noise.
+  float const clink_threshold = 100.0f; // Sets the minimum speed needed to result in collision noise.
   // TODO: Colliding with HeavyCoins should have their own unique sound.
 
   if (hit.bottom) {
@@ -325,7 +325,7 @@ HeavyCoin::collision_solid(const CollisionHit& hit)
 void
 Coin::move_to(const Vector& pos)
 {
-  Vector shift = pos - m_col.m_bbox.p1();
+  Vector const shift = pos - m_col.m_bbox.p1();
   if (get_path()) {
     get_path()->move_by(shift);
   }

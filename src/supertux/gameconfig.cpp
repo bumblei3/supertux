@@ -623,7 +623,7 @@ Config::is_christmas() const
   if (christmas_mode)
     return true;
 
-  std::time_t time = std::time(nullptr);
+  std::time_t const time = std::time(nullptr);
   const std::tm* now = std::localtime(&time);
 
   /* Activate Christmas mode from Dec 6th until Dec 31st. */

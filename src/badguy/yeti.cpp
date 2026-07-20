@@ -92,7 +92,7 @@ Yeti::initialize()
 
   // Force all players to face the yeti because this way it looks epic...
   // ... i think
-  bool playerdir = (invert_dir(m_dir) == Direction::RIGHT);
+  bool const playerdir = (invert_dir(m_dir) == Direction::RIGHT);
   for (Player* player : Sector::get().get_players())
   {
     player->set_dir(playerdir);
@@ -105,7 +105,7 @@ Yeti::initialize()
 void
 Yeti::recalculate_pos()
 {
-  float sectorw = Sector::get().get_width();
+  float const sectorw = Sector::get().get_width();
 
   if (m_dir == Direction::RIGHT) {
     m_left_stand_x = m_col.m_bbox.get_left();
@@ -134,7 +134,7 @@ Yeti::active_update(float dt_sec)
 {
   Boss::boss_update(dt_sec);
 
-  Vector grab_pos = get_bbox().get_middle();
+  Vector const grab_pos = get_bbox().get_middle();
   float push_distance;
   auto player = get_nearest_player();
 
@@ -471,7 +471,7 @@ void
 Yeti::turn_dizzy()
 {
   // We're dead.
-  Direction old_dir = m_dir;
+  Direction const old_dir = m_dir;
   m_dir = invert_dir(old_dir);
 
   m_physic.set_velocity((m_dir == Direction::RIGHT ? RUN_VX : -RUN_VX) / 5, 0);
@@ -576,7 +576,7 @@ Yeti::drop_stalactite()
     if (stalactite.is_hanging()) {
       if (!m_pinch_mode) {
         // Drop stalactites within 3 units of player, going out with each jump.
-        float distancex = fabsf(stalactite.get_bbox().get_middle().x - player->get_bbox().get_middle().x);
+        float const distancex = fabsf(stalactite.get_bbox().get_middle().x - player->get_bbox().get_middle().x);
         if (distancex < static_cast<float>(m_attack_count) * 32.0f) {
           stalactite.start_shaking();
         }
@@ -593,7 +593,7 @@ Yeti::drop_stalactite()
 void
 Yeti::summon_snowball()
 {
-  Vector bs_pos = get_pos() + Vector(m_dir == Direction::LEFT ? -32.f : (get_bbox().get_width() + 1.f), 0.f);
+  Vector const bs_pos = get_pos() + Vector(m_dir == Direction::LEFT ? -32.f : (get_bbox().get_width() + 1.f), 0.f);
   Sector::get().add<BouncingSnowball>(bs_pos, m_dir, 150.f * (m_pinch_mode ? BALL_PINCH_SPEED : BALL_SPEED));
 }
 
@@ -602,8 +602,8 @@ Yeti::summon_big_snowball()
 {
   auto& ball = Sector::get().add<BigSnowball>(Vector(0,0), m_dir, true);
 
-  float x = m_dir == Direction::LEFT ? get_bbox().get_left() - 32.f : get_bbox().get_right();
-  Vector pos(x, get_bbox().get_top());
+  float const x = m_dir == Direction::LEFT ? get_bbox().get_left() - 32.f : get_bbox().get_right();
+  Vector const pos(x, get_bbox().get_top());
   ball.set_pos(pos);
 }
 

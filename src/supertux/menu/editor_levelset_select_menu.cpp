@@ -64,7 +64,7 @@ EditorLevelsetSelectMenu::initialize()
   std::vector<std::string> level_worlds;
 
   physfsutil::enumerate_files_alphabetical("levels", [&level_worlds](const auto& filename) {
-    std::string filepath = FileSystem::join("levels", filename);
+    std::string const filepath = FileSystem::join("levels", filename);
     if (physfsutil::is_directory(filepath))
     {
       level_worlds.push_back(filepath);

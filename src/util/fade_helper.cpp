@@ -69,7 +69,7 @@ FadeHelper::update(float dt_sec)
   // If at some point in development, floats are changed to doubles, or the
   // ease funciton return type change from double to float, remove the casts
   // here (it takes a lot of space).               ~ Semphris
-  float progress = m_start + (m_target - m_start) * static_cast<float>(m_ease(
+  float const progress = m_start + (m_target - m_start) * static_cast<float>(m_ease(
                                   static_cast<double>(m_time / m_total_time)));
 
   m_progress = progress;

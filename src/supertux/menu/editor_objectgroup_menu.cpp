@@ -25,7 +25,7 @@
 
 EditorObjectgroupMenu::EditorObjectgroupMenu()
 {
-  bool worldmap = Editor::current()->get_level()->is_worldmap();
+  bool const worldmap = Editor::current()->get_level()->is_worldmap();
 
   add_label(_("Objects"));
   add_hl();

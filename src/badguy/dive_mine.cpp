@@ -162,7 +162,7 @@ DiveMine::active_update(float dt_sec)
     return;
   }
 
-  Vector dist = player->get_bbox().get_middle() - m_col.m_bbox.get_middle();
+  Vector const dist = player->get_bbox().get_middle() - m_col.m_bbox.get_middle();
   if (m_chasing)
   {
     if (glm::length(dist) > s_trigger_radius) // Player is out of trigger radius.

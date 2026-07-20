@@ -49,6 +49,6 @@ static inline void* obstack_chunk_alloc(size_t size)
 
 static inline void obstack_chunk_free(void* data)
 {
-  char* ptr = static_cast<char*>(data);
+  char const* ptr = static_cast<char*>(data);
   delete[] ptr;
 }

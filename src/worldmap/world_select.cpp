@@ -50,7 +50,7 @@ WorldSelect::WorldSelect(const std::string& current_world_filename) :
   int i = 0;
   try
   {
-    ssq::Table world_select = vm.findTable("state").findTable("world_select");
+    ssq::Table const world_select = vm.findTable("state").findTable("world_select");
     std::vector<std::string> worlds = world_select.getKeys();
 
     if (!worlds.empty())
@@ -72,7 +72,7 @@ WorldSelect::WorldSelect(const std::string& current_world_filename) :
     {
       try
       {
-        ssq::Table world_table = world_select.findTable(world.c_str());
+        ssq::Table const world_table = world_select.findTable(world.c_str());
 
         bool unlocked = false;
         world_table.get("unlocked", unlocked);
@@ -81,7 +81,7 @@ WorldSelect::WorldSelect(const std::string& current_world_filename) :
         wm.filename = world;
         wm.unlocked = unlocked;
 
-        ReaderDocument doc = ReaderDocument::from_file(world);
+        ReaderDocument const doc = ReaderDocument::from_file(world);
         if (!doc.get_root().get_mapping().get("name", wm.name))
         {
           log_warning << "No name for worldmap " << world << std::endl;
@@ -172,10 +172,10 @@ WorldSelect::draw(Compositor& compositor)
   int i = 0;
   for (const auto& world : m_worlds)
   {
-    float angle = m_angle - static_cast<float>(i) /
+    float const angle = m_angle - static_cast<float>(i) /
                   static_cast<float>(m_worlds.size()) * math::PI * 2;
 
-    float size = 1.f + (std::cos(angle) - 1.f) / 4.f;
+    float const size = 1.f + (std::cos(angle) - 1.f) / 4.f;
     Rectf rect = world.icon->get_region();
     rect = Rectf(0, 0, rect.get_width() * size / 2.f, rect.get_height() * size / 2.f);
     rect.move(Vector(context.get_width() / 2.f - rect.get_width() / 2.f,
@@ -196,8 +196,8 @@ WorldSelect::draw(Compositor& compositor)
     i++;
   }
 
-  float halfangle = 1.f / static_cast<float>(m_worlds.size()) * math::PI * 2;
-  float o = distance * (.5f - std::cos(halfangle));
+  float const halfangle = 1.f / static_cast<float>(m_worlds.size()) * math::PI * 2;
+  float const o = distance * (.5f - std::cos(halfangle));
   context.color().draw_text(Resources::big_font, name_to_display,
                             Vector(context.get_width() / 2.f,
                                    context.get_height() * 3.f / 4.f + pow(10.f - o * 10.f, 2.f)),

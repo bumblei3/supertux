@@ -32,11 +32,11 @@ CoinExplode::CoinExplode(const Vector& pos, bool count_stats, const std::string&
 void
 CoinExplode::update(float )
 {
-  float mag = 100.0f; // Magnitude at which coins are thrown.
-  float rand = 30.0f; // Max variation to be subtracted from the magnitude.
+  float const mag = 100.0f; // Magnitude at which coins are thrown.
+  float const rand = 30.0f; // Max variation to be subtracted from the magnitude.
 
   // Each coin in the explosion has a different velocity.
-  static std::list<Vector> coin_velocities = {
+  static std::list<Vector> const coin_velocities = {
     { 2.5, -4.5 }, { 2, -5 },
     { 1.5, -5.5 }, { 1, -6 }, { 0.5, -6.5 },
     { -2.5, -4.5 }, { -2, -5 },

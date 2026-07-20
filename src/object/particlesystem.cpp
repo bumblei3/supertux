@@ -81,8 +81,8 @@ ParticleSystem::draw(DrawingContext& context)
   if (!enabled)
     return;
 
-  float scrollx = context.get_translation().x;
-  float scrolly = context.get_translation().y;
+  float const scrollx = context.get_translation().x;
+  float const scrolly = context.get_translation().y;
   const auto& region = Sector::current()->get_active_region();
 
   context.push_transform();

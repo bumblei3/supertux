@@ -69,7 +69,7 @@ Bumper::update(float dt_sec)
 
   // Pushing rocks, as well as dynamic with tilemap, platform, and fallblock.
 
-  Rectf small_overlap_box = get_bbox().grown(1.f);
+  Rectf const small_overlap_box = get_bbox().grown(1.f);
 
   for (auto& rock : Sector::get().get_objects_by_type<Rock>())
   {

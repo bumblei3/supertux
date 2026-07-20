@@ -32,7 +32,7 @@ bool
 StringUtil::numeric_less(const std::string& lhs, const std::string& rhs)
 {
   std::string::size_type i = 0;
-  std::string::size_type min_len = std::min(lhs.size(), rhs.size());
+  std::string::size_type const min_len = std::min(lhs.size(), rhs.size());
 
   while (i < min_len)
   {

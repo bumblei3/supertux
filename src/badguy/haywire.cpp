@@ -204,7 +204,7 @@ Haywire::active_update(float dt_sec)
       else if (player && time_stunned == 0.0f)
       {
         /* Player is on the right or left. */
-        Direction player_dir = get_player_direction(player);
+        Direction const player_dir = get_player_direction(player);
         if (player_dir != m_last_player_direction)
         {
           m_skid_timer.start(SKID_TIME);

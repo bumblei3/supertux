@@ -57,7 +57,7 @@ MoleRock::initialize()
 {
   m_physic.set_velocity(initial_velocity);
 
-  int num = graphicsRandom.rand(1, static_cast<int>(m_sprite->get_actions_count()) + 1);
+  int const num = graphicsRandom.rand(1, static_cast<int>(m_sprite->get_actions_count()) + 1);
   set_action("variant-" + std::to_string(num));
 }
 

@@ -135,7 +135,7 @@ class ConsoleStreamBuffer final : public std::stringbuf
 public:
   virtual int sync() override
   {
-    int result = std::stringbuf::sync();
+    int const result = std::stringbuf::sync();
     if (ConsoleBuffer::current())
       ConsoleBuffer::current()->flush(*this);
     return result;

@@ -42,8 +42,8 @@ EditorDeleteLevelsetMenu::refresh()
   add_hl();
 
   unsigned int i = 0;
-  std::vector<std::string>& contrib_worlds = m_editor_levelset_select_menu->get_contrib_worlds();
-  for(std::string& level_world : contrib_worlds)
+  std::vector<std::string> const& contrib_worlds = m_editor_levelset_select_menu->get_contrib_worlds();
+  for(std::string const& level_world : contrib_worlds)
   {
     std::unique_ptr<World> world = World::from_directory(level_world);
     if (world->hide_from_contribs())
@@ -72,7 +72,7 @@ EditorDeleteLevelsetMenu::refresh()
 void
 EditorDeleteLevelsetMenu::menu_action(MenuItem& item)
 {
-  int id = item.get_id();
+  int const id = item.get_id();
   const auto& contrib_worlds = m_editor_levelset_select_menu->get_contrib_worlds();
   if (id >= 0)
   {

@@ -293,7 +293,7 @@ WorldMap::load_state()
 void
 WorldMap::save_state()
 {
-  WorldMapState state(*this);
+  WorldMapState const state(*this);
   state.save_state();
 }
 

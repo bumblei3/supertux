@@ -59,13 +59,13 @@ ColorRGB srgb_to_linear_srgb(const Color& c)
 
 ColorOKLab linear_srgb_to_oklab(const ColorRGB& c)
 {
-  float l = 0.4122214708f * c.r + 0.5363325363f * c.g + 0.0514459929f * c.b;
-  float m = 0.2119034982f * c.r + 0.6806995451f * c.g + 0.1073969566f * c.b;
-  float s = 0.0883024619f * c.r + 0.2817188376f * c.g + 0.6299787005f * c.b;
+  float const l = 0.4122214708f * c.r + 0.5363325363f * c.g + 0.0514459929f * c.b;
+  float const m = 0.2119034982f * c.r + 0.6806995451f * c.g + 0.1073969566f * c.b;
+  float const s = 0.0883024619f * c.r + 0.2817188376f * c.g + 0.6299787005f * c.b;
 
-  float l_ = cbrtf(l);
-  float m_ = cbrtf(m);
-  float s_ = cbrtf(s);
+  float const l_ = cbrtf(l);
+  float const m_ = cbrtf(m);
+  float const s_ = cbrtf(s);
 
   return {
     0.2104542553f*l_ + 0.7936177850f*m_ - 0.0040720468f*s_,
@@ -87,8 +87,8 @@ ColorOKLCh::ColorOKLCh(const Color& c) :
   C(0.0f),
   h(0.0f)
 {
-  ColorRGB rgb = srgb_to_linear_srgb(c);
-  ColorOKLab lab = linear_srgb_to_oklab(rgb);
+  ColorRGB const rgb = srgb_to_linear_srgb(c);
+  ColorOKLab const lab = linear_srgb_to_oklab(rgb);
   *this = lab_to_lch(lab);
   if (C < 0.00001f)
     // Deterministic behaviour for greyscale colors

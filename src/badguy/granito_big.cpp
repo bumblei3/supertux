@@ -53,7 +53,7 @@ GranitoBig::active_update(float dt_sec)
   if (!m_carrying)
     return;
 
-  Vector pos(get_bbox().get_middle().x - m_carrying->get_bbox().get_width() / 2,
+  Vector const pos(get_bbox().get_middle().x - m_carrying->get_bbox().get_width() / 2,
              get_bbox().get_top() - m_carrying->get_bbox().get_height());
   m_carrying->set_velocity_y(0);
   m_carrying->set_pos(pos);

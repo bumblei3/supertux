@@ -40,7 +40,7 @@ LayerIcon::draw(DrawingContext& context, const Vector& pos)
   if (!is_valid()) return;
 
   ObjectIcon::draw(context, pos);
-  int l = get_zpos();
+  int const l = get_zpos();
   if (l != std::numeric_limits<int>::min())
   {
     context.color().draw_text(Resources::small_font, std::to_string(l),
@@ -57,7 +57,7 @@ LayerIcon::draw(DrawingContext& context, const Vector& pos, int pixels_shown)
   if (!is_valid()) return;
 
   ObjectIcon::draw(context, pos, pixels_shown);
-  int l = get_zpos();
+  int const l = get_zpos();
   if (l != std::numeric_limits<int>::min())
   {
     // Don't draw the text if the icon is not 100% visible

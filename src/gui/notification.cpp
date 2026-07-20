@@ -97,7 +97,7 @@ Notification::set_mini_text(const std::string& text)
 void
 Notification::calculate_size()
 {
-  float mini_text_height = m_mini_text.empty() ? 0.f : m_mini_text_size.height + 24.f;
+  float const mini_text_height = m_mini_text.empty() ? 0.f : m_mini_text_size.height + 24.f;
   m_size = Sizef(std::max(m_text_size.width, m_mini_text_size.width) + 60.0f,
                  m_text_size.height + mini_text_height + 16.f);
   m_drag.x -= m_size.width + 100.f;
@@ -142,7 +142,7 @@ Notification::draw(DrawingContext& context)
   m_pos = Vector(context.get_width() - std::max(m_text_size.width, m_mini_text_size.width) - 90.0f,
                  static_cast<float>(context.get_height() / 12) - m_text_size.height - m_mini_text_size.height + 10.0f);
   m_pos.x -= m_drag.x;
-  float visibility = std::clamp(1.2f - (m_drag.x * 0.01f), 0.0f, 1.0f);
+  float const visibility = std::clamp(1.2f - (m_drag.x * 0.01f), 0.0f, 1.0f);
   context.set_alpha(visibility);
   Rectf bg_rect(m_pos, m_size);
 
@@ -174,8 +174,8 @@ Notification::draw(DrawingContext& context)
   if (!m_mouse_over) return;
   static const std::string sym1 = "-";
   static const std::string sym2 = "X";
-  Vector sym1_pos = Vector(bg_rect.get_left() + 5.0f, bg_rect.get_top());
-  Vector sym2_pos = Vector(bg_rect.get_right() - 15.0f, bg_rect.get_top());
+  Vector const sym1_pos = Vector(bg_rect.get_left() + 5.0f, bg_rect.get_top());
+  Vector const sym2_pos = Vector(bg_rect.get_right() - 15.0f, bg_rect.get_top());
 
   context.color().draw_text(Resources::normal_font, sym1, sym1_pos,
                               ALIGN_LEFT, LAYER_GUI, Color::YELLOW);
@@ -184,8 +184,8 @@ Notification::draw(DrawingContext& context)
                               ALIGN_LEFT, LAYER_GUI, Color::RED);
 
   // Draw description of a symbol, when the mouse hovers over it.
-  Rectf sym1_rect(sym1_pos, Sizef(Resources::normal_font->get_text_width(sym1), Resources::normal_font->get_text_height(sym1)));
-  Rectf sym2_rect(sym2_pos, Sizef(Resources::normal_font->get_text_width(sym2), Resources::normal_font->get_text_height(sym2)));
+  Rectf const sym1_rect(sym1_pos, Sizef(Resources::normal_font->get_text_width(sym1), Resources::normal_font->get_text_height(sym1)));
+  Rectf const sym2_rect(sym2_pos, Sizef(Resources::normal_font->get_text_width(sym2), Resources::normal_font->get_text_height(sym2)));
 
   m_mouse_over_sym1 = sym1_rect.contains(m_mouse_pos);
   m_mouse_over_sym2 = sym2_rect.contains(m_mouse_pos);

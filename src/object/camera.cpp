@@ -227,9 +227,9 @@ Camera::get_predicted_transform(float time_offset) const
 {
   if (g_config->frame_prediction) {
     // TODO: extrapolate forwards instead of interpolating over the last frame
-    float x = time_offset * LOGICAL_FPS;
-    Vector translation = get_translation() * x + (1.f - x) * m_last_translation;
-    float scale = get_current_scale() * x + (1.f - x) * m_last_scale;
+    float const x = time_offset * LOGICAL_FPS;
+    Vector const translation = get_translation() * x + (1.f - x) * m_last_translation;
+    float const scale = get_current_scale() * x + (1.f - x) * m_last_scale;
     return std::pair(translation, scale);
   } else {
     return std::pair(get_translation(), get_current_scale());
@@ -239,7 +239,7 @@ Camera::get_predicted_transform(float time_offset) const
 const Vector
 Camera::get_translation() const
 {
-  Vector screen_size = m_screen_size.as_vector();
+  Vector const screen_size = m_screen_size.as_vector();
   return m_translation + ((screen_size * (get_current_scale() - 1.f)) / 2.f);
 }
 
@@ -389,7 +389,7 @@ Camera::update(float dt_sec)
 void
 Camera::keep_in_bounds(const Rectf& bounds)
 {
-  Sizef screen_size = Sizef(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT)) / get_current_scale();
+  Sizef const screen_size = Sizef(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT)) / get_current_scale();
 
   // Determines the difference between normal and scaled translation.
   const Vector scale_factor = (screen_size.as_vector() * (get_current_scale() - 1.f)) / 2.f;
@@ -411,8 +411,8 @@ Camera::keep_in_bounds(const Rectf& bounds)
 void
 Camera::keep_in_bounds(Vector& translation_)
 {
-  float width = get_parent()->get_width();
-  float height = get_parent()->get_height();
+  float const width = get_parent()->get_width();
+  float const height = get_parent()->get_height();
 
   // Remove any earthquake offset from the translation.
   translation_.y -= m_earthquake_last_offset;
@@ -499,7 +499,7 @@ Camera::update_earthquake()
 void
 Camera::update_scroll_normal(float dt_sec)
 {
-  Player& player = *d_sector->get_players()[0];
+  Player const& player = *d_sector->get_players()[0];
   // TODO: Co-op mode needs a good camera.
   const Vector player_pos(player.get_bbox().get_left(),
                           player.get_bbox().get_bottom());
@@ -633,7 +633,7 @@ Camera::update_scroll_normal_multiplayer(float dt_sec)
 
   float scale = std::min(static_cast<float>(SCREEN_WIDTH) / static_cast<float>(cover.get_width()),
                          static_cast<float>(SCREEN_HEIGHT) / static_cast<float>(cover.get_height()));
-  float max_scale = std::max(static_cast<float>(SCREEN_WIDTH) / Sector::get().get_width(),
+  float const max_scale = std::max(static_cast<float>(SCREEN_WIDTH) / Sector::get().get_width(),
                              static_cast<float>(SCREEN_HEIGHT) / Sector::get().get_height());
 
   // Capping at `m_scale` allows fixing a minor bug where the camera would
@@ -719,8 +719,8 @@ Camera::update_scale(float dt_sec)
     }
     else
     {
-      float time_progress = (m_scale_time_total - m_scale_time_remaining) / m_scale_time_total;
-      float progress = static_cast<float>(m_scale_easing(static_cast<double>(time_progress)));
+      float const time_progress = (m_scale_time_total - m_scale_time_remaining) / m_scale_time_total;
+      float const progress = static_cast<float>(m_scale_easing(static_cast<double>(time_progress)));
 
       m_scale = m_scale_origin + (m_scale_target - m_scale_origin) * progress;
 
@@ -748,7 +748,7 @@ Camera::update_scale(float dt_sec)
   if (m_mode == Mode::NORMAL && Sector::current()->get_object_count<Player>() > 1)
     return;
 
-  Vector screen_size = m_screen_size.as_vector();
+  Vector const screen_size = m_screen_size.as_vector();
   m_translation += screen_size * (1.f - get_current_scale()) / 2.f;
 }
 

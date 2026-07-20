@@ -79,7 +79,7 @@ SDLVideoSystem::create_window()
 
   SDL_Renderer* renderer = nullptr;
   if (renderer_name && renderer_name[0] != '\0') {
-    SDL_PropertiesID props = SDL_CreateProperties();
+    SDL_PropertiesID const props = SDL_CreateProperties();
     SDL_SetStringProperty(props, SDL_PROP_RENDERER_CREATE_NAME_STRING, renderer_name);
     SDL_SetPointerProperty(props, SDL_PROP_RENDERER_CREATE_WINDOW_POINTER, m_sdl_window.get());
     renderer = SDL_CreateRendererWithProperties(props);
@@ -104,7 +104,7 @@ SDLVideoSystem::apply_config()
 
   { // apply_viewport
 #ifndef __ANDROID__
-    Size target_size = (g_config->use_fullscreen && g_config->fullscreen_size != Size(0, 0)) ?
+    Size const target_size = (g_config->use_fullscreen && g_config->fullscreen_size != Size(0, 0)) ?
       g_config->fullscreen_size :
       g_config->window_size;
 #else

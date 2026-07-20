@@ -32,7 +32,7 @@ ItemBack::ItemBack(const std::string& text, int id) :
 void
 ItemBack::draw(DrawingContext& context, const Vector& pos, int menu_width, bool active)
 {
-  float text_width = Resources::normal_font->get_text_width(get_text());
+  float const text_width = Resources::normal_font->get_text_width(get_text());
   context.color().draw_text(Resources::normal_font, get_text(),
                             Vector( pos.x + static_cast<float>(menu_width) / 2.0f,
                                     pos.y - static_cast<float>(int(Resources::normal_font->get_height()/2))),

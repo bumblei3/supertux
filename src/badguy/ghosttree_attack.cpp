@@ -458,14 +458,14 @@ GhostTreeAttackMain::active_update(float dtime)
   if (m_remaining_roots <= 0 || !m_spawn_timer.check())
     return;
 
-  Player* p = Sector::get().get_nearest_player(m_pos);
+  Player const* p = Sector::get().get_nearest_player(m_pos);
   if (!p)
   {
     Sector::get().add<GhostTreeRootMain>(m_pos, this);
     return;
   }
 
-  Vector pos(p->get_x() + (p->get_width() / 2), m_pos.y);
+  Vector const pos(p->get_x() + (p->get_width() / 2), m_pos.y);
 
 #if 0
   // Detect ground position below player

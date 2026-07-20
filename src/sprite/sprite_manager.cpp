@@ -27,7 +27,7 @@ SpriteManager::SpriteManager() :
 SpritePtr
 SpriteManager::create(const std::string& name)
 {
-  Sprites::iterator i = m_sprites.find(name);
+  Sprites::iterator const i = m_sprites.find(name);
   SpriteData* data;
   if (i == m_sprites.end())
   {

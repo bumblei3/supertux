@@ -92,21 +92,21 @@ ViciousIvy::active_update(float dt_sec)
   WalkingBadguy::active_update(dt_sec);
   if (!m_frozen && !m_ignited)
   {
-    bool in_water = !Sector::get().is_free_of_tiles(get_bbox(), true, Tile::WATER);
+    bool const in_water = !Sector::get().is_free_of_tiles(get_bbox(), true, Tile::WATER);
 
     Rectf watertopbox = get_bbox();
     watertopbox.set_top(get_bbox().get_bottom() - get_bbox().get_height()/3.f);
     Rectf wateroutbox = get_bbox();
     wateroutbox.set_bottom(get_bbox().get_top() + (2*get_bbox().get_height()/3.f));
 
-    bool on_top_of_water = (!Sector::get().is_free_of_tiles(watertopbox, true, Tile::WATER) &&
+    bool const on_top_of_water = (!Sector::get().is_free_of_tiles(watertopbox, true, Tile::WATER) &&
       Sector::get().is_free_of_tiles(wateroutbox, true, Tile::WATER));
 
     Rectf floatbox = get_bbox();
     floatbox.set_bottom(get_bbox().get_bottom() + 8.f);
 
     const bool ignore_unisolid = on_top_of_water || m_physic.get_velocity_y() < 0.0f;
-    bool float_here = (Sector::get().is_free_of_tiles(floatbox, ignore_unisolid)
+    bool const float_here = (Sector::get().is_free_of_tiles(floatbox, ignore_unisolid)
                        && Sector::get().is_free_of(floatbox, (1 << COLGROUP_STATIC) | (1 << COLGROUP_MOVING_STATIC),
                                                    this, ignore_unisolid));
 

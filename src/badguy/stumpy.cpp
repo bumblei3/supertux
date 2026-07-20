@@ -109,13 +109,13 @@ Stumpy::collision_squished(MovingObject& object)
     // Spawn some particles.
     // TODO: Provide convenience function in MovingSprite or MovingObject?
     for (int i = 0; i < 25; i++) {
-      Vector ppos = m_col.m_bbox.get_middle();
-      float angle = graphicsRandom.randf(-math::PI_2, math::PI_2);
-      float velocity = graphicsRandom.randf(45, 90);
-      float vx = sinf(angle)*velocity;
-      float vy = -cosf(angle)*velocity;
-      Vector pspeed = Vector(vx, vy);
-      Vector paccel = Vector(0, Sector::get().get_gravity()*10);
+      Vector const ppos = m_col.m_bbox.get_middle();
+      float const angle = graphicsRandom.randf(-math::PI_2, math::PI_2);
+      float const velocity = graphicsRandom.randf(45, 90);
+      float const vx = sinf(angle)*velocity;
+      float const vy = -cosf(angle)*velocity;
+      Vector const pspeed = Vector(vx, vy);
+      Vector const paccel = Vector(0, Sector::get().get_gravity()*10);
       Sector::get().add<SpriteParticle>("images/particles/bark.sprite",
                                              "default",
                                              ppos, ANCHOR_MIDDLE,

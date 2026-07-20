@@ -84,7 +84,7 @@ Mole::collision_squished(MovingObject& obj)
 void
 Mole::throw_rock()
 {
-  float angle = math::radians(135.f - (static_cast<float>(cycle_num) * 30.f));
+  float const angle = math::radians(135.f - (static_cast<float>(cycle_num) * 30.f));
 
   SoundManager::current()->play("sounds/dartfire.wav", get_pos());
   Sector::get().add<MoleRock>(m_col.m_bbox.get_middle(),

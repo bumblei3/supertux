@@ -57,7 +57,7 @@ PlayerStatus::PlayerStatus(int num_players) :
 void
 PlayerStatus::take_checkpoint_coins()
 {
-  int subtract_value = std::max(coins / 10, 25);
+  int const subtract_value = std::max(coins / 10, 25);
   if (coins - subtract_value >= 0)
     coins -= subtract_value;
   else
@@ -220,7 +220,7 @@ PlayerStatus::read(const ReaderMapping& mapping)
     {
       if (iter.get_key().size() > 3 && iter.get_key().substr(0, 3) == "tux" && iter.get_key() != "tuxdolls")
       {
-        int id = std::stoi(iter.get_key().substr(3)) - 1;
+        int const id = std::stoi(iter.get_key().substr(3)) - 1;
 
         if (id >= m_num_players)
         {
@@ -266,7 +266,7 @@ PlayerStatus::give_item_from_pocket(Player* player)
   if (!is_item_pocket_allowed())
     return;
 
-  BonusType bonustype = m_item_pockets[player->get_id()];
+  BonusType const bonustype = m_item_pockets[player->get_id()];
   if (bonustype == BONUS_NONE)
     return;
 
@@ -308,10 +308,10 @@ PlayerStatus::is_item_pocket_allowed() const
     return m_override_item_pocket == Level::ON;
   }
 
-  GameSession* session = GameSession::current();
+  GameSession const* session = GameSession::current();
   if (!session)
   {
-    worldmap::WorldMap* worldmap = worldmap::WorldMap::current();
+    worldmap::WorldMap const* worldmap = worldmap::WorldMap::current();
     if (worldmap)
     {
       return worldmap->is_item_pocket_allowed();
@@ -323,8 +323,8 @@ PlayerStatus::is_item_pocket_allowed() const
     }
   }
 
-  Level& level = session->get_current_level();
-  int allowed = static_cast<Level::Setting>(level.m_allow_item_pocket);
+  Level const& level = session->get_current_level();
+  int const allowed = static_cast<Level::Setting>(level.m_allow_item_pocket);
 
   if (allowed != Level::INHERIT)
   {
@@ -332,7 +332,7 @@ PlayerStatus::is_item_pocket_allowed() const
   }
   else
   {
-    worldmap::WorldMap* worldmap = worldmap::WorldMap::current();
+    worldmap::WorldMap const* worldmap = worldmap::WorldMap::current();
     if (worldmap)
     {
       return worldmap->is_item_pocket_allowed();
@@ -425,7 +425,7 @@ PlayerStatus::PocketPowerUp::update(float dt_sec)
 {
   PowerUp::update(dt_sec);
 
-  bool check = m_cooldown_timer.check();
+  bool const check = m_cooldown_timer.check();
   if (!m_cooldown_timer.started() && !check && m_col.m_group != COLGROUP_TOUCHABLE)
   {
     float sector_gravity = Sector::get().get_gravity();

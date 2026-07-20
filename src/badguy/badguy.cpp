@@ -180,8 +180,8 @@ BadGuy::draw(DrawingContext& context)
 {
   if (!m_sprite.get()) return;
 
-  Vector draw_offset = context.get_time_offset() * m_physic.get_velocity();
-  Vector draw_pos = get_pos() + draw_offset;
+  Vector const draw_offset = context.get_time_offset() * m_physic.get_velocity();
+  Vector const draw_pos = get_pos() + draw_offset;
 
   if (m_state == STATE_INIT || m_state == STATE_INACTIVE)
   {
@@ -288,11 +288,11 @@ BadGuy::update(float dt_sec)
   Rectf wateroutbox = get_bbox();
   wateroutbox.set_bottom(get_bbox().get_top() + get_bbox().get_height() / 3.f);
 
-  bool middle_has_water = !Sector::get().is_free_of_tiles(watertopbox, true, Tile::WATER);
-  bool on_top_of_water = (middle_has_water &&
+  bool const middle_has_water = !Sector::get().is_free_of_tiles(watertopbox, true, Tile::WATER);
+  bool const on_top_of_water = (middle_has_water &&
     Sector::get().is_free_of_tiles(wateroutbox, true, Tile::WATER));
 
-  bool in_water_bigger = !Sector::get().is_free_of_tiles(get_bbox().grown(-4.f), true, Tile::WATER); // *supposedly* prevents a weird sound glitch
+  bool const in_water_bigger = !Sector::get().is_free_of_tiles(get_bbox().grown(-4.f), true, Tile::WATER); // *supposedly* prevents a weird sound glitch
 
   if (m_physic.gravity_enabled()) {
     m_physic.set_gravity_modifier(middle_has_water ? m_frozen ? -1.f : 0.3f : 1.f);
@@ -437,10 +437,10 @@ BadGuy::update(float dt_sec)
         set_action("gear", m_dir, 1);
         set_state(STATE_GEAR);
       }
-      int pa = graphicsRandom.rand(0,3);
-      float px = graphicsRandom.randf(m_col.m_bbox.get_left(), m_col.m_bbox.get_right());
-      float py = graphicsRandom.randf(m_col.m_bbox.get_top(), m_col.m_bbox.get_bottom());
-      Vector ppos = Vector(px, py);
+      int const pa = graphicsRandom.rand(0,3);
+      float const px = graphicsRandom.randf(m_col.m_bbox.get_left(), m_col.m_bbox.get_right());
+      float const py = graphicsRandom.randf(m_col.m_bbox.get_top(), m_col.m_bbox.get_bottom());
+      Vector const ppos = Vector(px, py);
       Sector::get().add<SpriteParticle>(get_water_sprite(), "particle_" + std::to_string(pa),
                                              ppos, ANCHOR_MIDDLE,
                                              Vector(0, 0), Vector(0, 100 * Sector::get().get_gravity()),
@@ -540,7 +540,7 @@ BadGuy::collision_tile(uint32_t tile_attributes)
 
   if (tile_attributes & Tile::HURTS && is_hurtable())
   {
-    Rectf hurtbox = get_bbox().grown(-6.f);
+    Rectf const hurtbox = get_bbox().grown(-6.f);
     if (!Sector::get().is_free_of_tiles(hurtbox, true, Tile::HURTS) || tile_attributes & Tile::UNISOLID)
     {
       if (tile_attributes & Tile::FIRE)
@@ -781,11 +781,11 @@ BadGuy::apply_ice_physics()
 {
   if (!m_on_ice || !on_ground()) return;
   
-  float velx = m_physic.get_velocity_x();
+  float const velx = m_physic.get_velocity_x();
   // No artificial velocity threshold - let natural physics handle sliding
   
   // Use same friction base as player (WALK_ACCELERATION_X = 300)
-  float friction = 300.0f * BADGUY_ICE_FRICTION_MULTIPLIER; // Base friction value
+  float const friction = 300.0f * BADGUY_ICE_FRICTION_MULTIPLIER; // Base friction value
   if (velx < 0) {
     m_physic.set_acceleration_x(friction);
   } else if (velx > 0) {
@@ -821,11 +821,11 @@ BadGuy::kill_fall()
   if (m_frozen) {
     SoundManager::current()->play("sounds/brick.wav", get_pos());
     Vector pr_pos(0.0f, 0.0f);
-    float cx = m_col.m_bbox.get_width() / 2.f;
-    float cy = m_col.m_bbox.get_height() / 2.f;
+    float const cx = m_col.m_bbox.get_width() / 2.f;
+    float const cy = m_col.m_bbox.get_height() / 2.f;
     for (pr_pos.x = 0.f; pr_pos.x < m_col.m_bbox.get_width(); pr_pos.x +=  18.f) {
       for (pr_pos.y = 0.f; pr_pos.y < m_col.m_bbox.get_height(); pr_pos.y += 18.f) {
-        Vector speed = Vector((pr_pos.x - cx) * 3.f, (pr_pos.y - cy) * 2.f);
+        Vector const speed = Vector((pr_pos.x - cx) * 3.f, (pr_pos.y - cy) * 2.f);
         Sector::get().add<SpriteParticle>(
             "images/particles/ice_piece"+std::to_string(graphicsRandom.rand(1, 3))+".sprite", "default",
             m_col.m_bbox.p1() + pr_pos, ANCHOR_MIDDLE,
@@ -896,7 +896,7 @@ BadGuy::set_state(State state_)
   if (m_state == state_)
     return;
 
-  State laststate = m_state;
+  State const laststate = m_state;
   m_state = state_;
   switch (state_) {
     case STATE_BURNING:
@@ -937,7 +937,7 @@ BadGuy::is_offscreen() const
 {
   Vector cam_dist(0.0f, 0.0f);
   Vector player_dist(0.0f, 0.0f);
-  Camera& cam = Sector::get().get_camera();
+  Camera const& cam = Sector::get().get_camera();
   cam_dist = cam.get_center() - m_col.m_bbox.get_middle();
   if (Editor::is_active()) {
       if ((fabsf(cam_dist.x) <= X_OFFSCREEN_DISTANCE) && (fabsf(cam_dist.y) <= Y_OFFSCREEN_DISTANCE)) {
@@ -995,16 +995,16 @@ BadGuy::might_fall(int height)
   assert(height > 0);
 
   // Origin in Y coord used for raycasting.
-  float oy = get_bbox().get_bottom() + 1.f;
+  float const oy = get_bbox().get_bottom() + 1.f;
 
-  float fh = static_cast<float>(height);
+  float const fh = static_cast<float>(height);
 
   if (m_detected_slope == 0)
   {
     Vector eye(0, oy - 2.f);
     eye.x = (m_dir == Direction::LEFT ? get_bbox().get_left() : get_bbox().get_right());
 
-    Vector end(eye.x, eye.y + fh + 2.f);
+    Vector const end(eye.x, eye.y + fh + 2.f);
 
     RaycastResult result = Sector::get().get_first_line_intersection(eye, end, false, &m_col);
 
@@ -1017,7 +1017,7 @@ BadGuy::might_fall(int height)
     auto tile_p = std::get_if<const Tile*>(&result.hit);
     if (tile_p && (*tile_p) && (*tile_p)->is_slope())
     {
-      AATriangle tri((*tile_p)->get_data());
+      AATriangle const tri((*tile_p)->get_data());
 
       if (tri.is_south() && (m_dir == Direction::LEFT ? tri.is_east() : !tri.is_east()))
       {
@@ -1032,18 +1032,18 @@ BadGuy::might_fall(int height)
 
   if (m_detected_slope != 0)
   {
-    float dirmult = (m_dir == Direction::LEFT ? 1.f : -1.f);
+    float const dirmult = (m_dir == Direction::LEFT ? 1.f : -1.f);
 
     // X position of the opposite face of the hitbox relative to m_dir.
-    float rearx = (m_dir == Direction::LEFT ? get_bbox().get_right() : get_bbox().get_left());
+    float const rearx = (m_dir == Direction::LEFT ? get_bbox().get_right() : get_bbox().get_left());
 
     // X Offset from rearx used for determining the start of the raycast.
-    float startoff = (get_width() / 5.f) * dirmult;
-    Vector eye(rearx - startoff, oy);
+    float const startoff = (get_width() / 5.f) * dirmult;
+    Vector const eye(rearx - startoff, oy);
 
     // X Offset from eye's X used for determining the end of the raycast.
-    float endoff = startoff - (2.f * dirmult);
-    Vector end(eye.x + endoff, eye.y + 80.f);
+    float const endoff = startoff - (2.f * dirmult);
+    Vector const end(eye.x + endoff, eye.y + 80.f);
 
     // The resulting line segment (eye, end) should result in a downwards facing diagonal direction.
 
@@ -1152,7 +1152,7 @@ BadGuy::ungrab(MovingObject& object, Direction dir_)
     m_unfreeze_timer.start(8.f);
     if (player->is_swimming() || player->is_water_jumping())
     {
-      float swimangle = player->get_swimming_angle();
+      float const swimangle = player->get_swimming_angle();
       m_physic.set_velocity((player->get_velocity() + Vector(std::cos(swimangle), std::sin(swimangle))) *
         (m_in_water ? 0.5f : 1.f));
     }
@@ -1166,7 +1166,7 @@ BadGuy::ungrab(MovingObject& object, Direction dir_)
       }
       else if (dir_ == Direction::DOWN)
       {
-        Vector mov(0, 32);
+        Vector const mov(0, 32);
         if (Sector::get().is_free_of_statics(get_bbox().moved(mov), this))
         {
           // There is free space, so throw it down.
@@ -1196,12 +1196,12 @@ BadGuy::freeze()
   set_colgroup_active(COLGROUP_MOVING_STATIC);
   SoundManager::current()->play("sounds/sizzle.ogg", get_pos());
 
-  float freezesize_x =
+  float const freezesize_x =
     get_overlay_size() == "3x3" ? 96.f :
     get_overlay_size() == "2x2" ? 64.f :
     get_overlay_size() == "2x1" ? 64.f : 45.f;
 
-  float freezesize_y =
+  float const freezesize_y =
     get_overlay_size() == "3x3" ? 94.f :
     get_overlay_size() == "2x2" ? 62.f :
     get_overlay_size() == "2x1" ? 43.f :
@@ -1242,11 +1242,11 @@ BadGuy::unfreeze(bool melt)
 
   SoundManager::current()->play(melt ? "sounds/splash.ogg" : "sounds/brick.wav", get_pos());
   Vector pr_pos(0.0f, 0.0f);
-  float cx = m_col.m_bbox.get_width() / 2.f;
-  std::string particle_sprite_name = melt ? "images/particles/water_piece" : "images/particles/ice_piece";
+  float const cx = m_col.m_bbox.get_width() / 2.f;
+  std::string const particle_sprite_name = melt ? "images/particles/water_piece" : "images/particles/ice_piece";
   for (pr_pos.x = 0; pr_pos.x < m_col.m_bbox.get_width(); pr_pos.x += 16.f) {
     for (pr_pos.y = 0; pr_pos.y < m_col.m_bbox.get_height(); pr_pos.y += 16.f) {
-      Vector speed = Vector((pr_pos.x - cx) * 2.f, 0.f);
+      Vector const speed = Vector((pr_pos.x - cx) * 2.f, 0.f);
       Sector::get().add<SpriteParticle>(
         particle_sprite_name + std::to_string(graphicsRandom.rand(1, 3)) + ".sprite", "default",
         m_col.m_bbox.p1() + pr_pos, ANCHOR_MIDDLE,
