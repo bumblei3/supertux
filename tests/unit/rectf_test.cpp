@@ -16,6 +16,7 @@
 
 #include <gtest/gtest.h>
 
+#include "math/rect.hpp"
 #include "math/rectf.hpp"
 
 TEST(RectfTest, contains_point)
@@ -78,6 +79,26 @@ TEST(RectfTest, set_p2)
   Rectf rect(Vector(16.0f, 16.0f), Vector(32.0f, 32.0f));
   rect.set_p2({48.0f, 100.0f});
   ASSERT_EQ(Rectf(Vector(16.0f, 16.0f), Vector(48.0f, 100.0f)), rect);
+}
+
+TEST(RectfTest, from_rect_and_stream)
+{
+  // Rectf constructed from an integer Rect promotes coordinates to floats.
+  Rect r(10, 20, 110, 220);
+  Rectf rf(r);
+  ASSERT_FLOAT_EQ(rf.get_left(), 10.0f);
+  ASSERT_FLOAT_EQ(rf.get_top(), 20.0f);
+  ASSERT_FLOAT_EQ(rf.get_right(), 110.0f);
+  ASSERT_FLOAT_EQ(rf.get_bottom(), 220.0f);
+
+  // Round-trip back to a Rect truncates the (integer) bounds.
+  Rect back = rf.to_rect();
+  ASSERT_EQ(back, Rect(10, 20, 110, 220));
+
+  // operator<< must render a parseable, correct representation.
+  std::ostringstream os;
+  os << rf;
+  ASSERT_EQ(os.str(), "Rectf(10, 20, 110, 220)");
 }
 
 /* EOF */

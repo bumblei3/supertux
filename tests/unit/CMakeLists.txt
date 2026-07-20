@@ -35,7 +35,7 @@ endfunction(make_unit_test)
 make_unit_test(RectTest SOURCE rect_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
-  EXTERNAL math/rect.cpp)
+  EXTERNAL math/rect.cpp math/rectf.cpp)
 
 make_unit_test(MD5Test SOURCE md5_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
@@ -69,7 +69,7 @@ make_unit_test(FileSystemTest SOURCE file_system_test.cpp file_system_test_stub.
 make_unit_test(RectfTest SOURCE rectf_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
-  EXTERNAL math/rectf.cpp)
+  EXTERNAL math/rectf.cpp math/rect.cpp)
 
 make_unit_test(RandomTest SOURCE random_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main

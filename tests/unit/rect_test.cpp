@@ -17,6 +17,7 @@
 #include <gtest/gtest.h>
 
 #include "math/rect.hpp"
+#include "math/rectf.hpp"
 
 TEST(RectTest, contains_point)
 {
@@ -75,6 +76,26 @@ TEST(RectTest, SDL)
   const SDL_Rect sdl_rect_expected{50, 50, 50, 50};
   ASSERT_TRUE(SDL_RectsEqual(&sdl_rect_result, &sdl_rect_expected));
   ASSERT_EQ(Rect(SDL_Rect{50, 50, 50, 50}), Rect(50, 50, 100, 100));
+}
+
+TEST(RectTest, from_rectf_and_stream)
+{
+  // Rect constructed from a Rectf truncates the fractional coordinates.
+  Rectf rf(10.5f, 20.5f, 110.5f, 220.5f);
+  Rect r(rf);
+  ASSERT_EQ(r, Rect(10, 20, 110, 220));
+
+  // Round-trip back to a Rectf preserves the truncated integer bounds.
+  Rectf back = r.to_rectf();
+  ASSERT_FLOAT_EQ(back.get_left(), 10.0f);
+  ASSERT_FLOAT_EQ(back.get_top(), 20.0f);
+  ASSERT_FLOAT_EQ(back.get_right(), 110.0f);
+  ASSERT_FLOAT_EQ(back.get_bottom(), 220.0f);
+
+  // operator<< must render a parseable, correct representation.
+  std::ostringstream os;
+  os << r;
+  ASSERT_EQ(os.str(), "Rect(10, 20, 110, 220)");
 }
 
 /* EOF */
