@@ -73,8 +73,8 @@ jobs:
           vcpkg install libogg:${{ matrix.arch }}-windows
           vcpkg install libvorbis:${{ matrix.arch }}-windows
           vcpkg install openal-soft:${{ matrix.arch }}-windows
-          vcpkg install sdl3:${{ matrix.arch }}-windows
-          vcpkg install "sdl3-image[jpeg,png]:${{ matrix.arch }}-windows"
+          vcpkg install sdl3:${{ matrix.arch }}-windows@3.4.12
+          vcpkg install "sdl3-image[jpeg,png]:${{ matrix.arch }}-windows@3.4.12"
           vcpkg install sdl3-ttf[harfbuzz]:${{ matrix.arch }}-windows
           vcpkg install glm:${{ matrix.arch }}-windows
           vcpkg install zlib:${{ matrix.arch }}-windows
