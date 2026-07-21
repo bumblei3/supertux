@@ -633,7 +633,7 @@ Sector::get_editor_size() const
   size_t max_surface = 0;
   Size size;
   for (const auto& tilemap : get_all_tilemaps()) {
-    size_t surface = tilemap->get_width() * tilemap->get_height();
+    size_t surface = static_cast<size_t>(tilemap->get_width()) * static_cast<size_t>(tilemap->get_height());
     if (surface > max_surface) {
       max_surface = surface;
       size = tilemap->get_size();

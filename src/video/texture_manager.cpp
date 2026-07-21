@@ -506,7 +506,7 @@ TextureManager::debug_print(std::ostream& out) const
     const auto& filename = it.first;
     const auto& surface = it.second;
 
-    total_surface_pixels += surface->w * surface->h;
+    total_surface_pixels += static_cast<size_t>(surface->w) * static_cast<size_t>(surface->h);
     out << "  surface filename:" << filename << " " << surface->w << "x" << surface->h << std::endl;
   }
   out << "surfaces:end" << std::endl;
