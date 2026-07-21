@@ -247,6 +247,42 @@ make_unit_test(TileReplacementTest SOURCE tile_replacement_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
   EXTERNAL editor/tile_replacement.hpp)
 
+# TileTest: coverage for supertux/tile.cpp attribute + solidity logic
+# (is_solid / is_unisolid / is_slope flags, get_attributes / get_data,
+# is_deprecated, object metadata, is_solid(tile_bbox,position,movement),
+# is_collisionful). Pure logic; only tile.cpp is linked (no rendering), so the
+# engine's Canvas/Editor/globals are stubbed (tile_test_stub.cpp).
+make_unit_test(TileTest SOURCE tile_test.cpp tile_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL supertux/tile.cpp video/color.cpp math/rectf.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
+# PhysicMovementTest: covers the out-of-line Physic::get_movement()
+# semi-implicit Euler integration (velocity + acceleration). With gravity
+# disabled, get_movement() never touches Sector, so only physic.cpp is needed
+# (no engine linkage). This complements PhysicTest, which covers the header-
+# inline state logic.
+make_unit_test(PhysicMovementTest SOURCE physic_movement_test.cpp physic_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL supertux/physic.cpp video/color.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
+
+# Same UBSan vptr caveat as PhysicTest: physic.cpp holds get_movement(), whose
+# inline Sector::get() call references `typeinfo for Sector`; under UBSan the
+# reference stays live. Sector is never instantiated here, so disable vptr
+# sanitization on physic.cpp only.
+target_compile_options(PhysicMovementTest PRIVATE
+  $<$<COMPILE_LANGUAGE:CXX>:-fno-sanitize=vptr>)
+
 message("ALL TESTS: ${all_test_targets}")
 
 add_custom_target(tests)
