@@ -283,6 +283,25 @@ make_unit_test(PhysicMovementTest SOURCE physic_movement_test.cpp physic_test_st
 target_compile_options(PhysicMovementTest PRIVATE
   $<$<COMPILE_LANGUAGE:CXX>:-fno-sanitize=vptr>)
 
+# PhysicIntegrationTest: multi-frame time integration of get_movement()
+# (semi-implicit Euler) under a constant acceleration supplied via
+# set_acceleration(), with Sector gravity disabled to stay engine-free. This
+# is the real falling-object integration math the engine runs each frame,
+# tested over many timesteps (velocity grows linearly, position quadratically)
+# without pulling in the Sector/Level/audio engine stack. Same vptr caveat:
+# disable vptr sanitization on physic.cpp only.
+make_unit_test(PhysicIntegrationTest SOURCE physic_integration_test.cpp physic_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL supertux/physic.cpp video/color.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
+target_compile_options(PhysicIntegrationTest PRIVATE
+  $<$<COMPILE_LANGUAGE:CXX>:-fno-sanitize=vptr>)
+
 message("ALL TESTS: ${all_test_targets}")
 
 add_custom_target(tests)
