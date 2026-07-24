@@ -302,6 +302,22 @@ make_unit_test(PhysicIntegrationTest SOURCE physic_integration_test.cpp physic_t
 target_compile_options(PhysicIntegrationTest PRIVATE
   $<$<COMPILE_LANGUAGE:CXX>:-fno-sanitize=vptr>)
 
+# CollisionMathTest: freestanding collision math in collision/collision.cpp
+# (rectangle_aatriangle slope/box resolution, set_rectangle_rectangle_constraints
+# AABB push-out, line_intersects_line / intersects_line, Constraints::merge).
+# Only depends on Rectf/AATriangle/Vector, so it links without the Sector/
+# Player/Editor engine stack. Note: collision.cpp references CollisionObject
+# only as a pointer type (no concrete symbols), so no engine stub is needed.
+make_unit_test(CollisionMathTest SOURCE collision_math_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL collision/collision.cpp math/rectf.cpp math/aatriangle.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
+
 message("ALL TESTS: ${all_test_targets}")
 
 add_custom_target(tests)
