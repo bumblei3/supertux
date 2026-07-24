@@ -104,4 +104,65 @@ TEST(TileTest, collisionful_distinguishes_solid_from_empty)
   ASSERT_TRUE(empty.is_collisionful(tile_bbox, obj_bbox, Vector(0.0f, 0.0f)));
 }
 
+// Unisolid tiles are only solid from one direction. The direction is
+// encoded in the low bits of get_data() (UNI_DIR_MASK): a UNI_DIR_NORTH
+// tile (data=0) is solid when the object is above it and moving downward
+// (or resting on it), but lets it pass when moving clearly upward; the
+// other directions are analogous. This exercises check_movement_unisolid()
+// and check_position_unisolid() through the public
+// is_collisionful(tile_bbox, obj_bbox, movement) entry point.
+//
+// Geometry: the tile occupies (0,0)-(32,32). The object is placed just
+// above the tile (bottom at y=0, i.e. resting on top) so that
+// check_position_unisolid() reports the object as "above" (not already
+// inside) the tile -- a fully-overlapping obj_bbox would read as "already
+// inside" and report non-solid, which is correct behaviour.
+TEST(TileTest, unisolid_north_solid_only_when_moving_down)
+{
+  Tile tile({}, {}, Tile::UNISOLID, Tile::UNI_DIR_NORTH, 1.0f);
+  Rectf const tile_bbox(0.0f, 0.0f, 32.0f, 32.0f);
+  Rectf const obj_bbox(0.0f, -32.0f, 32.0f, 0.0f); // resting on top of tile
+
+  // Moving down / resting / horizontal => solid (you stand on it from below).
+  ASSERT_TRUE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(0.0f, 5.0f)));
+  ASSERT_TRUE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(0.0f, 0.0f)));
+  ASSERT_TRUE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(5.0f, 0.0f)));
+  // Moving clearly up => not solid (you can jump up through it).
+  ASSERT_FALSE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(0.0f, -5.0f)));
+}
+
+TEST(TileTest, unisolid_south_solid_only_when_moving_up)
+{
+  Tile tile({}, {}, Tile::UNISOLID, Tile::UNI_DIR_SOUTH, 1.0f);
+  Rectf const tile_bbox(0.0f, 0.0f, 32.0f, 32.0f);
+  Rectf const obj_bbox(0.0f, 32.0f, 32.0f, 64.0f); // hanging below the tile
+
+  ASSERT_TRUE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(0.0f, -5.0f)));
+  ASSERT_TRUE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(0.0f, 0.0f)));
+  ASSERT_TRUE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(-5.0f, 0.0f)));
+  ASSERT_FALSE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(0.0f, 5.0f)));
+}
+
+TEST(TileTest, unisolid_west_solid_only_when_moving_right)
+{
+  Tile tile({}, {}, Tile::UNISOLID, Tile::UNI_DIR_WEST, 1.0f);
+  Rectf const tile_bbox(0.0f, 0.0f, 32.0f, 32.0f);
+  Rectf const obj_bbox(-32.0f, 0.0f, 0.0f, 32.0f); // to the left of the tile
+
+  ASSERT_TRUE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(5.0f, 0.0f)));
+  ASSERT_TRUE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(0.0f, 0.0f)));
+  ASSERT_FALSE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(-5.0f, 0.0f)));
+}
+
+TEST(TileTest, unisolid_east_solid_only_when_moving_left)
+{
+  Tile tile({}, {}, Tile::UNISOLID, Tile::UNI_DIR_EAST, 1.0f);
+  Rectf const tile_bbox(0.0f, 0.0f, 32.0f, 32.0f);
+  Rectf const obj_bbox(32.0f, 0.0f, 64.0f, 32.0f); // to the right of the tile
+
+  ASSERT_TRUE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(-5.0f, 0.0f)));
+  ASSERT_TRUE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(0.0f, 0.0f)));
+  ASSERT_FALSE(tile.is_collisionful(tile_bbox, obj_bbox, Vector(5.0f, 0.0f)));
+}
+
 // EOF //
