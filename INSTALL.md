@@ -97,15 +97,20 @@ following steps:
    submodules should already be included in the package.)
 
    **Fork-only SDL3 submodule patches.** `external/SDL_ttf` is pinned to an
-   upstream commit that still uses the SDL2 API, but the fork's SDL3 port needs
-   the SDL3-converted SDL_ttf. That conversion is vendored (not pushed
-   anywhere, since upstream PRs are blocked) in `patches/submodules/` and applied
-   by `scripts/apply_submodule_patches.sh`. Run it after the submodule update:
+   upstream commit (861c047, "Bump CMake minimum required") that still uses the
+   SDL2 API, but the fork's SDL3 port needs the SDL3-converted SDL_ttf. That
+   conversion is vendored (not pushed anywhere, since upstream PRs are blocked)
+   in `patches/submodules/` and applied by `scripts/apply_submodule_patches.sh`.
+   Run it after the submodule update:
 
    ```bash
    git submodule update --init --recursive
    bash scripts/apply_submodule_patches.sh
    ```
+
+   **SDL3 host drift note:** the system SDL3 packages on Ubuntu 26.04 lag
+   upstream (3.4.2 vs latest 3.4.12). To get the latest SDL3 on macOS/Linux
+   via vcpkg, set `VCPKG_OVERLAY_TRIPLETS` or use a custom overlay port.
 
    `external/tinygettext` needs no patch: the pinned commit already ships SDL3
    support via `-DTINYGETTEXT_SDL_VERSION=3` (set in the top-level
