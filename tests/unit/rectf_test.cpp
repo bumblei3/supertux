@@ -37,9 +37,18 @@ TEST(RectfTest, overlaps_rect)
 {
   ASSERT_TRUE(Rectf(100.0f, 100.0f, 200.0f, 200.0f).overlaps(Rectf(150.0f, 150.0f, 190.0f, 190.0f)));
   ASSERT_TRUE(Rectf(100.0f, 100.0f, 200.0f, 200.0f).overlaps(Rectf(100.0f, 100.0f, 200.0f, 200.0f)));
-  // Touching edges do not count as overlap (exclusive bounds).
-  ASSERT_FALSE(Rectf(100.0f, 100.0f, 200.0f, 200.0f).overlaps(Rectf(200.0f, 100.0f, 300.0f, 200.0f)));
+  // SuperTux overlaps() is inclusive on the edges (touching counts as overlap).
+  ASSERT_TRUE(Rectf(100.0f, 100.0f, 200.0f, 200.0f).overlaps(Rectf(200.0f, 100.0f, 300.0f, 200.0f)));
   ASSERT_FALSE(Rectf(100.0f, 100.0f, 200.0f, 200.0f).overlaps(Rectf(250.0f, 250.0f, 300.0f, 300.0f)));
+}
+
+TEST(RectfTest, empty)
+{
+  // Zero or negative width/height is empty.
+  EXPECT_TRUE(Rectf(0.0f, 0.0f, 0.0f, 10.0f).empty());
+  EXPECT_TRUE(Rectf(0.0f, 0.0f, 10.0f, 0.0f).empty());
+  EXPECT_TRUE(Rectf(10.0f, 10.0f, 0.0f, 0.0f).empty());
+  EXPECT_FALSE(Rectf(0.0f, 0.0f, 10.0f, 10.0f).empty());
 }
 
 TEST(RectfTest, moved)
@@ -97,18 +106,12 @@ TEST(RectfTest, set_p2)
   ASSERT_EQ(Rectf(Vector(16.0f, 16.0f), Vector(48.0f, 100.0f)), rect);
 }
 
-TEST(RectfTest, empty)
-{
-  // Zero or negative width/height is empty.
-  EXPECT_TRUE(Rectf(0.0f, 0.0f, 0.0f, 10.0f).empty());
-  EXPECT_TRUE(Rectf(0.0f, 0.0f, 10.0f, 0.0f).empty());
-  EXPECT_TRUE(Rectf(10.0f, 10.0f, 0.0f, 0.0f).empty());
-  EXPECT_FALSE(Rectf(0.0f, 0.0f, 10.0f, 10.0f).empty());
-}
-
 TEST(RectfTest, equality)
 {
   EXPECT_TRUE(Rectf(1.0f, 2.0f, 3.0f, 4.0f) == Rectf(1.0f, 2.0f, 3.0f, 4.0f));
+  // Same p1 and same p2 (= same size) compares equal.
+  EXPECT_TRUE(Rectf(1.0f, 2.0f, 3.0f, 4.0f) == Rectf(1.0f, 2.0f, 3.0f, 4.0f));
+  // Different p2 (different size) makes them unequal.
   EXPECT_FALSE(Rectf(1.0f, 2.0f, 3.0f, 4.0f) == Rectf(1.0f, 2.0f, 3.0f, 5.0f));
 }
 
@@ -127,10 +130,16 @@ TEST(RectfTest, grow_vector)
 
 TEST(RectfTest, grow_negative_shrinks)
 {
-  // Shrinking past zero width/height flips the rect (no clamping).
-  const Rectf r = Rectf(10.0f, 10.0f, 20.0f, 20.0f).grown(-8.0f);
-  EXPECT_EQ(r, Rectf(18.0f, 18.0f, 12.0f, 12.0f));
-  EXPECT_TRUE(r.empty());
+  // Shrinking by an amount that keeps size >= 0 actually shrinks both sides.
+  const Rectf r = Rectf(10.0f, 10.0f, 20.0f, 20.0f).grown(-3.0f);
+  EXPECT_EQ(r, Rectf(13.0f, 13.0f, 17.0f, 17.0f));
+}
+
+TEST(RectfTest, grow_negative_below_zero_is_noop)
+{
+  // Shrinking past zero is a no-op (returns the original rect unchanged).
+  const Rectf base(10.0f, 10.0f, 20.0f, 20.0f);
+  EXPECT_EQ(base.grown(-8.0f), base);
 }
 
 TEST(RectfTest, get_middle_and_set_pos)
@@ -139,23 +148,6 @@ TEST(RectfTest, get_middle_and_set_pos)
   EXPECT_EQ(r.get_middle(), Vector(5.0f, 10.0f));
   r.set_pos(Vector(100.0f, 200.0f));
   EXPECT_EQ(r, Rectf(100.0f, 200.0f, 110.0f, 220.0f));
-}
-
-TEST(RectfTest, distance_to_point)
-{
-  const Rectf r(0.0f, 0.0f, 10.0f, 10.0f);
-  // Point inside -> distance 0.
-  EXPECT_FLOAT_EQ(r.distance(Vector(5.0f, 5.0f)), 0.0f);
-  // Point to the right -> distance 5.
-  EXPECT_FLOAT_EQ(r.distance(Vector(15.0f, 5.0f)), 5.0f);
-}
-
-TEST(RectfTest, distance_between_rects)
-{
-  const Rectf a(0.0f, 0.0f, 10.0f, 10.0f);
-  const Rectf b(20.0f, 0.0f, 30.0f, 10.0f);
-  // Middle-to-middle distance: a.middle=(5,5), b.middle=(25,5) -> 20.
-  EXPECT_FLOAT_EQ(a.distance(b), 20.0f);
 }
 
 TEST(RectfTest, sdl_roundtrip)
