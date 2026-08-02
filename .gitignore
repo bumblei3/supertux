@@ -1,6 +1,7 @@
 # Build Files
 build/
 build.*/
+Testing/
 build-cov/
 build-san/
 build-gate/
