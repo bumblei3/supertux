@@ -95,19 +95,14 @@ jobs:
       - name: Install dependencies
         run: |
           cd vcpkg
-          ./vcpkg install --classic --triplet=$VCPKG_TRIPLET \
-            fmt     \
-            libogg   \
-            libvorbis \
-            libraqm    \
-            freetype    \
-            physfs      \
-            glm         \
-            libpng      \
-            zlib        \
-            sdl3        \
-            sdl3-image[jpeg,png]  \
-            sdl3-ttf
+          # Manifest mode (reads vcpkg.json at repo root): generates the
+          # per-triplet toolchain file vcpkg/<triplet>.cmake that the Build
+          # step passes to -DCMAKE_TOOLCHAIN_FILE. Classic mode
+          # (--classic) does NOT emit that file, so the build fails with
+          # "Could not find toolchain file: vcpkg/<triplet>.cmake".
+          # In manifest mode the package set comes from vcpkg.json, so no
+          # packages are listed on the command line.
+          ./vcpkg install --triplet=$VCPKG_TRIPLET
 
       - name: Build
         run: |
