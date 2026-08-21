@@ -125,6 +125,19 @@ make_unit_test(ReaderTest SOURCE reader_test.cpp reader_test_stub.cpp
   INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
             ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
 
+# Reader coverage for the parts NOT in ReaderTest: ReaderCollection::get_objects(),
+# ReaderIterator iteration, default_value overloads, from_string/get_filename/
+# get_directory, uint32_t/UID get() overloads. Same stub/link setup as ReaderTest.
+make_unit_test(ReaderCollectionIteratorTest
+  SOURCE reader_collection_iterator_test.cpp reader_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
+  EXTERNAL util/reader_document.cpp util/reader_mapping.cpp
+            util/reader_collection.cpp util/reader_iterator.cpp
+            util/reader_object.cpp util/gettext.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+            ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
+
 # Round-trip coverage for util/writer.hpp: write values into a std::ostream,
 # parse them back with ReaderDocument::from_string, verify the save/load cycle.
 # Logging/physfs stubbed (writer_test_stub.cpp); uses the ostream constructor

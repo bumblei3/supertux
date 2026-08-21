@@ -1,0 +1,265 @@
+//  SuperTux
+//  Copyright (C) 2026 Ingo Ruhnke <grumbel@gmail.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+// Reader coverage for the parts NOT exercised by reader_test.cpp:
+//   - ReaderCollection::get_objects() (old "(section (obj ...) ...)" format)
+//   - ReaderIterator::next()/get_key()/as_mapping() iteration loop
+//   - default_value overloads on ReaderMapping::get(...)
+//   - from_string + get_filename()/get_directory()
+//   - uint32_t and UID get() overloads
+//
+// Engine logging/filesystem is stubbed by reader_test_stub.cpp (linked in
+// alongside this file) to keep the test self-contained.
+
+#include <gtest/gtest.h>
+
+#include <cstdint>
+#include <optional>
+#include <sstream>
+#include <string>
+#include <vector>
+
+#include "util/reader_collection.hpp"
+#include "util/reader_document.hpp"
+#include "util/reader_iterator.hpp"
+#include "util/reader_mapping.hpp"
+#include "util/uid.hpp"
+
+// Helper: parse a document whose root is (root-name ...body...) and return it.
+static ReaderDocument
+parse(const std::string& text, const std::string& filename = "<string>")
+{
+  return ReaderDocument::from_string(text, filename);
+}
+
+TEST(ReaderCollectionTest, get_objects)
+{
+  // Old-style collection: (sector (object "name" (x 1)) (object "name" (x 2)))
+  std::string text =
+    "(level\n"
+    "  (objects\n"
+    "    (sprite (name \"a\") (x 10))\n"
+    "    (sprite (name \"b\") (x 20))\n"
+    "    (sprite (name \"c\") (x 30))\n"
+    "  )\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto root = doc.get_root();
+  ASSERT_EQ("level", root.get_name());
+
+  auto mapping = root.get_mapping();
+  std::optional<ReaderCollection> collection;
+  ASSERT_TRUE(mapping.get("objects", collection));
+  ASSERT_TRUE(collection.has_value());
+
+  auto objects = collection->get_objects();
+  ASSERT_EQ(3u, objects.size());
+
+  // Each object carries its name and inner mapping.
+  ASSERT_EQ("sprite", objects[0].get_name());
+  ASSERT_EQ("sprite", objects[1].get_name());
+  ASSERT_EQ("sprite", objects[2].get_name());
+
+  int x0 = -1, x1 = -1, x2 = -1;
+  objects[0].get_mapping().get("x", x0);
+  objects[1].get_mapping().get("x", x1);
+  objects[2].get_mapping().get("x", x2);
+  ASSERT_EQ(10, x0);
+  ASSERT_EQ(20, x1);
+  ASSERT_EQ(30, x2);
+}
+
+TEST(ReaderCollectionTest, empty_collection)
+{
+  std::string text =
+    "(level\n"
+    "  (objects)\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+
+  std::optional<ReaderCollection> collection;
+  ASSERT_TRUE(mapping.get("objects", collection));
+  ASSERT_TRUE(collection.has_value());
+  ASSERT_EQ(0u, collection->get_objects().size());
+}
+
+TEST(ReaderIteratorTest, iterate_pairs)
+{
+  std::string text =
+    "(supertux-test\n"
+    "  (a 1)\n"
+    "  (b 2)\n"
+    "  (c 3)\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+  auto it = mapping.get_iter();
+
+  int seen = 0;
+  std::vector<std::string> keys;
+  while (it.next())
+  {
+    ASSERT_TRUE(it.is_pair());
+    keys.push_back(it.get_key());
+    if (it.get_key() == "a")
+    {
+      int v = 0;
+      it.get(v);
+      ASSERT_EQ(1, v);
+      seen++;
+    }
+    else if (it.get_key() == "b")
+    {
+      int v = 0;
+      it.get(v);
+      ASSERT_EQ(2, v);
+      seen++;
+    }
+    else if (it.get_key() == "c")
+    {
+      int v = 0;
+      it.get(v);
+      ASSERT_EQ(3, v);
+      seen++;
+    }
+  }
+  ASSERT_EQ(3, seen);
+  ASSERT_EQ(std::vector<std::string>({"a", "b", "c"}), keys);
+}
+
+TEST(ReaderIteratorTest, iterate_string_items)
+{
+  std::string text =
+    "(supertux-test\n"
+    "  \"hello\" \"world\"\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+  auto it = mapping.get_iter();
+
+  std::vector<std::string> items;
+  while (it.next())
+  {
+    ASSERT_TRUE(it.is_string());
+    items.push_back(it.as_string_item());
+  }
+  ASSERT_EQ(std::vector<std::string>({"hello", "world"}), items);
+}
+
+TEST(ReaderIteratorTest, as_mapping)
+{
+  std::string text =
+    "(supertux-test\n"
+    "  (child (x 42))\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+  auto it = mapping.get_iter();
+
+  ASSERT_TRUE(it.next());
+  ASSERT_EQ("child", it.get_key());
+  auto child = it.as_mapping();
+  int x = 0;
+  child.get("x", x);
+  ASSERT_EQ(42, x);
+}
+
+TEST(ReaderMappingTest, default_value_overloads)
+{
+  // Keys present use the parsed value; missing keys fall back to default.
+  std::string text =
+    "(supertux-test\n"
+    "  (present-int 7)\n"
+    "  (present-str \"yes\")\n"
+    "  (present-float 2.5)\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+
+  int i = 0;
+  ASSERT_TRUE(mapping.get("present-int", i, 99));
+  ASSERT_EQ(7, i);
+
+  int missing_i = 0;
+  ASSERT_FALSE(mapping.get("absent-int", missing_i, 99));
+  ASSERT_EQ(99, missing_i);
+
+  std::string s;
+  ASSERT_TRUE(mapping.get("present-str", s, std::optional<const char*>("fallback")));
+  ASSERT_EQ("yes", s);
+
+  std::string missing_s;
+  ASSERT_FALSE(mapping.get("absent-str", missing_s, std::optional<const char*>("fallback")));
+  ASSERT_EQ("fallback", missing_s);
+
+  float f = 0.0f;
+  ASSERT_TRUE(mapping.get("present-float", f, 1.0f));
+  ASSERT_FLOAT_EQ(2.5f, f);
+
+  float missing_f = 0.0f;
+  ASSERT_FALSE(mapping.get("absent-float", missing_f, 1.0f));
+  ASSERT_FLOAT_EQ(1.0f, missing_f);
+}
+
+TEST(ReaderMappingTest, uint32_and_uid_overloads)
+{
+  std::string text =
+    "(supertux-test\n"
+    "  (big 4294967295)\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+
+  uint32_t big = 0;
+  ASSERT_TRUE(mapping.get("big", big));
+  ASSERT_EQ(4294967295u, big);
+
+  // UID overload just needs a key that holds a string; absence returns false.
+  UID uid;
+  ASSERT_FALSE(mapping.get("no-such-uid", uid));
+}
+
+TEST(ReaderDocumentTest, from_string_filename_and_directory)
+{
+  std::string text = "(supertux-test (a 1))\n";
+  auto doc = parse(text, "/path/to/levels/world1.stl");
+
+  ASSERT_EQ("supertux-test", doc.get_root().get_name());
+  ASSERT_EQ("/path/to/levels/world1.stl", doc.get_filename());
+  ASSERT_EQ("/path/to/levels", doc.get_directory());
+}
+
+TEST(ReaderDocumentTest, from_stream_equivalent)
+{
+  std::string text = "(supertux-test (a 1))\n";
+  std::istringstream in(text);
+  auto doc = ReaderDocument::from_stream(in, "<stream>");
+
+  ASSERT_EQ("supertux-test", doc.get_root().get_name());
+  int a = 0;
+  doc.get_root().get_mapping().get("a", a);
+  ASSERT_EQ(1, a);
+}
+
+/* EOF */
