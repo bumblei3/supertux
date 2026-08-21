@@ -112,16 +112,21 @@ jobs:
           # NO per-triplet convenience file vcpkg/<triplet>.cmake --
           # passing that as CMAKE_TOOLCHAIN_FILE fails with
           # "Could not find toolchain file".
+          # GITHUB_JOBS is NOT set anywhere in this workflow; a bare -j
+          # would spawn unlimited parallel cc1plus processes and OOM the
+          # 7 GB runner (observed: "Killed signal terminated program
+          # cc1plus"). Cap at 2 -- Android NDK cross-compiles are heavy.
+          JOBS=2
           cmake -B build -S . \
             -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
             -DVCPKG_TARGET_TRIPLET=$VCPKG_TRIPLET \
-            -DSUPERTUX_JOBS=$GITHUB_JOBS \
+            -DSUPERTUX_JOBS=$JOBS \
             -DCMAKE_BUILD_TYPE=Release
-          cmake --build build --target supertux2 -j$GITHUB_JOBS
+          cmake --build build --target supertux2 -j$JOBS
 
       - name: Package APK
         run: |
-          cmake --build build --target package -j$GITHUB_JOBS
+          cmake --build build --target package -j2
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
