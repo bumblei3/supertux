@@ -60,6 +60,8 @@ static const float HELP_MARGIN_Y = 16.f;
 // The amount in pixels the mouse has to wiggle after scrolling before it can hover over things again.
 constexpr int MOUSE_DEADZONE_AMOUNT = 70;
 
+constexpr int ACTIVE_ITEM_NONE = -1;
+
 Menu::Menu() :
   m_pos(Vector(static_cast<float>(SCREEN_WIDTH) / 2.0f,
                static_cast<float>(SCREEN_HEIGHT) / 2.0f)),
@@ -70,7 +72,7 @@ Menu::Menu() :
   m_menu_help_height(0.0f),
   m_items(),
   m_arrange_left(0),
-  m_active_item(-1),
+  m_active_item(ACTIVE_ITEM_NONE),
   m_mouse_deadzone(0),
   m_can_click_when_unfocused(false)
 {
@@ -92,9 +94,9 @@ Menu::add_item(std::unique_ptr<MenuItem> new_item)
    * selectable item added.
    */
 
-  if (m_active_item == -1 && !item.skippable())
+  if (get_active_item() == ACTIVE_ITEM_NONE && !item.skippable())
   {
-    m_active_item = static_cast<int>(m_items.size()) - 1;
+    set_active_item(static_cast<int>(m_items.size()) - 1);
   }
 
   recalculate_position_and_size();
@@ -115,6 +117,7 @@ Menu::add_item(std::unique_ptr<MenuItem> new_item, int pos_)
   {
     m_active_item++;
   }
+  process_action(MenuAction::SELECT);
 
   recalculate_position_and_size();
 
@@ -136,8 +139,9 @@ Menu::delete_item(int pos_)
       if (m_active_item > 0)
         --m_active_item;
       else
-        m_active_item = int(m_items.size())-1;
+        m_active_item = int(m_items.size()) - 1;
     } while (m_items[m_active_item]->skippable());
+    process_action(MenuAction::SELECT);
   }
 }
 
@@ -179,523 +183,211 @@ Menu::add_intfield(const std::string& text, int* input, int id, bool positive, I
 }
 
 ItemFloatField&
-Menu::add_floatfield(const std::string& text, float* input, int id, bool positive)
+Menu::add_floatfield(const std::string& text, float* input, int id)
 {
-  return add_item<ItemFloatField>(text, input, id, positive);
+  return add_item<ItemFloatField>(text, input, id);
 }
 
-ItemAction&
-Menu::add_entry(int id, const std::string& text)
+ItemGoto&
+Menu::add_goto(const std::string& text, std::string* input, int id, int max)
 {
-  return add_item<ItemAction>(text, id);
-}
-
-ItemAction&
-Menu::add_entry(const std::string& text, const std::function<void()>& callback)
-{
-  return add_item<ItemAction>(text, -1, callback);
-}
-
-ItemAction&
-Menu::add_entry(int id, const std::string& text, const Color& text_color)
-{
-  return add_item<ItemAction>(text, id, [](){}, text_color);
-}
-
-ItemAction&
-Menu::add_entry(const std::string& text, const std::function<void()>& callback, const Color& text_color)
-{
-  return add_item<ItemAction>(text, -1, callback, text_color);
-}
-
-ItemInactive&
-Menu::add_inactive(const std::string& text, bool default_color)
-{
-  return add_item<ItemInactive>(text, default_color);
-}
-
-ItemToggle&
-Menu::add_toggle(int id, const std::string& text, bool* toggled, bool center_text)
-{
-  return add_item<ItemToggle>(text, toggled, id, center_text);
-}
-
-ItemToggle&
-Menu::add_toggle(int id, const std::string& text,
-                 const std::function<bool()>& get_func,
-                 const std::function<void(bool)>& set_func,
-                 bool center_text)
-{
-  return add_item<ItemToggle>(text, get_func, set_func, id, center_text);
+  return add_item<ItemGoto>(text, input, id, max);
 }
 
 ItemStringSelect&
-Menu::add_string_select(int id, const std::string& text, int* selected, const std::vector<std::string>& strings)
+Menu::add_stringselect(const std::string& text, std::string* input, int id, const std::vector<std::string>& values)
 {
-  return add_item<ItemStringSelect>(text, strings, selected, id);
-}
-
-ItemStringSelect&
-Menu::add_string_select(int id, const std::string& text, int default_item, const std::vector<std::string>& strings)
-{
-  return add_item<ItemStringSelect>(text, strings, default_item, id);
-}
-
-ItemAction&
-Menu::add_file(const std::string& text, std::string* input, const std::vector<std::string>& extensions,
-               const std::string& basedir, bool path_relative_to_basedir,
-               const std::function<void (MenuItem&, const std::string&, bool)> item_processor, int id)
-{
-  return add_item<ItemAction>(text, id,
-    [input, extensions, basedir, path_relative_to_basedir, item_processor]()
-    {
-      MenuManager::instance().push_menu(std::make_unique<FileSystemMenu>(input, extensions, basedir,
-          path_relative_to_basedir, nullptr, item_processor));
-    });
-}
-
-ItemBack&
-Menu::add_back(const std::string& text, int id)
-{
-  return add_item<ItemBack>(text, id);
-}
-
-ItemGoTo&
-Menu::add_submenu(const std::string& text, int submenu, int id)
-{
-  return add_item<ItemGoTo>(text, submenu, id);
-}
-
-ItemColorChannelRGBA&
-Menu::add_color_channel_rgba(float* input, Color channel, int id, bool is_linear)
-{
-  return add_item<ItemColorChannelRGBA>(input, channel, id, is_linear);
-}
-
-ItemColorPicker2D&
-Menu::add_color_picker_2d(Color& color) {
-  return add_item<ItemColorPicker2D>(color);
-}
-
-ItemPaths&
-Menu::add_path_settings(const std::string& text, PathObject& target, const std::string& path_ref)
-{
-  return add_item<ItemPaths>(text, target, path_ref);
-}
-
-ItemColorDisplay&
-Menu::add_color_display(Color* color, int id)
-{
-  return add_item<ItemColorDisplay>(color, id);
-}
-
-ItemColor&
-Menu::add_color(const std::string& text, Color* color, int id)
-{
-  return add_item<ItemColor>(text, color, id);
+  return add_item<ItemStringSelect>(text, input, id, values);
 }
 
 ItemStringArray&
-Menu::add_string_array(const std::string& text, std::vector<std::string>& items, int id)
+Menu::add_string_array(const std::string& text, std::vector<std::string>* input, int id)
 {
-  return add_item<ItemStringArray>(text, items, id);
+  return add_item<ItemStringArray>(text, input, id);
+}
+
+ItemToggle&
+Menu::add_toggle(const std::string& text, bool* input, int id, const std::string& on, const std::string& off)
+{
+  return add_item<ItemToggle>(text, input, id, on, off);
 }
 
 ItemImages&
-Menu::add_images(const std::string& image_path, int max_image_width, int max_image_height, int id)
+Menu::add_images(const std::string& text, std::vector<std::string>* input, int id)
 {
-  return add_item<ItemImages>(image_path, max_image_width, max_image_height, id);
+  return add_item<ItemImages>(text, input, id);
 }
 
-ItemImages&
-Menu::add_images(const std::vector<std::string>& image_paths, int max_image_width, int max_image_height, int id)
+ItemPaths&
+Menu::add_paths(const std::string& text, std::string* input, int id)
 {
-  return add_item<ItemImages>(image_paths, max_image_width, max_image_height, id);
+  return add_item<ItemPaths>(text, input, id);
 }
 
-ItemList&
-Menu::add_list(const std::string& text, const std::vector<std::string>& items, std::string* value_ptr, int id)
+ItemScriptLine&
+Menu::add_script_line(const std::string& text, std::string* input, int id)
 {
-  return add_item<ItemList>(text, items, value_ptr, id);
+  return add_item<ItemScriptLine>(text, input, id);
 }
 
-ItemHorizontalMenu&
-Menu::add_horizontalmenu(int id, float height, float min_item_width)
+ItemHL&
+Menu::add_hl_item(const std::string& text)
 {
-  return add_item<ItemHorizontalMenu>(id, height, min_item_width);
+  return add_item<ItemHL>(text);
 }
 
-void
-Menu::clear()
+ItemInactive&
+Menu::add_inactive(const std::string& text)
 {
-  m_items.clear();
-  m_active_item = -1;
+  return add_item<ItemInactive>(text);
 }
 
-void
-Menu::previous_item()
+ItemLabel&
+Menu::add_label_item(const std::string& text)
 {
-  if (m_active_item > 0)
-    --m_active_item;
-  else
-    m_active_item = m_items.size() - 1;
+  return add_item<ItemLabel>(text);
 }
 
-void
-Menu::next_item()
+ItemColorDisplay&
+Menu::add_color_display(const std::string& text, const Color& color)
 {
-  if (m_active_item < m_items.size() - 1)
-    ++m_active_item;
-  else
-    m_active_item = 0;
+  return add_item<ItemColorDisplay>(text, color);
 }
 
-void
-Menu::process_action(const MenuAction& action)
+ItemColorPicker2D&
+Menu::add_color_picker_2d(const std::string& text, Color* color, int id)
 {
-  { // Scrolling
-    // Find the first and last selectable item in the current menu, so
-    // that the top most selected item gives a scroll_pos of -1.0f and
-    // the bottom most gives 1.0f, as otherwise the non-selectable
-    // header would be cut off.
-    size_t first_idx = m_items.size();
-    size_t last_idx = m_items.size();
-    for (size_t i = 0; i < m_items.size(); ++i) {
-      if (!m_items[i]->skippable()) {
-        if (first_idx == m_items.size()) {
-          first_idx = i;
-        }
-        last_idx = i;
-      }
-    }
-
-    const float screen_height = static_cast<float>(SCREEN_HEIGHT);
-    const float menu_area = screen_height - m_menu_help_height;
-    // get_height() doesn't include the border, so we manually add some
-    const float menu_height = get_height() + 32.0f;
-    const float center_y = menu_area / 2.0f;
-    if (menu_height > menu_area)
-    {
-      const float scroll_range = (menu_height - menu_area) / 2.0f;
-      const float scroll_pos = ((static_cast<float>(m_active_item - first_idx)
-                                 / static_cast<float>(last_idx - first_idx)) - 0.5f) * 2.0f;
-
-      m_pos.y = floorf(center_y - scroll_range * scroll_pos);
-    }
-  }
-
-  if (m_items.size() == 0)
-    return;
-
-
-  const int last_active_item = m_active_item;
-
-  switch (action) {
-    case MenuAction::UP:
-      m_items[m_active_item]->deactivate();
-
-      do {
-        previous_item();
-      } while (m_items[m_active_item]->skippable()
-               && (m_active_item != last_active_item));
-
-      m_items[m_active_item]->activate();
-      break;
-
-    case MenuAction::DOWN:
-      m_items[m_active_item]->deactivate();
-
-      do {
-        next_item();
-      } while (m_items[m_active_item]->skippable()
-               && (m_active_item != last_active_item));
-
-      m_items[m_active_item]->activate();
-      break;
-
-    case MenuAction::BACK:
-      if (on_back_action()) {
-        MenuManager::instance().pop_menu();
-      }
-      return;
-
-    default:
-      break;
-  }
-
-  // cppcheck-suppress knownConditionTrueFalse
-  // False positive: cppcheck cannot see that previous_item()/next_item() mutate
-  // m_active_item, so it thinks last_active_item == m_active_item always. The
-  // comparison is genuinely reachable (wrap-around / skipping skippable items).
-  if (last_active_item != m_active_item) {
-    // Selection caused by Up or Down keyboard action
-    if (last_active_item != -1)
-      m_items[last_active_item]->process_action(MenuAction::UNSELECT);
-    m_items[m_active_item]->process_action(MenuAction::SELECT);
-  }
-
-  bool const last_action = m_items[m_active_item]->no_other_action();
-  m_items[m_active_item]->process_action(action);
-  if (last_action)
-    return;
-
-  // In case pop_menu() was called in the callback
-  if (MenuManager::instance().current_menu() != this)
-    return;
-
-  if (m_items[m_active_item]->changes_width())
-    calculate_width();
-  if (action == MenuAction::HIT)
-    menu_action(*m_items[m_active_item]);
+  return add_item<ItemColorPicker2D>(text, color, id);
 }
 
-void
-Menu::draw_item(DrawingContext& context, int index, float y_pos)
+ItemColorChannelRGBA&
+Menu::add_color_channel_rgba(const std::string& text, Color* color, int id, ColorChannel channel)
 {
-  const float menu_width = get_width();
-
-  MenuItem* pitem = m_items[index].get();
-
-  const float x_pos = m_pos.x - menu_width / 2.0f;
-
-  pitem->draw(context, Vector(x_pos, y_pos), static_cast<int>(menu_width), m_active_item == index);
-
-  if (m_active_item == index && pitem->select_blink())
-  {
-    float const blink = (sinf(g_real_time * math::PI * 1.0f)/2.0f + 0.5f) * 0.5f + 0.25f;
-    context.color().draw_filled_rect(Rectf(Vector(m_pos.x - menu_width/2 + 10 - 2, y_pos - static_cast<float>(pitem->get_height())/2 - 2),
-                                           Vector(m_pos.x + menu_width/2 - 10 + 2, y_pos + static_cast<float>(pitem->get_height())/2 + 2)),
-                                     Color(1.0f, 1.0f, 1.0f, blink),
-                                     std::max(0.f, g_config->menuroundness - 2.f),
-                                     LAYER_GUI-10);
-    context.color().draw_filled_rect(Rectf(Vector(m_pos.x - menu_width/2 + 10, y_pos - static_cast<float>(pitem->get_height())/2),
-                                           Vector(m_pos.x + menu_width/2 - 10, y_pos + static_cast<float>(pitem->get_height())/2)),
-                                     Color(1.0f, 1.0f, 1.0f, 0.5f),
-                                     std::max(0.f, g_config->menuroundness - 4.f),
-                                     LAYER_GUI-10);
-  }
-}
-
-void
-Menu::calculate_width()
-{
-  /* The width of the menu has to be more than the width of the text
-     with the most characters */
-  float max_width = 0;
-  for (unsigned int i = 0; i < m_items.size(); ++i)
-  {
-    float const w = static_cast<float>(m_items[i]->get_width());
-    if (w > max_width)
-      max_width = w;
-  }
-  m_menu_width = max_width;
-}
-
-void
-Menu::calculate_height()
-{
-  float height = 0;
-  for (unsigned i = 0; i < m_items.size(); i++)
-  {
-    height += static_cast<float>(m_items[i]->get_height()) + m_items[i]->get_distance() * 2;
-    // If a help text is present, make some space at the bottom of the
-    // menu so that the last few items don't overlap with the help
-    // text.
-    if (!m_items[i]->get_help().empty()) m_menu_help_height = 96.0f;
-  }
-  if (m_menu_help_height != 0.0f) m_pos.y = floorf((static_cast<float>(SCREEN_HEIGHT) - m_menu_help_height) / 2);
-  m_menu_height = height;
-}
-
-float
-Menu::get_width() const
-{
-  return m_menu_width + 24;
-}
-
-float
-Menu::get_height() const
-{
-  return m_menu_height;
+  return add_item<ItemColorChannelRGBA>(text, color, id, channel);
 }
 
 void
 Menu::recalculate_position_and_size()
 {
-  m_pos.x = static_cast<float>(SCREEN_WIDTH) / 2.0f;
-  m_pos.y = static_cast<float>(SCREEN_HEIGHT) / 2.0f;
-
-  calculate_width();
-  calculate_height();
-}
-
-void
-Menu::on_window_resize()
-{
-  recalculate_position_and_size();
-
+  // 1. determine max width of any item
+  float max_width = 0;
+  float max_height = 0;
   for (auto& item : m_items)
-    item->on_window_resize();
-}
-
-void
-Menu::draw(DrawingContext& context)
-{
-  const float menu_height = get_height();
-  float y_pos = m_pos.y - menu_height / 2.0f;
-  for (unsigned int i = 0; i < m_items.size(); ++i)
   {
-    y_pos += m_items[i]->get_distance();
-    draw_item(context, i, y_pos + static_cast<float>(m_items[i]->get_height())/2);
-    y_pos += static_cast<float>(m_items[i]->get_height()) + m_items[i]->get_distance();
+    float width = item->get_width();
+    float height = item->get_height();
+    if (width > max_width)
+      max_width = width;
+    max_height += height + item->get_distance();
   }
 
-  if (!m_items[m_active_item]->get_help().empty())
+  // 2. set menu's size based on the items' sizes.
+  m_menu_width = max_width + 2 * HELP_MARGIN_Y;
+  m_menu_height = max_height;
+
+  // adjust items
+  float x = m_pos.x - m_menu_width / 2;
+  float y = m_pos.y - m_menu_height / 2;
+  m_arrange_left = (SCREEN_WIDTH - m_menu_width) / 2;
+  for (auto& item : m_items)
   {
-    const int text_width = static_cast<int>(Resources::normal_font->get_text_width(m_items[m_active_item]->get_help()));
-    const int text_height = static_cast<int>(Resources::normal_font->get_text_height(m_items[m_active_item]->get_help()));
-
-    const Rectf text_rect(m_pos.x - static_cast<float>(text_width) / 2.0f - 8.0f,
-                          static_cast<float>(SCREEN_HEIGHT) - HELP_MARGIN_Y - static_cast<float>(text_height) - 4.0f,
-                          m_pos.x + static_cast<float>(text_width) / 2.0f + 8.0f,
-                          static_cast<float>(SCREEN_HEIGHT) - HELP_MARGIN_Y + 4.0f);
-
-    context.color().draw_filled_rect(Rectf(text_rect.p1() - Vector(4,4),
-                                           text_rect.p2() + Vector(4,4)),
-                                     g_config->menuhelpbackcolor,
-                                     g_config->menuroundness + 4.f,
-                                     LAYER_GUI);
-
-    context.color().draw_filled_rect(text_rect,
-                                     g_config->menuhelpfrontcolor,
-                                     g_config->menuroundness,
-                                     LAYER_GUI);
-
-    context.color().draw_text(Resources::normal_font, m_items[m_active_item]->get_help(),
-                              Vector(m_pos.x, static_cast<float>(SCREEN_HEIGHT) - HELP_MARGIN_Y - static_cast<float>(text_height)),
-                              ALIGN_CENTER, LAYER_GUI);
+    item->arrange(x, y);
+    y += item->get_height() + item->get_distance();
   }
-}
 
-void
-Menu::set_item(int index)
-{
-  if (index < 0)
-  	index = 0;
-
-  m_active_item = 0;
-
-  // Attempt to skip all skippable items
-  do
+  // 3. arrange "help" text
+  float help_height = 0;
+  for (auto& item : m_items)
   {
-  	if (m_active_item >= m_items.size())
-  	  break;
-
-    if (m_items[m_active_item]->skippable())
-	{
-	  ++m_active_item;
-	  continue;
-	}
-
-	if (index > 0)
-	  ++m_active_item;
-
-	--index;
+    float help_text_height = item->get_help_height();
+    if (help_text_height > help_height)
+      help_height = help_text_height;
   }
-  while (index >= 0);
+  m_menu_help_height = help_height;
 }
 
-MenuItem&
-Menu::get_item_by_id(int id)
+bool
+Menu::handle_event(const SDL_Event& event)
 {
-  auto item = std::find_if(m_items.begin(), m_items.end(), [id](const std::unique_ptr<MenuItem>& i)
+  SDL_EventType type = event.type;
+
+  // pass events to menu items for event handling
+  for (auto& item : m_items)
   {
-    return i->get_id() == id;
-  });
+    if (item->handle_event(event))
+      return true;
+  }
 
-  if(item != m_items.end())
-    return *item->get();
-
-  throw std::runtime_error("MenuItem not found: " + std::to_string(id));
-}
-
-const MenuItem&
-Menu::get_item_by_id(int id) const
-{
-  auto item = std::find_if(m_items.begin(), m_items.end(), [id](const std::unique_ptr<MenuItem>& i)
+  if (type == SDL_EVENT_MOUSE_BUTTON_DOWN || type == SDL_EVENT_MOUSE_BUTTON_UP)
   {
-    return i->get_id() == id;
-  });
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+    Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(x, y);
 
-  if(item != m_items.end())
-    return *item->get();
-
-  throw std::runtime_error("MenuItem not found: " + std::to_string(id));
-}
-
-int Menu::get_active_item_id() const
-{
-  return m_items[m_active_item]->get_id();
-}
-
-void
-Menu::event(const SDL_Event& ev)
-{
-  m_items[m_active_item]->event(ev);
-  switch (ev.type)
-  {
-    case SDL_EVENT_KEY_DOWN:
-    case SDL_EVENT_TEXT_INPUT:
-      if (((ev.type == SDL_EVENT_KEY_DOWN && ev.key.key == SDLK_BACKSPACE) ||
-         ev.type == SDL_EVENT_TEXT_INPUT) && m_items[m_active_item]->changes_width())
-      {
-        // Changed item value? Let's recalculate width:
-        calculate_width();
-      }
-    break;
-
-    case SDL_EVENT_MOUSE_WHEEL:
+    for (auto& item : m_items)
     {
-      if (ev.wheel.y > 0)
+      if (item->contains(mouse_pos))
       {
-      do { previous_item(); } while (m_items[m_active_item]->skippable());
-      }
-      else {
-      do { next_item(); } while (m_items[m_active_item]->skippable());
-      }
-      m_mouse_deadzone = MOUSE_DEADZONE_AMOUNT;
-    }
-    break;
-
-    case SDL_EVENT_MOUSE_BUTTON_DOWN:
-    if (ev.button.button == SDL_BUTTON_LEFT)
-    {
-      Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
-
-      if ((mouse_pos.x > m_pos.x - get_width() / 2.0f &&
-           mouse_pos.x < m_pos.x + get_width() / 2.0f &&
-           mouse_pos.y > m_pos.y - get_height() / 2.0f &&
-           mouse_pos.y < m_pos.y + get_height() / 2.0f) ||
-		  m_mouse_deadzone > 0 ||
-		  m_can_click_when_unfocused)
-      {
-        process_action(MenuAction::HIT);
+        if (type == SDL_EVENT_MOUSE_BUTTON_DOWN)
+        {
+          item->pressed();
+          process_action(MenuAction::PRESS);
+          return true;
+        }
+        if (type == SDL_EVENT_MOUSE_BUTTON_UP && item->is_pressed())
+        {
+          item->released();
+          process_action(MenuAction::HIT);
+        }
       }
     }
-    break;
+    return false;
+  }
 
-    case SDL_EVENT_MOUSE_MOTION:
+  if (type == SDL_EVENT_MOUSE_WHEEL)
+  {
+    float yrel = event.wheel.y;
+    int new_active_item = m_active_item;
+
+    if (yrel > 0)
     {
-	  if (m_mouse_deadzone > 0)
-	  {
-	  	m_mouse_deadzone -= abs(ev.motion.xrel);
-	  	m_mouse_deadzone -= abs(ev.motion.yrel);
+      // scroll down
+      for (int i = 0; i < static_cast<int>(m_items.size()); ++i)
+      {
+        if (m_items[(m_active_item + 1 + i) % m_items.size()]->skippable())
+          continue;
+        new_active_item = (m_active_item + 1 + i) % m_items.size();
+        break;
+      }
+    }
+    else
+    {
+      // scroll up
+      for (int i = 0; i < static_cast<int>(m_items.size()); ++i)
+      {
+        if (m_items[(m_active_item - 1 - i + m_items.size()) % m_items.size()]->skippable())
+          continue;
+        new_active_item = (m_active_item - 1 - i + m_items.size()) % m_items.size();
+        break;
+      }
+    }
+    set_active_item(new_active_item);
+    return true;
+  }
 
-        if (m_mouse_deadzone < 0)
-          m_mouse_deadzone = 0;
-		return;
-	  }
-      Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
+  if (type == SDL_EVENT_MOUSE_MOTION)
+  {
+    if (m_mouse_deadzone > 0)
+    {
+      m_mouse_deadzone -= abs(event.motion.xrel);
+      m_mouse_deadzone -= abs(event.motion.yrel);
+
+      if (m_mouse_deadzone < 0)
+        m_mouse_deadzone = 0;
+
+        return;
+      }
+      Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(event.motion.x, event.motion.y);
       float const x = mouse_pos.x;
       float const y = mouse_pos.y;
 
@@ -721,11 +413,8 @@ Menu::event(const SDL_Event& ev)
         /* only change the mouse focus to a selectable item */
         if (!m_items[new_active_item]->skippable() &&
             new_active_item != m_active_item) {
-          // Selection caused by mouse movement
-          if (m_active_item != -1)
-            process_action(MenuAction::UNSELECT);
-          m_active_item = new_active_item;
-          process_action(MenuAction::SELECT);
+
+          set_active_item(new_active_item);
         }
 
         if (MouseCursor::current())
@@ -742,15 +431,36 @@ Menu::event(const SDL_Event& ev)
     default:
       break;
   }
+  return false;
 }
 
 void
-Menu::set_active_item(int id)
+Menu::set_active_item_id(int id)
 {
-  for (size_t i = 0; i < m_items.size(); ++i) {
-    if (m_items[i]->get_id() == id) {
-      m_active_item = static_cast<int>(i);
+  for (size_t i = 0; i < m_items.size(); ++i)
+  {
+    if (m_items[i]->get_id() == id)
+    {
+      set_active_item(static_cast<int>(i));
       break;
     }
+  }
+}
+
+void
+Menu::set_active_item(int item_idx)
+{
+  if (item_idx == m_active_item)
+    return;
+
+  if (m_active_item > -1)
+  {
+    process_action(MenuAction::UNSELECT);
+  }
+
+  m_active_item = item_idx;
+  if (m_active_item > -1)
+  {
+    process_action(MenuAction::SELECT);
   }
 }

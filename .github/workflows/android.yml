@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # SUPERTUX_VERSION is set later using git describe.
-      SDL_TAG: 3.4.2
+      SDL_TAG: 3.4.12
       B_T_VERSION: 35.0.0
       NDK_VERSION: 29.0.14206865
       SDK_VERSION: 35
@@ -74,15 +74,13 @@ jobs:
             armeabi-v7a) export VCPKG_TRIPLET=arm-neon-android ;;
             x86) export VCPKG_TRIPLET=x86-android ;;
             x86_64) export VCPKG_TRIPLET=x64-android ;;
-            *) exit 67 ;;
           esac
-          echo "VCPKG_TRIPLET=$VCPKG_TRIPLET" >> $GITHUB_ENV
-          echo "VCPKG_ROOT=$VCPKG_ROOT" >> $GITHUB_ENV
-
-          git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
           cd vcpkg
           ./bootstrap-vcpkg.sh
 
+      - name: Install dependencies
+        run: |
+          cd vcpkg
           ./vcpkg install --classic --triplet=$VCPKG_TRIPLET \
             fmt     \
             libogg   \
@@ -94,125 +92,24 @@ jobs:
             libpng      \
             zlib        \
             sdl3        \
-            sdl3-image  \
-            sdl3-ttf    \
-            curl        \
-            openal-soft \
-            libogg      \
-            libvorbis
+            sdl3-image[jpeg,png]  \
+            sdl3-ttf
 
-          find $VCPKG_ROOT/installed -name '*.pc' -exec sed -i -E 's/-lc\+\+//g' {} \;
-
-      - name: Prepare SDL Android project
+      - name: Build
         run: |
-          # Has to be the same version as the one found in vcpkg!!
-          ./tools/bootstrap-android-project.sh ${SDL_TAG}
+          cmake -B build -S . \
+            -DCMAKE_TOOLCHAIN_FILE=vcpkg/$VCPKG_TRIPLET.cmake \
+            -DSUPERTUX_JOBS=$GITHUB_JOBS \
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --target supertux2 -j$GITHUB_JOBS
 
-          echo "vcpkg_root=$VCPKG_ROOT" > mk/android/local.properties
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: 21
-          cache: 'gradle'
-
-      - name: Setup Android enviroment
-        uses: android-actions/setup-android@v2
-        with:
-          packages: |
-            platforms;android-${{ env.SDK_VERSION }}
-            ndk;${{ env.NDK_VERSION }}
-            build-tools;${{ env.B_T_VERSION }}
-
-      - name: Run slugify
-        id: slugify
-        uses: eltimn/slugify-action@v2.0.2
-
-      - name: Build APK
-        working-directory: mk/android/
-        env:
-          # Using git rev-parse gives incorrect values when querying the branch
-          # so, use slugify instead
-          GIT_HASH: ${{ steps.slugify.outputs.sha }}
-          GIT_BRANCH: ${{ steps.slugify.outputs.branch }}
+      - name: Package APK
         run: |
-          tree
+          cmake --build build --target package -j$GITHUB_JOBS
 
-          chmod +x ./gradlew
-          ./gradlew assembleRelease \
-            -Pcpuarch="${{ matrix.arch }}" \
-            -Pcmake_args="-DGIT_HASH=$GIT_HASH;-DGIT_BRANCH=$GIT_BRANCH" \
-            --info
-
-      - name: Rename APK
-        run: |
-          mv mk/android/app/build/outputs/apk/release/app-release-unsigned.apk \
-            mk/android/app/build/outputs/apk/release/SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}-unsigned.apk
-
-      ### Not really a point, but kept around for now
-      #
-      # - name: Upload unsigned APK
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: "Unsigned APK ${{ matrix.arch }}"
-      #     path: "mk/android/app/build/outputs/apk/release/SuperTux-${{ env.SUPERTUX_VERSION }}-${{ matrix.arch }}-unsigned.apk"
-
-      - name: Fetch keys
-        working-directory: mk/android/app/build/outputs/apk/release
-        run: |
-          if [[ "${{ secrets.ANDROID_SIGNING_KEY }}" ]]
-          then
-            echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > supertux.keystore
-          else
-            echo "Key wasn't found. Skipping..."
-          fi
-
-      - name: Sign APK
-        working-directory: mk/android/app/build/outputs/apk/release
-        run: |
-          # Note: this is created before, but just some fallback logic for later
-          if [ ! -f supertux.keystore ]
-          then
-            echo "!!! Generating a new key."
-            keytool -genkey -v \
-              -keystore supertux.keystore \
-              -alias supertux \
-              -storepass hunter2 \
-              -dname "cn=MatusBro, ou=Contributor, O=SuperTux Team, L=Antarctica, ST=Antarctica, C=aq" \
-              -keyalg RSA -keysize 2048 -validity 10000
-          fi
-
-          cp ./SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}-unsigned.apk ./SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}.apk
-
-          if [[ "${{ secrets.ANDROID_SIGNING_KEY }}" ]]
-          then
-            $ANDROID_SDK_ROOT/build-tools/${B_T_VERSION}/apksigner sign \
-              --ks supertux.keystore \
-              --ks-key-alias supertux \
-              --ks-pass pass:"${{ secrets.ANDROID_SIGNING_PW }}" \
-              ./SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}.apk
-          else
-            # More fallback logic; our key should exist
-            echo "!!! WARNING: Signing with manual CI key. Check your shit ;-/"
-            $ANDROID_SDK_ROOT/build-tools/${B_T_VERSION}/apksigner sign \
-              --ks supertux.keystore \
-              --ks-key-alias supertux \
-              --ks-pass pass:hunter2 \
-              ./SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}.apk
-          fi
-
-      - name: Upload signed APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: "Signed SuperTux APK ${{ matrix.arch }}"
-          path: "mk/android/app/build/outputs/apk/release/SuperTux-${{ env.SUPERTUX_VERSION }}-${{ matrix.arch }}.apk"
-
-      - name: Create Release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: "build/upload/*"
-          draft: true
+          name: supertux2-${{ matrix.arch }}.apk
+          path: build/package/*.apk
+          if-no-files-found: error

@@ -32,26 +32,108 @@
 
 namespace {
 
-/** Resolve a PHYSFS path that already exists to a real filesystem path. */
-std::string real_path_for_existing(const std::string& filename)
+Sint64 funcSize(void* userdata)
 {
-  const char* path = PHYSFS_getRealDir(filename.c_str());
-  if (!path) {
-    std::stringstream msg;
-    msg << "File '" << filename << "' doesn't exist in any search path";
-    throw std::runtime_error(msg.str());
-  }
-  return FileSystem::join(path, filename);
+  PHYSFS_file* file = static_cast<PHYSFS_file*>(userdata);
+  return (Sint64)PHYSFS_fileLength(file);
 }
 
-/** Resolve a PHYSFS write path (may not exist yet) under the write dir. */
-std::string real_path_for_write(const std::string& filename)
+Sint64 funcSeek(void *userdata, Sint64 offset, SDL_IOWhence whence)
 {
-  const char* write_dir = PHYSFS_getWriteDir();
-  if (!write_dir) {
-    throw std::runtime_error("PHYSFS write directory is not set");
+  PHYSFS_file* file = static_cast<PHYSFS_file*>(userdata);
+  int res;
+  switch (whence) {
+    case SEEK_SET:
+      res = PHYSFS_seek(file, offset);
+      break;
+    case SEEK_CUR:
+      res = PHYSFS_seek(file, PHYSFS_tell(file) + offset);
+      break;
+    case SEEK_END:
+      res = PHYSFS_seek(file, PHYSFS_fileLength(file) + offset);
+      break;
+    default:
+      res = 0; // NOLINT
+      assert(false);
+      break;
   }
-  return FileSystem::join(write_dir, filename);
+  if (res == 0) {
+    log_warning << "Error seeking in file: " << physfsutil::get_last_error() << std::endl;
+    return -1;
+  }
+  int i = static_cast<int>(PHYSFS_tell(file));
+
+  return i;
+}
+
+size_t funcRead(void *userdata, void *ptr, size_t size, SDL_IOStatus *status)
+{
+  PHYSFS_file* file = static_cast<PHYSFS_file*>(userdata);
+  PHYSFS_sint64 res = PHYSFS_readBytes(file, ptr, (PHYSFS_uint64)size);
+
+  if (PHYSFS_getLastErrorCode() == PHYSFS_ERR_OK)
+  {
+    *status = SDL_IO_STATUS_READY;
+  }
+  else
+  {
+    *status = SDL_IO_STATUS_ERROR;
+  }
+
+  if (res < 0)
+  {
+    return 0;
+  }
+  else
+  {
+    return static_cast<size_t>(res);
+  }
+}
+
+size_t funcWrite(void *userdata, const void *ptr, size_t size, SDL_IOStatus *status)
+{
+  PHYSFS_file* file = static_cast<PHYSFS_file*>(userdata);
+
+  PHYSFS_sint64 res = PHYSFS_writeBytes(file, ptr, size);
+
+  if (PHYSFS_getLastErrorCode() == PHYSFS_ERR_OK)
+  {
+    *status = SDL_IO_STATUS_READY;
+  }
+  else
+  {
+    *status = SDL_IO_STATUS_ERROR;
+  }
+
+  if (res < 0)
+  {
+    return 0;
+  }
+  else
+  {
+    return static_cast<size_t>(res);
+  }
+}
+
+bool funcFlush(void *userdata, SDL_IOStatus *status) {
+    PHYSFS_file* file = static_cast<PHYSFS_file*>(userdata);
+
+    if (PHYSFS_flush(file) != 0) {
+        *status = SDL_IO_STATUS_READY;
+        return true;
+    }
+
+    *status = SDL_IO_STATUS_ERROR;
+    return false;
+}
+
+bool funcClose(void *userdata)
+{
+  PHYSFS_file* file = static_cast<PHYSFS_file*>(userdata);
+
+  PHYSFS_close(file);
+
+  return false;
 }
 
 } // namespace
@@ -64,15 +146,23 @@ SDL_IOStream* get_physfs_SDLRWops(const std::string& filename)
     throw std::runtime_error("Couldn't open file: empty filename");
   }
 
-  auto full_path = real_path_for_existing(filename);
-  SDL_IOStream* ops = SDL_IOFromFile(full_path.c_str(), "rb");
-  if (!ops) {
+  PHYSFS_file* file = static_cast<PHYSFS_file*>(PHYSFS_openRead(filename.c_str()));
+  if (!file) {
     std::stringstream msg;
-    msg << "Couldn't open '" << filename << "' (" << full_path << "): "
-        << SDL_GetError();
+    msg << "Couldn't open '" << filename << "': "
+        << physfsutil::get_last_error();
     throw std::runtime_error(msg.str());
   }
-  return ops;
+
+  SDL_IOStreamInterface iface;
+  SDL_INIT_INTERFACE(&iface);
+  iface.size = funcSize;
+  iface.seek = funcSeek;
+  iface.read = funcRead;
+  iface.write = funcWrite;
+  iface.flush = funcFlush;
+  iface.close = funcClose;
+  return SDL_OpenIO(&iface, (void*)file);
 }
 
 SDL_IOStream* get_writable_physfs_SDLRWops(const std::string& filename)
@@ -83,15 +173,21 @@ SDL_IOStream* get_writable_physfs_SDLRWops(const std::string& filename)
     throw std::runtime_error("Couldn't open file: empty filename");
   }
 
-  // PHYSFS_getRealDir only works for *existing* files. Screenshots and
-  // other writers create new files, so resolve against the write dir.
-  auto full_path = real_path_for_write(filename);
-  SDL_IOStream* ops = SDL_IOFromFile(full_path.c_str(), "wb");
-  if (!ops) {
+  PHYSFS_file* file = static_cast<PHYSFS_file*>(PHYSFS_openWrite(filename.c_str()));
+  if (!file) {
     std::stringstream msg;
-    msg << "Couldn't open '" << filename << "' (" << full_path
-        << ") for writing: " << SDL_GetError();
+    msg << "Couldn't open '" << filename << "' for writing: "
+        << physfsutil::get_last_error();
     throw std::runtime_error(msg.str());
   }
-  return ops;
+
+  SDL_IOStreamInterface iface;
+  SDL_INIT_INTERFACE(&iface);
+  iface.size = funcSize;
+  iface.seek = funcSeek;
+  iface.read = funcRead;
+  iface.write = funcWrite;
+  iface.flush = funcFlush;
+  iface.close = funcClose;
+  return SDL_OpenIO(&iface, (void*)file);
 }
