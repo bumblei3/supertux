@@ -64,7 +64,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/vcpkg
-          key: android-${{ matrix.arch }}-vcpkg-${{ hashFiles('.github/workflows/android.yml') }}
+          # Bump the suffix when the installed package set or the way we
+          # invoke vcpkg changes, so a stale cache (e.g. one created while
+          # VCPKG_TRIPLET was empty and 'vcpkg install' aborted before
+          # populating vcpkg/installed/) is not reused.
+          key: android-${{ matrix.arch }}-vcpkg-installed-v2-${{ hashFiles('.github/workflows/android.yml') }}
 
       - name: Bootstrap custom vcpkg
         if: steps.cache-dependencies.outputs.cache-hit != 'true'
