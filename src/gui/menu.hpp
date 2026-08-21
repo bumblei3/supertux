@@ -72,6 +72,7 @@ public:
   void draw(DrawingContext& context);
 
   virtual void event(const SDL_Event& event);
+  virtual void handle_event(const SDL_Event& event);
   virtual void process_action(const MenuAction& action);
 
   ItemHorizontalLine& add_hl();

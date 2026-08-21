@@ -55,8 +55,12 @@ public:
   /** Returns the minimum width of the menu item. */
   virtual int get_width() const;
 
-  /** Returns height of menu item. */
+  /** Returns height of menu item including help text. */
   virtual int get_height() const { return 24; }
+  virtual int get_help_height() const;
+
+  /** Positions the item within the menu layout. */
+  virtual void arrange(float x, float y);
 
   /** Processes the menu action. */
   virtual void process_action(const MenuAction& action)

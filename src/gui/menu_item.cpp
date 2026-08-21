@@ -5,7 +5,7 @@
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
+//  at your option) any later version.
 //
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,7 +13,8 @@
 //  GNU General Public License for more details.
 //
 //  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 #include "gui/menu_item.hpp"
 
@@ -22,6 +23,8 @@
 #include "supertux/globals.hpp"
 #include "supertux/resources.hpp"
 #include "video/drawing_context.hpp"
+
+#include <algorithm>
 
 static const float HELP_TEXT_WIDTH = 800.f;
 
@@ -57,6 +60,23 @@ MenuItem::draw(DrawingContext& context, const Vector& pos, int menu_width, bool 
                             Vector( pos.x + static_cast<float>(menu_width) / 2.0f,
                                     pos.y - static_cast<float>(m_font->get_height()) / 2.0f ),
                             ALIGN_CENTER, LAYER_GUI, active ? g_config->activetextcolor : get_color());
+}
+
+int
+MenuItem::get_help_height() const
+{
+  if (m_help.empty())
+    return 0;
+  int lines = 1;
+  for (char c : m_help)
+    if (c == '\n') ++lines;
+  return lines * m_font->get_height();
+}
+
+void
+MenuItem::arrange(float /*x*/, float /*y*/)
+{
+  // Base MenuItem doesn't require special layout; subclasses override as needed.
 }
 
 Color

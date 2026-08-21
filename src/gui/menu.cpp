@@ -4,7 +4,7 @@
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
+//  at your option) any later version.
 //
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,7 +12,8 @@
 //  GNU General Public License for more details.
 //
 //  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 #include "gui/menu.hpp"
 
@@ -277,7 +278,8 @@ Menu::add_color_channel_rgba(float* input, Color channel, int id, bool is_linear
 }
 
 ItemColorPicker2D&
-Menu::add_color_picker_2d(Color& color) {
+Menu::add_color_picker_2d(Color& color)
+{
   return add_item<ItemColorPicker2D>(color);
 }
 
@@ -334,36 +336,299 @@ Menu::clear()
 {
   m_items.clear();
   m_active_item = ACTIVE_ITEM_NONE;
+  m_menu_width = 0;
+  m_menu_height = 0;
+  m_menu_help_height = 0;
+  m_arrange_left = 0;
+}
+
+void
+Menu::set_item(int index)
+{
+  if (index < 0)
+    index = 0;
+
+  m_active_item = 0;
+
+  // Attempt to skip all skippable items
+  do
+  {
+    if (m_active_item > m_items.size())
+      break;
+
+    if (m_items[m_active_item]->skippable())
+    {
+      ++m_active_item;
+      continue;
+    }
+
+    if (index > 0)
+      ++m_active_item;
+
+    --index;
+  }
+  while (index >= 0);
+  process_action(MenuAction::SELECT);
+}
+
+MenuItem&
+Menu::get_item_by_id(int id)
+{
+  auto item = std::find_if(m_items.begin(), m_items.end(), [id](const std::unique_ptr<MenuItem>& i)
+  {
+    return i->get_id() == id;
+  });
+
+  if(item != m_items.end())
+    return *item->get();
+
+  throw std::runtime_error("MenuItem not found: " + std::to_string(id));
+}
+
+const MenuItem&
+Menu::get_item_by_id(int id) const
+{
+  auto item = std::find_if(m_items.begin(), m_items.end(), [id](const std::unique_ptr<MenuItem>& i)
+  {
+    return i->get_id() == id;
+  });
+
+  if(item != m_items.end())
+    return *item->get();
+
+  throw std::runtime_error("MenuItem not found: " + std::to_string(id));
+}
+
+int Menu::get_active_item_id() const
+{
+  return m_items[m_active_item]->get_id();
 }
 
 void
 Menu::previous_item()
 {
-  auto active_item = get_active_item();
   if (m_active_item > 0)
-    set_active_item(active_item - 1);
-  else
-    set_active_item(m_items.size() - 1);
+    set_active_item(m_active_item - 1);
 }
 
 void
 Menu::next_item()
 {
-  auto active_item = get_active_item();
-  if (m_active_item < m_items.size() - 1)
-    set_active_item(active_item + 1);
-  else
-    set_active_item(0);
+  if (m_active_item < static_cast<int>(m_items.size()) - 1)
+    set_active_item(m_active_item + 1);
+}
+
+float
+Menu::get_width() const
+{
+  return m_menu_width + 24;
+}
+
+float
+Menu::get_height() const
+{
+  return m_menu_height;
+}
+
+void
+Menu::recalculate_position_and_size()
+{
+  m_pos.x = static_cast<float>(SCREEN_WIDTH) / 2.0f;
+  m_pos.y = static_cast<float>(SCREEN_HEIGHT) / 2.0f;
+
+  calculate_width();
+  calculate_height();
+}
+
+void
+Menu::on_window_resize()
+{
+  recalculate_position_and_size();
+
+  for (auto& item : m_items)
+    item->on_window_resize();
+}
+
+void
+Menu::draw(DrawingContext& context)
+{
+  const float menu_height = get_height();
+  float y_pos = m_pos.y - menu_height / 2.0f;
+  for (unsigned int i = 0; i < m_items.size(); ++i)
+  {
+    y_pos += m_items[i]->get_distance();
+    draw_item(context, i, y_pos + static_cast<float>(m_items[i]->get_height())/2);
+    y_pos += static_cast<float>(m_items[i]->get_height()) + m_items[i]->get_distance();
+  }
+
+  if (!m_items[m_active_item]->get_help().empty())
+  {
+    const int text_width = static_cast<int>(Resources::normal_font->get_text_width(m_items[m_active_item]->get_help()));
+    const int text_height = static_cast<int>(Resources::normal_font->get_text_height(m_items[m_active_item]->get_help()));
+
+    const Rectf text_rect(m_pos.x - static_cast<float>(text_width) / 2.0f - 8.0f,
+                          static_cast<float>(SCREEN_HEIGHT) - HELP_MARGIN_Y - static_cast<float>(text_height) - 4.0f,
+                          m_pos.x + static_cast<float>(text_width) / 2.0f + 8.0f,
+                          static_cast<float>(SCREEN_HEIGHT) - HELP_MARGIN_Y + 4.0f);
+
+    context.color().draw_filled_rect(Rectf(text_rect.p1() - Vector(4,4),
+                                           text_rect.p2() + Vector(4,4)),
+                                     g_config->menuhelpbackcolor,
+                                     g_config->menuroundness + 4.f,
+                                     LAYER_GUI);
+    context.color().draw_filled_rect(text_rect,
+                                     g_config->menuhelpfrontcolor,
+                                     g_config->menuroundness,
+                                     LAYER_GUI);
+    context.color().draw_text(Resources::normal_font, m_items[m_active_item]->get_help(),
+                              Vector(m_pos.x, static_cast<float>(SCREEN_HEIGHT) - HELP_MARGIN_Y - static_cast<float>(text_height)),
+                              ALIGN_CENTER, LAYER_GUI);
+  }
+}
+
+void
+Menu::set_active_item_id(int id)
+{
+  for (size_t i = 0; i < m_items.size(); ++i)
+  {
+    if (m_items[i]->get_id() == id)
+    {
+      set_active_item(static_cast<int>(i));
+      break;
+    }
+  }
+}
+
+void
+Menu::set_active_item(int item_idx)
+{
+  if (item_idx == m_active_item)
+    return;
+
+  if (m_active_item > -1)
+  {
+    process_action(MenuAction::UNSELECT);
+  }
+
+  m_active_item = item_idx;
+  if (m_active_item > -1)
+  {
+    process_action(MenuAction::SELECT);
+  }
+}
+
+void
+Menu::event(const SDL_Event& ev)
+{
+  m_items[m_active_item]->event(ev);
+}
+
+void
+Menu::handle_event(const SDL_Event& ev)
+{
+  m_items[m_active_item]->event(ev);
+  switch (ev.type)
+  {
+    case SDL_EVENT_KEY_DOWN:
+    case SDL_EVENT_TEXT_INPUT:
+      if (((ev.type == SDL_EVENT_KEY_DOWN && ev.key.key == SDLK_BACKSPACE) ||
+           ev.type == SDL_EVENT_TEXT_INPUT) && m_items[m_active_item]->changes_width())
+      {
+        calculate_width();
+      }
+    break;
+
+    case SDL_EVENT_MOUSE_WHEEL:
+    {
+      if (ev.wheel.y > 0)
+      {
+        do { previous_item(); } while (m_items[m_active_item]->skippable());
+      }
+      else
+      {
+        do { next_item(); } while (m_items[m_active_item]->skippable());
+      }
+      m_mouse_deadzone = MOUSE_DEADZONE_AMOUNT;
+    }
+    break;
+
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+      if (ev.button.button == SDL_BUTTON_LEFT)
+      {
+        Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
+
+        if ((mouse_pos.x > m_pos.x - get_width() / 2.0f &&
+             mouse_pos.x < m_pos.x + get_width() / 2.0f &&
+             mouse_pos.y > m_pos.y - get_height() / 2.0f &&
+             mouse_pos.y < m_pos.y + get_height() / 2.0f) ||
+            m_mouse_deadzone > 0 ||
+            m_can_click_when_unfocused)
+        {
+          process_action(MenuAction::HIT);
+        }
+      }
+    break;
+
+    case SDL_EVENT_MOUSE_MOTION:
+    {
+      if (m_mouse_deadzone > 0)
+      {
+        m_mouse_deadzone -= abs(ev.motion.xrel);
+        m_mouse_deadzone -= abs(ev.motion.yrel);
+
+        if (m_mouse_deadzone < 0)
+          m_mouse_deadzone = 0;
+
+        return;
+      }
+      Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
+      float x = mouse_pos.x;
+      float y = mouse_pos.y;
+
+      if (x > m_pos.x - get_width()/2 &&
+          x < m_pos.x + get_width()/2 &&
+          y > m_pos.y - get_height()/2 &&
+          y < m_pos.y + get_height()/2)
+      {
+        int new_active_item = 0;
+        float item_y = m_pos.y - get_height()/2;
+        for (unsigned i = 0; i < m_items.size(); i++)
+        {
+          if (y >= item_y && y <= item_y + static_cast<float>(m_items[i]->get_height()))
+          {
+            new_active_item = i;
+            break;
+          }
+          item_y += static_cast<float>(m_items[i]->get_height());
+        }
+
+        if (!m_items[new_active_item]->skippable() &&
+            new_active_item != m_active_item)
+        {
+          set_active_item(new_active_item);
+        }
+
+        if (MouseCursor::current())
+          MouseCursor::current()->set_state(MouseCursorState::LINK);
+      }
+      else
+      {
+        if (MouseCursor::current())
+          MouseCursor::current()->set_state(MouseCursorState::NORMAL);
+      }
+    }
+    break;
+
+    default:
+      break;
+  }
 }
 
 void
 Menu::process_action(const MenuAction& action)
 {
-  { // Scrolling
-    // Find the first and last selectable item in the current menu, so
-    // that the top most selected item gives a scroll_pos of -1.0f and
-    // the bottom most gives 1.0f, as otherwise the non-selectable
-    // header would be cut off.
+  // Scrolling: find first/last selectable item, scroll menu to keep them visible
+  {
     size_t first_idx = m_items.size();
     size_t last_idx = m_items.size();
     for (size_t i = 0; i < m_items.size(); ++i) {
@@ -377,7 +642,6 @@ Menu::process_action(const MenuAction& action)
 
     const float screen_height = static_cast<float>(SCREEN_HEIGHT);
     const float menu_area = screen_height - m_menu_help_height;
-    // get_height() doesn't include the border, so we manually add some
     const float menu_height = get_height() + 32.0f;
     const float center_y = menu_area / 2.0f;
     if (menu_height > menu_area)
@@ -392,7 +656,6 @@ Menu::process_action(const MenuAction& action)
 
   if (m_items.size() == 0)
     return;
-
 
   const int last_active_item = m_active_item;
 
@@ -473,8 +736,6 @@ Menu::draw_item(DrawingContext& context, int index, float y_pos)
 void
 Menu::calculate_width()
 {
-  /* The width of the menu has to be more than the width of the text
-     with the most characters */
   float max_width = 0;
   for (unsigned int i = 0; i < m_items.size(); ++i)
   {
@@ -492,278 +753,14 @@ Menu::calculate_height()
   for (unsigned i = 0; i < m_items.size(); i++)
   {
     height += static_cast<float>(m_items[i]->get_height()) + m_items[i]->get_distance() * 2;
-    // If a help text is present, make some space at the bottom of the
-    // menu so that the last few items don't overlap with the help
-    // text.
     if (!m_items[i]->get_help().empty()) m_menu_help_height = 96.0f;
   }
   if (m_menu_help_height != 0.0f) m_pos.y = floorf((static_cast<float>(SCREEN_HEIGHT) - m_menu_help_height) / 2);
   m_menu_height = height;
 }
 
-float
-Menu::get_width() const
-{
-  return m_menu_width + 24;
-}
-
-float
-Menu::get_height() const
-{
-  return m_menu_height;
-}
-
 void
-Menu::recalculate_position_and_size()
+Menu::check_controlfield_change_event(const SDL_Event&)
 {
-  m_pos.x = static_cast<float>(SCREEN_WIDTH) / 2.0f;
-  m_pos.y = static_cast<float>(SCREEN_HEIGHT) / 2.0f;
-
-  calculate_width();
-  calculate_height();
-}
-
-void
-Menu::on_window_resize()
-{
-  recalculate_position_and_size();
-
-  for (auto& item : m_items)
-    item->on_window_resize();
-}
-
-void
-Menu::draw(DrawingContext& context)
-{
-  const float menu_height = get_height();
-  float y_pos = m_pos.y - menu_height / 2.0f;
-  for (unsigned int i = 0; i < m_items.size(); ++i)
-  {
-    y_pos += m_items[i]->get_distance();
-    draw_item(context, i, y_pos + static_cast<float>(m_items[i]->get_height())/2);
-    y_pos += static_cast<float>(m_items[i]->get_height()) + m_items[i]->get_distance();
-  }
-
-  if (!m_items[m_active_item]->get_help().empty())
-  {
-    const int text_width = static_cast<int>(Resources::normal_font->get_text_width(m_items[m_active_item]->get_help()));
-    const int text_height = static_cast<int>(Resources::normal_font->get_text_height(m_items[m_active_item]->get_help()));
-
-    const Rectf text_rect(m_pos.x - static_cast<float>(text_width) / 2.0f - 8.0f,
-                          static_cast<float>(SCREEN_HEIGHT) - HELP_MARGIN_Y - static_cast<float>(text_height) - 4.0f,
-                          m_pos.x + static_cast<float>(text_width) / 2.0f + 8.0f,
-                          static_cast<float>(SCREEN_HEIGHT) - HELP_MARGIN_Y + 4.0f);
-
-    context.color().draw_filled_rect(Rectf(text_rect.p1() - Vector(4,4),
-                                           text_rect.p2() + Vector(4,4)),
-                                     g_config->menuhelpbackcolor,
-                                     g_config->menuroundness + 4.f,
-                                     LAYER_GUI);
-
-    context.color().draw_filled_rect(text_rect,
-                                     g_config->menuhelpfrontcolor,
-                                     g_config->menuroundness,
-                                     LAYER_GUI);
-
-    context.color().draw_text(Resources::normal_font, m_items[m_active_item]->get_help(),
-                              Vector(m_pos.x, static_cast<float>(SCREEN_HEIGHT) - HELP_MARGIN_Y - static_cast<float>(text_height)),
-                              ALIGN_CENTER, LAYER_GUI);
-  }
-}
-
-void
-Menu::set_item(int index)
-{
-  if (index < 0)
-  	index = 0;
-
-  m_active_item = 0;
-
-  // Attempt to skip all skippable items
-  do
-  {
-  	if (m_active_item > m_items.size())
-	  break;
-
-    if (m_items[m_active_item]->skippable())
-    {
-      ++m_active_item;
-      continue;
-    }
-
-    if (index > 0)
-      ++m_active_item;
-
-    --index;
-  }
-  while (index >= 0);
-  process_action(MenuAction::SELECT);
-}
-
-MenuItem&
-Menu::get_item_by_id(int id)
-{
-  auto item = std::find_if(m_items.begin(), m_items.end(), [id](const std::unique_ptr<MenuItem>& i)
-  {
-    return i->get_id() == id;
-  });
-
-  if(item != m_items.end())
-    return *item->get();
-
-  throw std::runtime_error("MenuItem not found: " + std::to_string(id));
-}
-
-const MenuItem&
-Menu::get_item_by_id(int id) const
-{
-  auto item = std::find_if(m_items.begin(), m_items.end(), [id](const std::unique_ptr<MenuItem>& i)
-  {
-    return i->get_id() == id;
-  });
-
-  if(item != m_items.end())
-    return *item->get();
-
-  throw std::runtime_error("MenuItem not found: " + std::to_string(id));
-}
-
-int Menu::get_active_item_id() const
-{
-  return m_items[m_active_item]->get_id();
-}
-
-void
-Menu::event(const SDL_Event& ev)
-{
-  m_items[m_active_item]->event(ev);
-  switch (ev.type)
-  {
-    case SDL_EVENT_KEY_DOWN:
-    case SDL_EVENT_TEXT_INPUT:
-      if (((ev.type == SDL_EVENT_KEY_DOWN && ev.key.key == SDLK_BACKSPACE) ||
-         ev.type == SDL_EVENT_TEXT_INPUT) && m_items[m_active_item]->changes_width())
-      {
-        // Changed item value? Let's recalculate width:
-        calculate_width();
-      }
-    break;
-
-    case SDL_EVENT_MOUSE_WHEEL:
-    {
-      if (ev.wheel.y > 0)
-      {
-      do { previous_item(); } while (m_items[m_active_item]->skippable());
-      }
-      else {
-      do { next_item(); } while (m_items[m_active_item]->skippable());
-      }
-      m_mouse_deadzone = MOUSE_DEADZONE_AMOUNT;
-    }
-    break;
-
-    case SDL_EVENT_MOUSE_BUTTON_DOWN:
-    if (ev.button.button == SDL_BUTTON_LEFT)
-    {
-      Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
-
-      if ((mouse_pos.x > m_pos.x - get_width() / 2.0f &&
-           mouse_pos.x < m_pos.x + get_width() / 2.0f &&
-           mouse_pos.y > m_pos.y - get_height() / 2.0f &&
-           mouse_pos.y < m_pos.y + get_height() / 2.0f) ||
-          m_mouse_deadzone > 0 ||
-          m_can_click_when_unfocused)
-      {
-        process_action(MenuAction::HIT);
-      }
-    }
-    break;
-
-    case SDL_EVENT_MOUSE_MOTION:
-    {
-      if (m_mouse_deadzone > 0)
-      {
-        m_mouse_deadzone -= abs(ev.motion.xrel);
-        m_mouse_deadzone -= abs(ev.motion.yrel);
-
-        if (m_mouse_deadzone < 0)
-          m_mouse_deadzone = 0;
-
-        return;
-      }
-      Vector const mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
-      float const x = mouse_pos.x;
-      float const y = mouse_pos.y;
-
-      if (x > m_pos.x - get_width()/2 &&
-         x < m_pos.x + get_width()/2 &&
-         y > m_pos.y - get_height()/2 &&
-         y < m_pos.y + get_height()/2)
-      {
-        int new_active_item = 0;
-        // This is probably not the most efficient way of finding active item
-        // but I can't think of something better right now ~ mrkubax10
-        float item_y = m_pos.y - get_height()/2;
-        for (unsigned i = 0; i < m_items.size(); i++)
-        {
-          if (y >= item_y && y <= item_y + static_cast<float>(m_items[i]->get_height()))
-          {
-            new_active_item = i;
-            break;
-          }
-          item_y += static_cast<float>(m_items[i]->get_height());
-        }
-
-        /* only change the mouse focus to a selectable item */
-        if (!m_items[new_active_item]->skippable() &&
-            new_active_item != m_active_item) {
-
-          set_active_item(new_active_item);
-        }
-
-        if (MouseCursor::current())
-          MouseCursor::current()->set_state(MouseCursorState::LINK);
-      }
-      else
-      {
-        if (MouseCursor::current())
-          MouseCursor::current()->set_state(MouseCursorState::NORMAL);
-      }
-    }
-    break;
-
-    default:
-      break;
-  }
-}
-
-void
-Menu::set_active_item_id(int id)
-{
-  for (size_t i = 0; i < m_items.size(); ++i)
-  {
-    if (m_items[i]->get_id() == id)
-    {
-      set_active_item(static_cast<int>(i));
-      break;
-    }
-  }
-}
-
-void
-Menu::set_active_item(int item_idx)
-{
-  if (item_idx == m_active_item)
-    return;
-
-  if (m_active_item > -1)
-  {
-    process_action(MenuAction::UNSELECT);
-  }
-
-  m_active_item = item_idx;
-  if (m_active_item > -1)
-  {
-    process_action(MenuAction::SELECT);
-  }
+  // Stub: not needed for base Menu
 }
