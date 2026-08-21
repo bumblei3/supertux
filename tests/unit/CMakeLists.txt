@@ -151,12 +151,19 @@ make_unit_test(WriterTest SOURCE writer_test.cpp writer_test_stub.cpp
   INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
             ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
 
-# sexp::Value round-trip (parser/serializer). Fully isolated: links only
-# the sexp-cpp library (no engine / tinygettext / SDL), exercising the
-# value types SuperTux's Writer/Reader ultimately produce and consume.
-make_unit_test(SexpValueTest SOURCE sexp_value_test.cpp
-  LIBRARIES GTest::gtest GTest::gtest_main sexp
-  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include)
+# Sexp::Value + ReaderDocument/ReaderMapping round-trip tests.
+# Uses the same stub/link setup as ReaderTest (RESCAN for SDL3 load-order,
+# tinygettext for locale, sexp for the s-expression backend, plus the Reader
+# source files). sexp_parse_test.cpp contains both pure sexp-cpp tests and
+# ReaderDocument/ReaderMapping integration tests.
+make_unit_test(SexpParseTest SOURCE sexp_parse_test.cpp reader_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
+  EXTERNAL util/reader_document.cpp util/reader_mapping.cpp
+            util/reader_collection.cpp util/reader_iterator.cpp
+            util/reader_object.cpp util/gettext.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+            ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
 
 # SDL3 API / fullscreen regression tests. These pin the SDL2->SDL3 API
 # contract (SDL_SetWindowFullscreen returns bool; SDL_RectsEqual rename) and

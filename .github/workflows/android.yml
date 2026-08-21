@@ -75,6 +75,7 @@ jobs:
             x86) export VCPKG_TRIPLET=x86-android ;;
             x86_64) export VCPKG_TRIPLET=x64-android ;;
           esac
+          git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
           cd vcpkg
           ./bootstrap-vcpkg.sh
 

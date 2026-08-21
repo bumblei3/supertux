@@ -14,6 +14,16 @@
 #   "Allow setting SDL version") already ships SDL3 support, selected via
 #   -DTINYGETTEXT_SDL_VERSION=3 in the top-level CMakeLists.txt.
 #
+#   external/sexp-cpp is pinned to SuperTux/sexp-cpp@02d5014. ReaderMapping::get
+#   (uint32_t/UID) must round-trip values up to UINT32_MAX (e.g. a level's
+#   uid or a 0xFFFFFFFF default). The pinned sexp-cpp stores integers as
+#   `int` (32-bit signed) and as_int() returns int, so parsing 4294967295
+#   throws std::out_of_range (stoi) and the cast to uint32_t would also wrap.
+#   The patch widens sexp::Value's integer storage + as_int() to long long,
+#   so 4294967295 parses and round-trips correctly. This is fork-only; there
+#   is no bumblei3/sexp-cpp fork and upstream PRs are blocked, so it is
+#   vendored and applied after `git submodule update`.
+#
 # Idempotent: skips any patch that is already applied (git apply --check fails
 # because the change is present). Safe to re-run.
 set -euo pipefail
@@ -38,3 +48,4 @@ apply_patch() {
 }
 
 apply_patch sdl_ttf_sdl3.patch external/SDL_ttf
+apply_patch sexp_cpp_longlong_int.patch external/sexp-cpp

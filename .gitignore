@@ -16,6 +16,7 @@ build-dyntest/
 build-san-check/
 build-san-writer/
 build-san-writer2/
+build-wip/
 **/__pycache__/
 *.pyc
 **/CMakeFiles/

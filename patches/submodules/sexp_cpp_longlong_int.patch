@@ -1,0 +1,95 @@
+diff --git a/include/sexp/value.hpp b/include/sexp/value.hpp
+index f4769c9..2ef7216 100644
+--- a/include/sexp/value.hpp
++++ b/include/sexp/value.hpp
+@@ -57,14 +57,14 @@ private:
+   {
+     inline Data() {}
+     inline Data(bool v) : m_bool(v) {}
+-    inline Data(int v) : m_int(v) {}
++    inline Data(long long v) : m_int(v) {}
+     inline Data(float v) : m_float(v) {}
+     inline Data(std::string* v) : m_string(v) {}
+     inline Data(Cons* v) : m_cons(v) {}
+     inline Data(std::vector<Value>* v) : m_array(v) {}
+ 
+     bool m_bool;
+-    int m_int;
++    long long m_int;
+     float m_float;
+ 
+     std::string* m_string;
+@@ -86,7 +86,7 @@ public:
+   static Value const& nil_ref() { static Value const s_nil; return s_nil; }
+   static Value nil() { return Value(); }
+   static Value boolean(bool v) { return Value(BooleanTag(), v); }
+-  static Value integer(int v) { return Value(IntegerTag(), v); }
++  static Value integer(long long v) { return Value(IntegerTag(), v); }
+   static Value real(float v) { return Value(RealTag(), v); }
+   static Value string(std::string const& v) { return Value(StringTag(), v); }
+   static Value symbol(std::string const& v) { return Value(SymbolTag(), v); }
+@@ -120,7 +120,7 @@ public:
+ 
+ private:
+   inline explicit Value(BooleanTag, bool value) : m_line(0), m_type(Type::BOOLEAN), m_data(value) {}
+-  inline explicit Value(IntegerTag, int value) : m_line(0), m_type(Type::INTEGER), m_data(value) {}
++  inline explicit Value(IntegerTag, long long value) : m_line(0), m_type(Type::INTEGER), m_data(value) {}
+   inline explicit Value(RealTag, float value) : m_line(0), m_type(Type::REAL), m_data(value) {}
+   inline Value(StringTag, std::string const& value) :
+     m_line(0),
+@@ -221,7 +221,7 @@ public:
+   void append(Value&& sexpr);
+ 
+   bool as_bool() const;
+-  int as_int() const;
++  long long as_int() const;
+   float as_float() const;
+   std::string const& as_string() const;
+   std::vector<Value> const& as_array() const;
+@@ -375,7 +375,7 @@ Value::get_cdr() const
+ {
+   if (m_type == Type::CONS)
+   {
+-  return m_data.m_cons->cdr;
++    return m_data.m_cons->cdr;
+   }
+   else
+   {
+@@ -447,7 +447,7 @@ Value::as_bool() const
+   }
+ }
+ 
+-inline int
++inline long long
+ Value::as_int() const
+ {
+   if (m_type == Type::INTEGER)
+@@ -458,7 +458,6 @@ Value::as_int() const
+   {
+     type_error("sexp::Value::as_int(): wrong type, expected Type::INTEGER");
+   }
+-
+ }
+ 
+ inline float
+diff --git a/src/parser.cpp b/src/parser.cpp
+index 15526c2..4bcd74c 100644
+--- a/src/parser.cpp
++++ b/src/parser.cpp
+@@ -21,6 +21,7 @@
+ #include <stdexcept>
+ #include <string.h>
+ #include <iostream>
++#include <cstdlib>
+ 
+ #include "float.hpp"
+ 
+@@ -163,7 +164,7 @@ Parser::read()
+       break;
+ 
+     case Lexer::TOKEN_INTEGER:
+-      result = Value::integer(std::stoi(m_lexer.get_string()));
++      result = Value::integer(std::stoll(m_lexer.get_string()));
+       break;
+ 
+     case Lexer::TOKEN_REAL:

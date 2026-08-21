@@ -53,7 +53,8 @@ jobs:
             g++-9 \
             libc++-dev \
             libtinyxml2-dev \
-            doxygen
+            doxygen \
+            graphviz
 
       - name: Build scripting reference generator
         working-directory: tools/scripting_docs_gen

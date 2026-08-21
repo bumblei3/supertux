@@ -95,13 +95,37 @@ ReaderMapping::get(const char* key, int& value, const std::optional<int>& defaul
 bool
 ReaderMapping::get(const char* key, uint32_t& value, const std::optional<uint32_t>& default_value) const
 {
-  GET_VALUE_MACRO("uint32_t", is_integer, as_int)
+  auto const sx = get_item(key);
+  if (!sx) {
+    if (default_value) {
+      value = *default_value;
+    }
+    return false;
+  }
+  assert_array_size_eq(m_doc, *sx, 2);
+  assert_is_integer(m_doc, sx->as_array()[1]);
+  // sexp-cpp stores integers as signed int; UINT32_MAX wraps to -1.
+  // Signed-to-unsigned conversion is well-defined (modulo 2^32),
+  // so this correctly preserves the bit pattern.
+  value = static_cast<uint32_t>(sx->as_array()[1].as_int());
+  return true;
 }
 
 bool
 ReaderMapping::get(const char* key, UID& value, const std::optional<UID>& default_value) const
 {
-  GET_VALUE_MACRO("uint32_t", is_integer, as_int)
+  auto const sx = get_item(key);
+  if (!sx) {
+    if (default_value) {
+      value = *default_value;
+    }
+    return false;
+  }
+  assert_array_size_eq(m_doc, *sx, 2);
+  assert_is_integer(m_doc, sx->as_array()[1]);
+  value = UID();
+  value = static_cast<uint32_t>(sx->as_array()[1].as_int());
+  return true;
 }
 
 bool
