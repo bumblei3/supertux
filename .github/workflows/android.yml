@@ -69,15 +69,24 @@ jobs:
       - name: Bootstrap custom vcpkg
         if: steps.cache-dependencies.outputs.cache-hit != 'true'
         run: |
-          case "${{ matrix.arch }}" in
-            arm64-v8a) export VCPKG_TRIPLET=arm64-android ;;
-            armeabi-v7a) export VCPKG_TRIPLET=arm-neon-android ;;
-            x86) export VCPKG_TRIPLET=x86-android ;;
-            x86_64) export VCPKG_TRIPLET=x64-android ;;
-          esac
           git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
           cd vcpkg
           ./bootstrap-vcpkg.sh
+
+      # Set the vcpkg triplet for the current matrix arch. Must run
+      # unconditionally (NOT inside the cache-guarded bootstrap step) so
+      # VCPKG_TRIPLET is defined even when the vcpkg cache is reused;
+      # otherwise `--triplet=` is empty and vcpkg errors with
+      # "Invalid triplet:". Exported to $GITHUB_ENV so the Build/Install
+      # steps both see it.
+      - name: Set vcpkg triplet
+        run: |
+          case "${{ matrix.arch }}" in
+            arm64-v8a) echo "VCPKG_TRIPLET=arm64-android" >> $GITHUB_ENV ;;
+            armeabi-v7a) echo "VCPKG_TRIPLET=arm-neon-android" >> $GITHUB_ENV ;;
+            x86) echo "VCPKG_TRIPLET=x86-android" >> $GITHUB_ENV ;;
+            x86_64) echo "VCPKG_TRIPLET=x64-android" >> $GITHUB_ENV ;;
+          esac
 
       - name: Install dependencies
         run: |
