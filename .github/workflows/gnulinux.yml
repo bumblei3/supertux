@@ -57,6 +57,14 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
+      # Apply fork-only submodule patches (SDL_ttf SDL3 port + sexp-cpp
+      # long long integer widening) so a fresh checkout reproduces the
+      # local build. Without this, the pinned sexp-cpp stores integers as
+      # 32-bit int and ReaderMapping::get(uint32_t&)/get(UID&) round-trips
+      # UINT32_MAX incorrectly. See scripts/apply_submodule_patches.sh.
+      - name: Apply submodule patches
+        run: bash scripts/apply_submodule_patches.sh
+
       - name: Install 64-bit dependencies
         if: ${{ matrix.arch == 64 }}
         run: |
