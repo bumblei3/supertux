@@ -261,6 +261,15 @@ make_unit_test(BezierTest SOURCE bezier_test.cpp bezier_test_stub.cpp
   EXTERNAL math/bezier.cpp video/color.cpp
   INCLUDES ${CMAKE_BINARY_DIR})
 
+# VectorTest: coverage for math/vector.hpp SuperTux-owned polar/angle
+# helpers (vec2_from_polar, angle, at_angle). Vector is a glm::vec2 typedef
+# (GLM tested upstream); only the SuperTux free functions are asserted.
+# Header-only + glm, no engine libraries or stubs linked.
+make_unit_test(VectorTest SOURCE vector_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  INCLUDES ${CMAKE_BINARY_DIR})
+
 # TileReplacementTest: regression coverage for the editor tile-replacement
 # degenerate/division-by-zero guard (issue #3810).
 make_unit_test(TileReplacementTest SOURCE tile_replacement_test.cpp
