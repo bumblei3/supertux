@@ -684,6 +684,12 @@ Menu::process_action(const MenuAction& action)
       break;
   }
 
+  // cppcheck-suppress knownConditionTrueFalse
+  // False positive: last_active_item is a snapshot taken BEFORE the
+  // UP/DOWN switch, and m_active_item is mutated by previous_item()/
+  // next_item() inside the do-while above (via m_items[...]->skippable()).
+  // cppcheck cannot see that mutation, so it wrongly claims the
+  // comparison is always true/false. It is a real runtime-conditional.
   if (last_active_item != m_active_item) {
     // Selection caused by Up or Down keyboard action
     if (last_active_item != ACTIVE_ITEM_NONE)
