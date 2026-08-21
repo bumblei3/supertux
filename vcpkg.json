@@ -51,8 +51,9 @@
       "supports": "!emscripten"
     }
   },
-  "default-features": {
-    "default": ["nonwasm", "glew", "bidi"],
-    "android": ["nonwasm", "bidi"]
-  }
+  "default-features": [
+    "nonwasm",
+    { "name": "glew", "platform": "!android" },
+    "bidi"
+  ]
 }
