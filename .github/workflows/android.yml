@@ -106,8 +106,15 @@ jobs:
 
       - name: Build
         run: |
+          # Use the STANDARD vcpkg toolchain with an explicit target
+          # triplet. In manifest mode (this repo ships vcpkg.json) it
+          # wires CMake up to vcpkg_installed/$VCPKG_TRIPLET. There is
+          # NO per-triplet convenience file vcpkg/<triplet>.cmake --
+          # passing that as CMAKE_TOOLCHAIN_FILE fails with
+          # "Could not find toolchain file".
           cmake -B build -S . \
-            -DCMAKE_TOOLCHAIN_FILE=vcpkg/$VCPKG_TRIPLET.cmake \
+            -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+            -DVCPKG_TARGET_TRIPLET=$VCPKG_TRIPLET \
             -DSUPERTUX_JOBS=$GITHUB_JOBS \
             -DCMAKE_BUILD_TYPE=Release
           cmake --build build --target supertux2 -j$GITHUB_JOBS
