@@ -240,6 +240,71 @@ TEST(ReaderMappingTest, uint32_and_uid_overloads)
   ASSERT_FALSE(mapping.get("no-such-uid", uid));
 }
 
+TEST(ReaderMappingTest, translations_disabled_returns_raw_string)
+{
+  // The editor parses levels with s_translations_enabled = false so that
+  // (_ "text") entries come through verbatim instead of via gettext().
+  std::string text =
+    "(supertux-test\n"
+    "  (name (_ \"Hollow Hills\"))\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+
+  std::string name;
+  ASSERT_TRUE(mapping.get("name", name));
+  ASSERT_EQ("Hollow Hills", name); // translated path (stub _ is identity)
+
+  ReaderMapping::s_translations_enabled = false;
+  std::string raw;
+  ASSERT_TRUE(mapping.get("name", raw));
+  ASSERT_EQ("Hollow Hills", raw);
+  ReaderMapping::s_translations_enabled = true; // restore global state
+}
+
+TEST(ReaderObjectTest, get_collection_and_get_mapping_views)
+{
+  // Same root sexp viewed as mapping vs collection: get_mapping() reads
+  // key/value pairs, get_collection()/get_objects() enumerates children.
+  std::string text =
+    "(sector\n"
+    "  (tilemap (zpos -100))\n"
+    "  (background (color 1 1 1))\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto root = doc.get_root();
+
+  ASSERT_EQ("sector", root.get_name());
+
+  // Each child object is itself readable as a mapping of its own pairs.
+  auto objects = root.get_collection().get_objects();
+  ASSERT_EQ(2u, objects.size());
+  ASSERT_EQ("tilemap", objects[0].get_name());
+  ASSERT_EQ("background", objects[1].get_name());
+
+  int zpos = 0;
+  objects[0].get_mapping().get("zpos", zpos);
+  ASSERT_EQ(-100, zpos);
+}
+
+TEST(ReaderMappingTest, get_custom_with_translatable_string)
+{
+  std::string text =
+    "(supertux-test\n"
+    "  (direction (_ \"left\"))\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+
+  auto from_string = [](const std::string& s) { return s; };
+  std::string dir;
+  ASSERT_TRUE(mapping.get_custom("direction", dir, from_string));
+  ASSERT_EQ("left", dir);
+}
+
 TEST(ReaderDocumentTest, from_string_filename_and_directory)
 {
   std::string text = "(supertux-test (a 1))\n";
