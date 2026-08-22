@@ -140,13 +140,60 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release
           cmake --build build --target supertux2 -j$JOBS
 
-      - name: Package APK
+      - name: Prepare SDL Android project
         run: |
-          cmake --build build --target package -j2
+          # Bootstraps mk/android from SDL ${SDL_TAG}'s android-project
+          # (gradlew, wrapper jar, Java activity). Without it there is no
+          # way to package an APK -- the CPack 'package' target only
+          # produces tarballs.
+          ./tools/bootstrap-android-project.sh ${SDL_TAG}
+
+          echo "vcpkg_root=$VCPKG_ROOT" > mk/android/local.properties
+          echo "ndk_home=$NDK_CMAKE" >> mk/android/local.properties
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 21
+          cache: 'gradle'
+
+      - name: Build APK
+        working-directory: mk/android/
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleRelease -Pcpuarch="${{ matrix.arch }}"
+
+      - name: Rename APK
+        run: |
+          mv mk/android/app/build/outputs/apk/release/app-release-unsigned.apk \
+            mk/android/app/build/outputs/apk/release/SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}-unsigned.apk
+
+      - name: Sign APK
+        working-directory: mk/android/app/build/outputs/apk/release
+        run: |
+          # CI fallback key (no secrets on the fork).
+          if [ ! -f supertux.keystore ]
+          then
+            keytool -genkey -v \
+              -keystore supertux.keystore \
+              -alias supertux \
+              -storepass hunter2 \
+              -dname "cn=SuperTux CI, O=SuperTux, L=Antarctica, ST=Antarctica, C=aq" \
+              -keyalg RSA -keysize 2048 -validity 10000
+          fi
+
+          cp ./SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}-unsigned.apk ./SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}.apk
+
+          $ANDROID_SDK_ROOT/build-tools/${B_T_VERSION}/apksigner sign \
+            --ks supertux.keystore \
+            --ks-key-alias supertux \
+            --ks-pass pass:hunter2 \
+            ./SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: supertux2-${{ matrix.arch }}.apk
-          path: build/package/*.apk
+          path: "mk/android/app/build/outputs/apk/release/SuperTux-${{ env.SUPERTUX_VERSION }}-${{ matrix.arch }}.apk"
           if-no-files-found: error
