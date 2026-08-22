@@ -162,7 +162,14 @@ jobs:
         working-directory: mk/android/
         run: |
           chmod +x ./gradlew
-          ./gradlew assembleRelease -Pcpuarch="${{ matrix.arch }}"
+          # Gradle re-runs CMake itself (externalNativeBuild) with the NDK
+          # toolchain primary and vcpkg chainloaded (Android.cmake). Point
+          # it at the SAME installed tree our manifest-mode install
+          # populated, and keep manifest mode ON so vcpkg autorestores any
+          # missing package into that tree. VCPKG_MANIFEST_MODE=OFF in
+          # app/build.gradle is overridden here via cmake_args.
+          ./gradlew assembleRelease -Pcpuarch="${{ matrix.arch }}" \
+            -Pcmake_args="-DVCPKG_MANIFEST_MODE=ON;-DVCPKG_INSTALLED_DIR=$GITHUB_WORKSPACE/build/vcpkg_installed;--no-warn-unused-cli"
 
       - name: Rename APK
         run: |
