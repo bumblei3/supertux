@@ -110,15 +110,16 @@ jobs:
 
       - name: Build
         run: |
-          # Use the NDK toolchain as the PRIMARY CMake toolchain, with the
-          # vcpkg one CHAINLOADED via VCPKG_CHAIN_LOAD_TOOLCHAIN_FILE. This
-          # is the vcpkg-documented way to combine android triplets with
-          # the Android NDK. Passing ONLY the vcpkg toolchain (previous
-          # attempt) leaves CMAKE_C/CXX_COMPILER at the host gcc
-          # ("/usr/bin/cc" in configure log) -> all supertux objects are
-          # built as host code and the final link fails against the
-          # correctly-built arm64 libSDL3_ttf.a with
-          # "Relocations in generic ELF (EM: 183) / file in wrong format".
+          # Use the STANDARD vcpkg toolchain as PRIMARY (it wires up
+          # find_package / CMAKE_PREFIX_PATH to vcpkg_installed/) and
+          # CHAINLOAD the Android NDK toolchain via
+          # VCPKG_CHAINLOAD_TOOLCHAIN_FILE (correct spelling + direction:
+          # the NDK supplies the cross-compiler, vcpkg supplies package
+          # discovery). Passing ONLY the vcpkg toolchain left the host
+          # compiler ("/usr/bin/cc") -> link failed against arm64
+          # libSDL3_ttf.a ("Relocations in generic ELF"). Passing ONLY the
+          # NDK toolchain lost vcpkg package discovery ("libpng not
+          # found").
           # ANDROID_ABI (set per-arch above) selects the target arch.
           # GITHUB_JOBS is NOT set anywhere in this workflow; a bare -j
           # would spawn unlimited parallel cc1plus processes and OOM the
@@ -130,8 +131,8 @@ jobs:
           NDK_CMAKE=$(ls -d $ANDROID_HOME/ndk/* | sort -V | tail -1)
           echo "Using NDK toolchain: $NDK_CMAKE"
           cmake -B build -S . \
-            -DCMAKE_TOOLCHAIN_FILE=$NDK_CMAKE/build/cmake/android.toolchain.cmake \
-            -DVCPKG_CHAIN_LOAD_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+            -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+            -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$NDK_CMAKE/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=$ANDROID_ABI \
             -DANDROID_PLATFORM=android-$SDK_VERSION \
             -DVCPKG_TARGET_TRIPLET=$VCPKG_TRIPLET \
