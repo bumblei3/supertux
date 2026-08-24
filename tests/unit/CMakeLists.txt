@@ -254,7 +254,7 @@ make_unit_test(AutotileTest SOURCE autotile_test.cpp autotile_test_stub.cpp
 # autotile config content (real temp files, from_file). Needs g_config
 # (validate gate) plus the reader stack; logging stubbed via autotile_test_stub.
 make_unit_test(AutotileParserTest SOURCE autotile_parser_test.cpp autotile_parser_test_stub.cpp
-  LIBRARIES GTest::gtest GTest::gtest_main
+  LIBRARIES GTest::gtest GTest::gtest_main PhysFS
             "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
   EXTERNAL supertux/autotile_parser.cpp supertux/autotile.cpp supertux/gameconfig.cpp
            util/log.cpp util/reader_document.cpp util/reader_mapping.cpp
@@ -262,7 +262,7 @@ make_unit_test(AutotileParserTest SOURCE autotile_parser_test.cpp autotile_parse
            util/reader_object.cpp util/gettext.cpp util/writer.cpp
            util/file_system.cpp physfs/ifile_stream.cpp
            physfs/ifile_streambuf.cpp physfs/ofile_stream.cpp physfs/ofile_streambuf.cpp
-           video/color.cpp supertux/globals.cpp
+           physfs/util.cpp video/color.cpp supertux/globals.cpp
            supertux/colorscheme.cpp
   INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
            ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include

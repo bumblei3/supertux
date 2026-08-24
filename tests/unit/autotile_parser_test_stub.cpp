@@ -26,6 +26,14 @@
 char* curl_easy_escape(CURL*, const char* s, int) { return strdup(s); }
 void curl_free(void* p) { free(p); }
 
+JoystickConfig::JoystickConfig() {}
+void JoystickConfig::read(const ReaderMapping&) {}
+void JoystickConfig::write(Writer&) {}
+
+KeyboardConfig::KeyboardConfig() {}
+void KeyboardConfig::read(const ReaderMapping&) {}
+void KeyboardConfig::write(Writer&) {}
+
 // Real libphysfs is linked; initialize it and mount "/" so absolute paths
 // to temp files resolve natively. No shim needed.
 static const bool s_physfs_ready = [] {
