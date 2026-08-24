@@ -219,6 +219,17 @@ make_unit_test(FadeHelperTest SOURCE fade_helper_test.cpp
 make_unit_test(CurrentonTest SOURCE currenton_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main)
 
+# ReaderErrorTest: util/reader_error.hpp assert helpers (type checks with
+# file:line context in the thrown messages). Same stub/link setup as ReaderTest.
+make_unit_test(ReaderErrorTest SOURCE reader_error_test.cpp reader_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
+  EXTERNAL util/reader_document.cpp util/reader_mapping.cpp
+           util/reader_collection.cpp util/reader_iterator.cpp
+           util/reader_object.cpp util/gettext.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
+
 # Dependency-free coverage for LineIterator (util/line_iterator.hpp): newline
 # splitting, trailing-newline handling, interior empty lines, exhaustion.
 make_unit_test(LineIteratorTest SOURCE line_iterator_test.cpp
