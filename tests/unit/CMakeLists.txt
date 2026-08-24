@@ -254,7 +254,7 @@ make_unit_test(AutotileTest SOURCE autotile_test.cpp autotile_test_stub.cpp
 # autotile config content (real temp files, from_file). Needs g_config
 # (validate gate) plus the reader stack; logging stubbed via autotile_test_stub.
 make_unit_test(AutotileParserTest SOURCE autotile_parser_test.cpp autotile_parser_test_stub.cpp gameconfig_input_config_stub.cpp
-  LIBRARIES GTest::gtest GTest::gtest_main PhysFS
+  LIBRARIES GTest::gtest GTest::gtest_main PkgConfig::PhysFS
             "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
   EXTERNAL supertux/autotile_parser.cpp supertux/autotile.cpp supertux/gameconfig.cpp
            util/log.cpp util/reader_document.cpp util/reader_mapping.cpp
@@ -295,7 +295,7 @@ make_unit_test(ReaderGetLayerTest SOURCE reader_get_layer_test.cpp reader_test_s
 # TileSetTest: supertux/tile_set.cpp (add_tile resize + duplicate guard,
 # get() fallback semantics, tilegroup deprecated-tile removal).
 make_unit_test(TileSetTest SOURCE tile_set_test.cpp tile_test_stub.cpp autotile_test_stub.cpp tile_set_test_stub.cpp
-  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm physfs CURL::libcurl
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm PkgConfig::PhysFS CURL::libcurl
             "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp;SDL_SavePNG;SDL3_image>"
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
   EXTERNAL supertux/tile_set.cpp supertux/tile.cpp video/color.cpp math/rectf.cpp
@@ -327,7 +327,7 @@ make_unit_test(LineIteratorTest SOURCE line_iterator_test.cpp
 # (tiles, tilegroups with range filter + offsets) via real temp files. Reuses
 # the AutotileParserTest stub strategy (stdio-backed PHYSFS shims).
 make_unit_test(TileSetParserTest SOURCE tile_set_parser_test.cpp autotile_parser_test_stub.cpp
-  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm physfs CURL::libcurl
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm PkgConfig::PhysFS CURL::libcurl
             "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp;SDL_SavePNG;SDL3_image>"
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
   EXTERNAL supertux/tile_set_parser.cpp supertux/tile_set.cpp supertux/tile.cpp
