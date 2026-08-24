@@ -112,6 +112,18 @@ make_unit_test(UIDTest SOURCE uid_test.cpp uid_test_stub.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL util/uid_generator.cpp)
 
+# UIDGenerator composition tests: magic/id packing, per-generator magic
+# distinctness, consecutive-id increments. Same stub/link setup as UIDTest.
+make_unit_test(UIDGeneratorTest SOURCE uid_generator_test.cpp uid_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL util/uid_generator.cpp)
+
+# UniqueName: util/unique_name.cpp — "gen<time><ptr>" identifiers.
+# Single header-declared function, no engine dependencies at all.
+make_unit_test(UniqueNameTest SOURCE unique_name_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL util/unique_name.cpp)
+
 # Reader: parses the lisp-style config format. Pulls in reader_document/
 # reader_mapping/reader_collection plus the tinygettext and sexp-cpp libraries
 # (both already built as static libs). The engine logging/filesystem layer is
