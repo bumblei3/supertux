@@ -243,6 +243,21 @@ make_unit_test(UIDStreamHashTest SOURCE uid_stream_hash_test.cpp uid_gen_test_st
   LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL util/uid.cpp)
 
+# ReaderGetLayerTest: util/reader.cpp reader_get_layer (z-pos/layer fallback
+# + LAYER_GUI clamp). Uses the same reader stubs as ReaderErrorTest.
+make_unit_test(ReaderGetLayerTest SOURCE reader_get_layer_test.cpp reader_test_stub.cpp reader_get_layer_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
+  EXTERNAL util/reader_document.cpp util/reader_mapping.cpp
+           util/reader_collection.cpp util/reader_iterator.cpp
+           util/reader_object.cpp util/gettext.cpp util/reader.cpp
+           video/color.cpp
+  INCLUDES ${CMAKE_BINARY_DIR}
+           ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include)
+
 # TileSetTest: supertux/tile_set.cpp (add_tile resize + duplicate guard,
 # get() fallback semantics, tilegroup deprecated-tile removal).
 make_unit_test(TileSetTest SOURCE tile_set_test.cpp tile_test_stub.cpp autotile_test_stub.cpp tile_set_test_stub.cpp
