@@ -248,6 +248,26 @@ make_unit_test(AutotileTest SOURCE autotile_test.cpp autotile_test_stub.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL supertux/autotile.cpp)
 
+# AutotileParserTest: supertux/autotile_parser.cpp — end-to-end parsing of
+# autotile config content (real temp files, from_file). Needs g_config
+# (validate gate) plus the reader stack; logging stubbed via autotile_test_stub.
+make_unit_test(AutotileParserTest SOURCE autotile_parser_test.cpp autotile_parser_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
+  EXTERNAL supertux/autotile_parser.cpp supertux/autotile.cpp supertux/gameconfig.cpp
+           util/log.cpp util/reader_document.cpp util/reader_mapping.cpp
+           util/reader_collection.cpp util/reader_iterator.cpp
+           util/reader_object.cpp util/gettext.cpp util/writer.cpp
+           util/file_system.cpp physfs/ifile_stream.cpp
+           physfs/ifile_streambuf.cpp physfs/ofile_stream.cpp physfs/ofile_streambuf.cpp
+           video/color.cpp supertux/globals.cpp
+           supertux/colorscheme.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
+
 # UIDStreamHashTest: util/uid.cpp (operator<< and std::hash<UID>) — these
 # symbols are NOT linked by UIDTest (uid_generator.cpp only), so they were
 # previously uncompiled/untested.
