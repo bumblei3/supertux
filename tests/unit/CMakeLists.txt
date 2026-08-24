@@ -276,6 +276,16 @@ make_unit_test(MathUtilTest SOURCE math_util_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   INCLUDES ${CMAKE_BINARY_DIR})
 
+# DirectionTest: supertux/direction.cpp (dir_to_string, string_to_dir,
+# invert_dir). Engine-free with a log stub; gettext + Color linked for real.
+make_unit_test(DirectionTest SOURCE direction_test.cpp direction_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext>"
+  EXTERNAL supertux/direction.cpp util/gettext.cpp video/color.cpp
+  INCLUDES ${CMAKE_BINARY_DIR}
+           ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include)
+
 # TileReplacementTest: regression coverage for the editor tile-replacement
 # degenerate/division-by-zero guard (issue #3810).
 make_unit_test(TileReplacementTest SOURCE tile_replacement_test.cpp
