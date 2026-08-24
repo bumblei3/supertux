@@ -161,7 +161,9 @@ make_unit_test(WriterTest SOURCE writer_test.cpp writer_test_stub.cpp
             util/reader_collection.cpp util/reader_iterator.cpp
             util/reader_object.cpp util/gettext.cpp
   INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
-            ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
+           ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include)
 
 # Sexp::Value + ReaderDocument/ReaderMapping round-trip tests.
 # Uses the same stub/link setup as ReaderTest (RESCAN for SDL3 load-order,
@@ -474,7 +476,7 @@ make_unit_test(CollisionMathTest SOURCE collision_math_test.cpp
 # data model. Round-trips GameObjectChange/GameObjectChangeSet through the
 # ostream Writer and parses back via ReaderIterator (the same path the
 # production parser uses). Reuses writer_test_stub.cpp's logging stubs.
-make_unit_test(GameObjectChangeTest SOURCE game_object_change_test.cpp writer_test_stub.cpp
+make_unit_test(GameObjectChangeTest SOURCE game_object_change_test.cpp gameobject_change_test_stub.cpp
   LIBRARIES "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
   EXTERNAL supertux/game_object_change.cpp util/writer.cpp util/log.cpp
            video/color.cpp supertux/globals.cpp util/gettext.cpp
