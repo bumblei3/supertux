@@ -236,6 +236,32 @@ make_unit_test(AutotileTest SOURCE autotile_test.cpp autotile_test_stub.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL supertux/autotile.cpp)
 
+# TileSetTest: supertux/tile_set.cpp (add_tile resize + duplicate guard,
+# get() fallback semantics, tilegroup deprecated-tile removal).
+make_unit_test(TileSetTest SOURCE tile_set_test.cpp tile_test_stub.cpp autotile_test_stub.cpp tile_set_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm physfs CURL::libcurl
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp;SDL_SavePNG;SDL3_image>"
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL supertux/tile_set.cpp supertux/tile.cpp video/color.cpp math/rectf.cpp
+           supertux/autotile.cpp util/gettext.cpp
+           supertux/autotile_parser.cpp
+           util/reader_document.cpp util/reader_mapping.cpp
+           util/reader_collection.cpp util/reader_iterator.cpp
+           util/reader_object.cpp util/string_util.cpp math/rect.cpp
+           util/reader_document.cpp util/reader_mapping.cpp
+           util/reader_collection.cpp util/reader_iterator.cpp
+           util/reader_object.cpp
+           supertux/tile_set_parser.cpp video/surface.cpp video/texture_manager.cpp
+           video/sdl_surface.cpp video/texture.cpp video/surface_batch.cpp
+           video/sampler.cpp
+           physfs/physfs_sdl.cpp physfs/ifile_stream.cpp physfs/ifile_streambuf.cpp
+           physfs/util.cpp util/file_system.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
+
 # Dependency-free coverage for LineIterator (util/line_iterator.hpp): newline
 # splitting, trailing-newline handling, interior empty lines, exhaustion.
 make_unit_test(LineIteratorTest SOURCE line_iterator_test.cpp
