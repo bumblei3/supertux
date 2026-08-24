@@ -7,8 +7,6 @@
 // never exercises are stubbed here. util/log.cpp is ALSO linked — do NOT
 // redefine g_log_level / log_*_f here (ASan ODR clash).
 
-#include "control/joystick_config.hpp"
-#include "control/keyboard_config.hpp"
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
 #include "editor/editor.hpp"
@@ -25,14 +23,6 @@
 
 char* curl_easy_escape(CURL*, const char* s, int) { return strdup(s); }
 void curl_free(void* p) { free(p); }
-
-JoystickConfig::JoystickConfig() {}
-void JoystickConfig::read(const ReaderMapping&) {}
-void JoystickConfig::write(Writer&) {}
-
-KeyboardConfig::KeyboardConfig() {}
-void KeyboardConfig::read(const ReaderMapping&) {}
-void KeyboardConfig::write(Writer&) {}
 
 // Real libphysfs is linked; initialize it and mount "/" so absolute paths
 // to temp files resolve natively. No shim needed.
