@@ -323,6 +323,34 @@ make_unit_test(TileSetTest SOURCE tile_set_test.cpp tile_test_stub.cpp autotile_
 make_unit_test(LineIteratorTest SOURCE line_iterator_test.cpp
   EXTERNAL util/line_iterator.cpp)
 
+# TileSetParserTest: supertux/tile_set_parser.cpp — end-to-end tileset parsing
+# (tiles, tilegroups with range filter + offsets) via real temp files. Reuses
+# the AutotileParserTest stub strategy (stdio-backed PHYSFS shims).
+make_unit_test(TileSetParserTest SOURCE tile_set_parser_test.cpp autotile_parser_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm physfs CURL::libcurl
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp;SDL_SavePNG;SDL3_image>"
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL supertux/tile_set_parser.cpp supertux/tile_set.cpp supertux/tile.cpp
+           supertux/autotile_parser.cpp supertux/autotile.cpp
+           video/color.cpp math/rectf.cpp math/rect.cpp
+           util/gettext.cpp util/string_util.cpp
+           util/log.cpp util/file_system.cpp supertux/globals.cpp
+           supertux/colorscheme.cpp util/writer.cpp
+           util/reader_document.cpp util/reader_mapping.cpp
+           util/reader_collection.cpp util/reader_iterator.cpp
+           util/reader_object.cpp physfs/util.cpp
+           supertux/gameconfig.cpp video/surface.cpp video/sdl_surface.cpp
+           video/texture.cpp video/texture_manager.cpp video/surface_batch.cpp
+           video/sampler.cpp video/drawing_context.cpp video/canvas.cpp
+           control/joystick_config.cpp control/keyboard_config.cpp
+           physfs/ifile_stream.cpp physfs/ifile_streambuf.cpp
+           physfs/ofile_stream.cpp physfs/ofile_streambuf.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
+
 # Coverage for UTF8Iterator (util/utf8_iterator.hpp): 1-4 byte decoding,
 # malformed-sequence handling, and the 4-byte off-by-one regression. Logging
 # is stubbed (utf8_iterator_test_stub.cpp) to avoid the engine console layer.

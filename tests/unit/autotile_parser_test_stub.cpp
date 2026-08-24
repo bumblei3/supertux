@@ -11,44 +11,29 @@
 #include "control/keyboard_config.hpp"
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
+#include "editor/editor.hpp"
+#include "physfs/ifile_stream.hpp"
+#include "physfs/ofile_stream.hpp"
+#include "physfs/ifile_streambuf.hpp"
+#include "physfs/ofile_streambuf.hpp"
+
+#include <physfs.h>
 
 #include <curl/curl.h>
 #include <cstdlib>
 #include <cstring>
 
-JoystickConfig::JoystickConfig() {}
-void JoystickConfig::read(const ReaderMapping&) {}
-void JoystickConfig::write(Writer&) {}
-
-KeyboardConfig::KeyboardConfig() {}
-void KeyboardConfig::read(const ReaderMapping&) {}
-void KeyboardConfig::write(Writer&) {}
-
 char* curl_easy_escape(CURL*, const char* s, int) { return strdup(s); }
 void curl_free(void* p) { free(p); }
 
-extern "C" {
-// Working stdio-backed PHYSFS shims: absolute paths work as-is, no mount needed.
-static FILE* to_file(void* p) { return static_cast<FILE*>(p); }
-void* PHYSFS_openRead(const char* path) { return fopen(path, "rb"); }
-void* PHYSFS_openWrite(const char* path) { return fopen(path, "wb"); }
-int PHYSFS_close(void* f) { return fclose(to_file(f)); }
-long long PHYSFS_fileLength(void* f) {
-  long long cur = ftell(to_file(f));
-  fseek(to_file(f), 0, SEEK_END);
-  long long size = ftell(to_file(f));
-  fseek(to_file(f), (long)cur, SEEK_SET);
-  return size;
-}
-int PHYSFS_readBytes(void* f, void* buf, unsigned int n) { return (int)fread(buf, 1, n, to_file(f)); }
-int PHYSFS_writeBytes(void* f, const void* buf, unsigned int n) { return (int)fwrite(buf, 1, n, to_file(f)); }
-int PHYSFS_eof(void* f) { return feof(to_file(f)) ? 1 : 0; }
-long long PHYSFS_tell(void* f) { return ftell(to_file(f)); }
-int PHYSFS_seek(void* f, unsigned long long pos) { return fseek(to_file(f), (long)pos, SEEK_SET); }
-int PHYSFS_delete(const char*) { return 0; }
-int PHYSFS_init(const char*) { return 1; }
-int PHYSFS_mount(const char*, const char*, int) { return 1; }
-}
+// Real libphysfs is linked; initialize it and mount "/" so absolute paths
+// to temp files resolve natively. No shim needed.
+static const bool s_physfs_ready = [] {
+  if (PHYSFS_init(nullptr) == 0) return false;
+  return PHYSFS_mount("/", nullptr, 0) != 0;
+}();
+
+bool Editor::is_active() { return false; }
 std::string VideoSystem::get_video_string(VideoSystem::Enum) { return ""; }
 VideoSystem::Enum VideoSystem::get_video_system(const std::string&) { return VideoSystem::VIDEO_SDL; }
 void Viewport::force_full_viewport(bool, bool) {}
@@ -71,5 +56,29 @@ ssq::Object::~Object() = default;
 
 std::ostream& operator<<(std::ostream& os, const UID& uid) { return os << uid.get_value(); }
 
-#include "physfs/util.hpp"
-namespace physfsutil { const char* get_last_error() { return "stub"; } }
+
+// Control enum helpers + editor gate + physfs file streams referenced by
+// gameconfig.cpp / tile_set_parser.cpp. The Control conversions are real
+// implementations inlined here to avoid linking the input-manager stack.
+#include "interface/control.hpp"
+#include "editor/editor.hpp"
+#include "physfs/ifile_streambuf.hpp"
+#include "physfs/ofile_streambuf.hpp"
+const char* g_control_names[] = { nullptr };
+// Real implementations from control/controller.cpp (small, header-free logic):
+std::string Control_to_string(Control control) { return g_control_names[static_cast<int>(control)]; }
+std::optional<Control> Control_from_string(const std::string& text)
+{
+  for (int i = 0; g_control_names[i] != nullptr; ++i) {
+    if (text == g_control_names[i]) return static_cast<Control>(i);
+  }
+  return std::nullopt;
+}
+std::ostream& operator<<(std::ostream& os, Control control) { return os << Control_to_string(control); }
+
+int Viewport::get_screen_width() const { return 0; }
+int Viewport::get_screen_height() const { return 0; }
+
+#include "physfs/physfs_sdl.hpp"
+SDL_IOStream* get_physfs_SDLRWops(const std::string&) { return nullptr; }
+SDL_IOStream* get_writable_physfs_SDLRWops(const std::string&) { return nullptr; }
