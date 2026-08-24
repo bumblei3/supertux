@@ -438,6 +438,23 @@ make_unit_test(CollisionMathTest SOURCE collision_math_test.cpp
            ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
            ${CMAKE_BINARY_DIR})
 
+# GameObjectChangeTest: supertux/game_object_change.cpp — the undo/redo
+# data model. Round-trips GameObjectChange/GameObjectChangeSet through the
+# ostream Writer and parses back via ReaderIterator (the same path the
+# production parser uses). Reuses writer_test_stub.cpp's logging stubs.
+make_unit_test(GameObjectChangeTest SOURCE game_object_change_test.cpp writer_test_stub.cpp
+  LIBRARIES "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
+  EXTERNAL supertux/game_object_change.cpp util/writer.cpp util/log.cpp
+           video/color.cpp supertux/globals.cpp util/gettext.cpp
+           util/reader_document.cpp util/reader_mapping.cpp
+           util/reader_collection.cpp util/reader_iterator.cpp
+           util/reader_object.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
+
 # TimerTest: supertux/timer.cpp (start/check/stop/pause/resume, cyclic timers,
 # progress helpers) + supertux/sequence.cpp (Sequence<->string mapping).
 # Engine-free: Timer only reads the global float g_game_time, which the tests
