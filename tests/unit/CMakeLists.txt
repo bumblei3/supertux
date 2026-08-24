@@ -209,6 +209,16 @@ make_unit_test(StringUtilStTest SOURCE string_util_st_test.cpp
 # static_cast<bool>() because DynamicScopedRef's operator bool() is explicit.
 make_unit_test(DynamicScopedTest SOURCE dynamic_scoped_test.cpp)
 
+# FadeHelperTest: util/fade_helper.cpp (timed interpolation, bound value,
+# completion clamping). Only needs math/easing.
+make_unit_test(FadeHelperTest SOURCE fade_helper_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL util/fade_helper.cpp math/easing.cpp util/string_util.cpp)
+
+# CurrentonTest: util/currenton.hpp CRTP current-instance registry. Header-only.
+make_unit_test(CurrentonTest SOURCE currenton_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main)
+
 # Dependency-free coverage for LineIterator (util/line_iterator.hpp): newline
 # splitting, trailing-newline handling, interior empty lines, exhaustion.
 make_unit_test(LineIteratorTest SOURCE line_iterator_test.cpp
