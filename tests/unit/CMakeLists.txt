@@ -230,6 +230,12 @@ make_unit_test(ReaderErrorTest SOURCE reader_error_test.cpp reader_test_stub.cpp
   INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
            ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
 
+# AutotileTest: supertux/autotile.cpp (mask matching, deterministic pick_tile,
+# neighbour bitmask assembly, membership). Only log.hpp stubbed.
+make_unit_test(AutotileTest SOURCE autotile_test.cpp autotile_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL supertux/autotile.cpp)
+
 # Dependency-free coverage for LineIterator (util/line_iterator.hpp): newline
 # splitting, trailing-newline handling, interior empty lines, exhaustion.
 make_unit_test(LineIteratorTest SOURCE line_iterator_test.cpp
