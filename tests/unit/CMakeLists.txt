@@ -236,6 +236,13 @@ make_unit_test(AutotileTest SOURCE autotile_test.cpp autotile_test_stub.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL supertux/autotile.cpp)
 
+# UIDStreamHashTest: util/uid.cpp (operator<< and std::hash<UID>) — these
+# symbols are NOT linked by UIDTest (uid_generator.cpp only), so they were
+# previously uncompiled/untested.
+make_unit_test(UIDStreamHashTest SOURCE uid_stream_hash_test.cpp uid_gen_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL util/uid.cpp)
+
 # TileSetTest: supertux/tile_set.cpp (add_tile resize + duplicate guard,
 # get() fallback semantics, tilegroup deprecated-tile removal).
 make_unit_test(TileSetTest SOURCE tile_set_test.cpp tile_test_stub.cpp autotile_test_stub.cpp tile_set_test_stub.cpp
