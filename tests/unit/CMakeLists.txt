@@ -438,6 +438,20 @@ make_unit_test(CollisionMathTest SOURCE collision_math_test.cpp
            ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
            ${CMAKE_BINARY_DIR})
 
+# TimerTest: supertux/timer.cpp (start/check/stop/pause/resume, cyclic timers,
+# progress helpers) + supertux/sequence.cpp (Sequence<->string mapping).
+# Engine-free: Timer only reads the global float g_game_time, which the tests
+# drive directly; log.cpp's Console references are satisfied by timer_test_stub.
+make_unit_test(TimerTest SOURCE timer_test.cpp timer_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL supertux/timer.cpp supertux/sequence.cpp supertux/globals.cpp util/log.cpp video/color.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
+
 message("ALL TESTS: ${all_test_targets}")
 
 add_custom_target(tests)
