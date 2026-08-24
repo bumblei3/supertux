@@ -270,6 +270,12 @@ make_unit_test(VectorTest SOURCE vector_test.cpp
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
   INCLUDES ${CMAKE_BINARY_DIR})
 
+# MathUtilTest: math/util.hpp free functions (clamp, sgn, in_bounds,
+# positive_mod, positive_fmodf, degrees/radians). Header-only, engine-free.
+make_unit_test(MathUtilTest SOURCE math_util_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  INCLUDES ${CMAKE_BINARY_DIR})
+
 # TileReplacementTest: regression coverage for the editor tile-replacement
 # degenerate/division-by-zero guard (issue #3810).
 make_unit_test(TileReplacementTest SOURCE tile_replacement_test.cpp
