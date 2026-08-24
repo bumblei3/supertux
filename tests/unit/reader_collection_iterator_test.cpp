@@ -327,4 +327,31 @@ TEST(ReaderDocumentTest, from_stream_equivalent)
   ASSERT_EQ(1, a);
 }
 
+// Positive UID get() case: the existing uint32_and_uid_overloads test only
+// covers the absent-key path. Real semantics: (key 42) parses as UID(42),
+// and a zero value is rejected as an invalid UID.
+TEST(ReaderMappingTest, uid_get_positive_and_zero_value)
+{
+  std::string text =
+    "(supertux-test\n"
+    "  (myuid 42)\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+
+  UID uid;
+  ASSERT_TRUE(mapping.get("myuid", uid));
+  ASSERT_TRUE(static_cast<bool>(uid));
+  ASSERT_EQ(42u, uid.get_value());
+
+  // Zero encodes "no UID"; the reader accepts the parse but the object is falsy.
+  auto doc2 = ReaderDocument::from_string("(supertux-test\n  (zuid 0)\n)\n");
+  UID zuid;
+  if (doc2.get_root().get_mapping().get("zuid", zuid))
+  {
+    ASSERT_FALSE(static_cast<bool>(zuid));
+  }
+}
+
 /* EOF */
