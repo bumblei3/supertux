@@ -160,4 +160,39 @@ TEST(StringUtilTest, split)
   ASSERT_EQ(out, (std::vector<std::string>{}));
 }
 
+TEST(StringUtilTest, numeric_less_digit_boundaries)
+{
+  // Multi-digit vs single-digit: numeric comparison, not lexicographic.
+  EXPECT_TRUE(StringUtil::numeric_less("a9", "a10"));
+  EXPECT_FALSE(StringUtil::numeric_less("a10", "a9"));
+  // Same digit count falls back to character compare inside the number.
+  EXPECT_TRUE(StringUtil::numeric_less("a2", "a3"));
+}
+
+TEST(StringUtilTest, numeric_less_leading_zeros)
+{
+  // Fewer digits wins regardless of value: "A1" < "A01" (digit-count rule).
+  EXPECT_TRUE(StringUtil::numeric_less("A1", "A01"));
+  EXPECT_FALSE(StringUtil::numeric_less("A01", "A1"));
+  // Equal digit count with leading zeros compares characters: "01" == "01".
+  EXPECT_FALSE(StringUtil::numeric_less("x01", "x01"));
+  EXPECT_TRUE(StringUtil::numeric_less("x00", "x01"));
+}
+
+TEST(StringUtilTest, numeric_less_multiple_numbers)
+{
+  // Comparison continues past the first differing number.
+  EXPECT_TRUE(StringUtil::numeric_less("level1x2", "level1x10"));
+  EXPECT_FALSE(StringUtil::numeric_less("level2x1", "level1x10"));
+}
+
+TEST(StringUtilTest, numeric_less_empty_and_prefix)
+{
+  EXPECT_FALSE(StringUtil::numeric_less("", ""));
+  EXPECT_TRUE(StringUtil::numeric_less("", "a"));
+  EXPECT_FALSE(StringUtil::numeric_less("abc", "abc"));
+  // Common prefix, one string longer -> shorter is less.
+  EXPECT_TRUE(StringUtil::numeric_less("abc", "abcd"));
+}
+
 /* EOF */
