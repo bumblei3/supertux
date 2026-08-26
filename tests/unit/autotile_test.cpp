@@ -213,4 +213,35 @@ TEST(AutotileSetTest, is_member_checks_base_alts_and_default)
   EXPECT_FALSE(set.is_member(0u));  // default==9, so 0 is not a member
 }
 
+TEST(AutotileSetTest, is_solid_tracks_tile_solidity)
+{
+  // Real semantics: is_solid(id) checks the matching Autotile's solidity;
+  // the default tile id reports solid only if m_default != 0.
+  Autotile::AltConditions cond{};
+  std::vector<Autotile*> tiles = {
+    new Autotile(1u, {{77u, cond}}, single_mask(0x01), true),   // solid
+    new Autotile(2u, {}, single_mask(0x02, false), false)       // non-solid
+  };
+  AutotileSet set(tiles, 9u, "solids", false);
+
+  EXPECT_TRUE(set.is_solid(1u));
+  EXPECT_TRUE(set.is_solid(77u));   // alt id inherits the autotile's solidity
+  EXPECT_FALSE(set.is_solid(2u));
+  EXPECT_TRUE(set.is_solid(9u));    // default id counts as solid
+  EXPECT_FALSE(set.is_solid(0u));   // default==9 -> 0 not solid
+}
+
+TEST(AutotileSetTest, get_mask_from_tile_returns_first_mask_or_zero)
+{
+  std::vector<Autotile*> tiles = {
+    new Autotile(1u, {}, single_mask(0xAB), true),
+    new Autotile(2u, {}, single_mask(0x0C, false), true)
+  };
+  AutotileSet set(tiles, 9u, "masks", false);
+
+  EXPECT_EQ(0xAB, set.get_mask_from_tile(1u));
+  EXPECT_EQ(0x0C, set.get_mask_from_tile(2u));
+  EXPECT_EQ(0x00, set.get_mask_from_tile(99u)); // unknown -> 0
+}
+
 /* EOF */

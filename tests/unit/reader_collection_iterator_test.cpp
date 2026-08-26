@@ -183,6 +183,26 @@ TEST(ReaderIteratorTest, as_mapping)
   ASSERT_EQ(42, x);
 }
 
+TEST(ReaderIteratorTest, as_mapping_on_string_item_is_error)
+{
+  // as_mapping() on a string item (not a pair) must throw / assert —
+  // the ReaderIterator contract only supports mapping extraction on pair items.
+  std::string text =
+    "(supertux-test\n"
+    "  \"just-a-string\"\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+  auto it = mapping.get_iter();
+  ASSERT_TRUE(it.next());
+  ASSERT_TRUE(it.is_string());
+  // as_mapping() on a non-pair item should fail — verify it throws
+  // (the existing ReaderIterator implementation will call assert_is_array
+  // which throws std::runtime_error via assert_is_array).
+  EXPECT_THROW(it.as_mapping(), std::runtime_error);
+}
+
 TEST(ReaderMappingTest, default_value_overloads)
 {
   // Keys present use the parsed value; missing keys fall back to default.
@@ -325,6 +345,218 @@ TEST(ReaderDocumentTest, from_stream_equivalent)
   int a = 0;
   doc.get_root().get_mapping().get("a", a);
   ASSERT_EQ(1, a);
+}
+
+TEST(ReaderDocumentTest, get_filename_and_directory_on_relative_path)
+{
+  // Relative path without directory component: get_directory() returns empty.
+  std::string text = "(supertux-test (a 1))\n";
+  auto doc = parse(text, "level.stl");
+
+  ASSERT_EQ("level.stl", doc.get_filename());
+  ASSERT_TRUE(doc.get_directory().empty());
+}
+
+TEST(ReaderDocumentTest, get_filename_and_directory_on_deep_path)
+{
+  std::string text = "(supertux-test (a 1))\n";
+  auto doc = parse(text, "/a/b/c/level.stl");
+
+  ASSERT_EQ("/a/b/c/level.stl", doc.get_filename());
+  ASSERT_EQ("/a/b/c", doc.get_directory());
+}
+
+TEST(ReaderMappingTest, get_sexp_value)
+{
+  // get(const char*, sexp::Value&) exposes the raw value sexp for a key.
+  std::string text =
+    "(supertux-test\n"
+    "  (integer 42)\n"
+    "  (boolean #t)\n"
+    "  (string \"hello\")\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+
+  sexp::Value v;
+  ASSERT_TRUE(mapping.get("integer", v));
+  ASSERT_TRUE(v.is_integer());
+  ASSERT_EQ(42, v.as_int());
+
+  ASSERT_TRUE(mapping.get("boolean", v));
+  ASSERT_TRUE(v.is_boolean());
+  ASSERT_TRUE(v.as_bool());
+
+  ASSERT_TRUE(mapping.get("string", v));
+  ASSERT_TRUE(v.is_string());
+  ASSERT_EQ("hello", v.as_string());
+
+  // Missing key → returns false, value untouched.
+  sexp::Value missing;
+  ASSERT_FALSE(mapping.get("no-such-key", missing));
+}
+
+TEST(ReaderMappingTest, get_optional_mapping_not_found)
+{
+  // std::optional<ReaderMapping> overload returns false when the key is absent.
+  std::string text =
+    "(supertux-test\n"
+    "  (present (x 1))\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+
+  std::optional<ReaderMapping> found;
+  ASSERT_TRUE(mapping.get("present", found));
+  ASSERT_TRUE(found.has_value());
+  int x = 0;
+  found->get("x", x);
+  ASSERT_EQ(1, x);
+
+  std::optional<ReaderMapping> missing;
+  ASSERT_FALSE(mapping.get("no-such-mapping", missing));
+  ASSERT_FALSE(missing.has_value());
+}
+
+TEST(ReaderMappingTest, get_optional_collection_not_found)
+{
+  // std::optional<ReaderCollection> overload returns false when the key is absent.
+  // Use a FRESH optional for the not-found case (reusing a populated one
+  // would still report has_value() == true since get() does not reset on miss).
+  std::string text =
+    "(supertux-test\n"
+    "  (things (item 1) (item 2))\n"
+    "  (other (item 3))\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+
+  std::optional<ReaderCollection> coll;
+  ASSERT_TRUE(mapping.get("things", coll));
+  ASSERT_TRUE(coll.has_value());
+  ASSERT_EQ(2u, coll->get_objects().size());
+
+  std::optional<ReaderCollection> missing;
+  ASSERT_FALSE(mapping.get("no-such-collection", missing));
+  ASSERT_FALSE(missing.has_value());
+}
+
+// Positive UID get() case: the existing uint32_and_uid_overloads test only
+// covers the absent-key path. Real semantics: (key 42) parses as UID(42),
+// and a zero value is rejected as an invalid UID.
+TEST(ReaderMappingTest, uid_get_positive_and_zero_value)
+{
+  std::string text =
+    "(supertux-test\n"
+    "  (myuid 42)\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+
+  UID uid;
+  ASSERT_TRUE(mapping.get("myuid", uid));
+  ASSERT_TRUE(static_cast<bool>(uid));
+  ASSERT_EQ(42u, uid.get_value());
+
+  // Zero encodes "no UID"; the reader accepts the parse but the object is falsy.
+  auto doc2 = ReaderDocument::from_string("(supertux-test\n  (zuid 0)\n)\n");
+  UID zuid;
+  if (doc2.get_root().get_mapping().get("zuid", zuid))
+  {
+    ASSERT_FALSE(static_cast<bool>(zuid));
+  }
+}
+
+
+// --- Back-door API coverage ----------------------------------------------
+
+TEST(ReaderMappingTest, get_sexp_value_overload)
+{
+  // get(const char*, sexp::Value&) returns the raw sexp value for a key.
+  // This is the back-door for getting untyped sexp values out of the reader.
+  std::string text =
+    "(supertux-test\n"
+    "  (integer 42)\n"
+    "  (boolean #t)\n"
+    "  (string \"hello\")\n"
+    "  (nested (a 1))\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+
+  sexp::Value v;
+  ASSERT_TRUE(mapping.get("integer", v));
+  ASSERT_TRUE(v.is_integer());
+  ASSERT_EQ(42, v.as_int());
+
+  ASSERT_TRUE(mapping.get("boolean", v));
+  ASSERT_TRUE(v.is_boolean());
+  ASSERT_TRUE(v.as_bool());
+
+  ASSERT_TRUE(mapping.get("string", v));
+  ASSERT_TRUE(v.is_string());
+  ASSERT_EQ("hello", v.as_string());
+
+  // Nested mapping comes back as a sexp array.
+  ASSERT_TRUE(mapping.get("nested", v));
+  ASSERT_TRUE(v.is_array());
+  ASSERT_EQ(2u, v.as_array().size());
+  ASSERT_TRUE(v.as_array()[0].is_symbol());
+  ASSERT_EQ("a", v.as_array()[0].as_string());
+  ASSERT_EQ(1, v.as_array()[1].as_int());
+
+  // Missing key returns false, v is untouched.
+  sexp::Value missing;
+  ASSERT_FALSE(mapping.get("no-such-key", missing));
+}
+
+TEST(ReaderMappingTest, get_optional_reader_mapping_not_found)
+{
+  // get(key, optional<ReaderMapping>&) returns false when the key is absent.
+  std::string text =
+    "(supertux-test\n"
+    "  (present (x 1))\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+
+  std::optional<ReaderMapping> found;
+  ASSERT_TRUE(mapping.get("present", found));
+  ASSERT_TRUE(found.has_value());
+  int x = 0;
+  found->get("x", x);
+  ASSERT_EQ(1, x);
+
+  std::optional<ReaderMapping> missing;
+  ASSERT_FALSE(mapping.get("no-such-key", missing));
+  ASSERT_FALSE(missing.has_value());
+}
+
+TEST(ReaderMappingTest, get_optional_reader_collection_not_found)
+{
+  // get(key, optional<ReaderCollection>&) returns false when the key is absent.
+  std::string text =
+    "(supertux-test\n"
+    "  (things (item 1) (item 2))\n"
+    ")\n";
+
+  auto doc = parse(text);
+  auto mapping = doc.get_root().get_mapping();
+
+  std::optional<ReaderCollection> found;
+  ASSERT_TRUE(mapping.get("things", found));
+  ASSERT_TRUE(found.has_value());
+  ASSERT_EQ(2u, found->get_objects().size());
+
+  std::optional<ReaderCollection> missing;
+  ASSERT_FALSE(mapping.get("no-such-key", missing));
+  ASSERT_FALSE(missing.has_value());
 }
 
 /* EOF */

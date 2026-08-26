@@ -164,3 +164,32 @@ TEST(RectfTest, sdl_roundtrip)
 }
 
 // vim: set ts=2 sw=2 et :
+
+TEST(RectfTest, distance_to_anchor_point)
+{
+  // distance(Vector) measures the distance from the rect's anchor point
+  // (default = ANCHOR_MIDDLE) to the given point.
+  Rectf r(0.0f, 0.0f, 10.0f, 10.0f);
+  // Default anchor is the middle of the rect (5, 5).
+  EXPECT_NEAR(r.distance(Vector(5.0f, 12.0f)), 7.0f, 1e-4f);
+  EXPECT_NEAR(r.distance(Vector(12.0f, 5.0f)), 7.0f, 1e-4f);
+  EXPECT_NEAR(r.distance(Vector(5.0f, 5.0f)), 0.0f, 1e-4f);
+}
+
+TEST(RectfTest, distance_to_anchor_point_explicit)
+{
+  // Explicit anchor points: ANCHOR_TOP_LEFT = (0,0), ANCHOR_BOTTOM_RIGHT = (10,10).
+  Rectf r(0.0f, 0.0f, 10.0f, 10.0f);
+  EXPECT_NEAR(r.distance(Vector(3.0f, 3.0f), ANCHOR_TOP_LEFT), glm::distance(Vector(0.0f, 0.0f), Vector(3.0f, 3.0f)), 1e-4f);
+  EXPECT_NEAR(r.distance(Vector(7.0f, 7.0f), ANCHOR_BOTTOM_RIGHT), glm::distance(Vector(10.0f, 10.0f), Vector(7.0f, 7.0f)), 1e-4f);
+  EXPECT_NEAR(r.distance(Vector(0.0f, 0.0f), ANCHOR_TOP_LEFT), 0.0f, 1e-4f);
+}
+
+TEST(RectfTest, distance_rect_to_rect_default_anchor)
+{
+  // distance(Rectf) uses the default anchor (middle) of each rect.
+  Rectf a(0.0f, 0.0f, 10.0f, 10.0f);   // middle (5,5)
+  Rectf b(20.0f, 0.0f, 30.0f, 10.0f);  // middle (25,5)
+  // Distance between middles: sqrt((25-5)^2 + (5-5)^2) = 20.
+  EXPECT_NEAR(a.distance(b), 20.0f, 1e-4f);
+}

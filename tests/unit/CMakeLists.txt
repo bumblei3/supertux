@@ -87,10 +87,12 @@ make_unit_test(FileSystemTest SOURCE file_system_test.cpp file_system_test_stub.
            ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
            ${CMAKE_BINARY_DIR})
 
-make_unit_test(RectfTest SOURCE rectf_test.cpp
-  LIBRARIES GTest::gtest GTest::gtest_main
+make_unit_test(RectfTest SOURCE rectf_test.cpp rectf_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm tinygettext
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
-  EXTERNAL math/rectf.cpp math/rect.cpp)
+  EXTERNAL math/rectf.cpp math/rect.cpp math/anchor_point.cpp
+  INCLUDES ${CMAKE_BINARY_DIR}
+           ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
 
 make_unit_test(RandomTest SOURCE random_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
@@ -111,6 +113,18 @@ make_unit_test(VersionTest SOURCE version_test.cpp
 make_unit_test(UIDTest SOURCE uid_test.cpp uid_test_stub.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL util/uid_generator.cpp)
+
+# UIDGenerator composition tests: magic/id packing, per-generator magic
+# distinctness, consecutive-id increments. Same stub/link setup as UIDTest.
+make_unit_test(UIDGeneratorTest SOURCE uid_generator_test.cpp uid_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL util/uid_generator.cpp)
+
+# UniqueName: util/unique_name.cpp — "gen<time><ptr>" identifiers.
+# Single header-declared function, no engine dependencies at all.
+make_unit_test(UniqueNameTest SOURCE unique_name_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL util/unique_name.cpp)
 
 # Reader: parses the lisp-style config format. Pulls in reader_document/
 # reader_mapping/reader_collection plus the tinygettext and sexp-cpp libraries
@@ -149,7 +163,9 @@ make_unit_test(WriterTest SOURCE writer_test.cpp writer_test_stub.cpp
             util/reader_collection.cpp util/reader_iterator.cpp
             util/reader_object.cpp util/gettext.cpp
   INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
-            ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
+           ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include)
 
 # Sexp::Value + ReaderDocument/ReaderMapping round-trip tests.
 # Uses the same stub/link setup as ReaderTest (RESCAN for SDL3 load-order,
@@ -180,11 +196,6 @@ make_unit_test(AATriangleTest SOURCE aatriangle_test.cpp
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
   EXTERNAL math/aatriangle.cpp)
 
-make_unit_test(CollisionTest SOURCE collision_test.cpp
-  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
-  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
-  EXTERNAL math/rectf.cpp)
-
 # CollisionModuleTest: regression coverage for the previously-untested
 # collision/ module (Constraints, set_rectangle_rectangle_constraints,
 # line_intersects_line, intersects_line, rectangle_aatriangle slope math).
@@ -192,6 +203,14 @@ make_unit_test(CollisionModuleTest SOURCE collision_module_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
   EXTERNAL collision/collision.cpp math/rectf.cpp math/aatriangle.cpp)
+
+# NOTE: CollisionTest (collision_test.cpp) was removed; coverage is now provided
+# by collision_geom_test, collision_module_test, and collision_math_test.
+# Uncomment only if a standalone CollisionTest is added back:
+# make_unit_test(CollisionTest SOURCE collision_test.cpp
+#   LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
+#   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+#   EXTERNAL collision/collision.cpp math/rectf.cpp math/aatriangle.cpp)
 
 # EasingTest: covers math/easing.cpp (the elastic easing overshoots by design).
 make_unit_test(EasingTest SOURCE easing_test.cpp
@@ -236,6 +255,26 @@ make_unit_test(AutotileTest SOURCE autotile_test.cpp autotile_test_stub.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL supertux/autotile.cpp)
 
+# AutotileParserTest: supertux/autotile_parser.cpp — end-to-end parsing of
+# autotile config content (real temp files, from_file). Needs g_config
+# (validate gate) plus the reader stack; logging stubbed via autotile_test_stub.
+make_unit_test(AutotileParserTest SOURCE autotile_parser_test.cpp autotile_parser_test_stub.cpp gameconfig_input_config_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main PkgConfig::PhysFS
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
+  EXTERNAL supertux/autotile_parser.cpp supertux/autotile.cpp supertux/gameconfig.cpp
+           util/log.cpp util/reader_document.cpp util/reader_mapping.cpp
+           util/reader_collection.cpp util/reader_iterator.cpp
+           util/reader_object.cpp util/gettext.cpp util/writer.cpp
+           util/file_system.cpp physfs/ifile_stream.cpp
+           physfs/ifile_streambuf.cpp physfs/ofile_stream.cpp physfs/ofile_streambuf.cpp
+           physfs/util.cpp video/color.cpp supertux/globals.cpp
+           supertux/colorscheme.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
+
 # UIDStreamHashTest: util/uid.cpp (operator<< and std::hash<UID>) — these
 # symbols are NOT linked by UIDTest (uid_generator.cpp only), so they were
 # previously uncompiled/untested.
@@ -261,7 +300,7 @@ make_unit_test(ReaderGetLayerTest SOURCE reader_get_layer_test.cpp reader_test_s
 # TileSetTest: supertux/tile_set.cpp (add_tile resize + duplicate guard,
 # get() fallback semantics, tilegroup deprecated-tile removal).
 make_unit_test(TileSetTest SOURCE tile_set_test.cpp tile_test_stub.cpp autotile_test_stub.cpp tile_set_test_stub.cpp
-  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm physfs CURL::libcurl
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm PkgConfig::PhysFS CURL::libcurl
             "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp;SDL_SavePNG;SDL3_image>"
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
   EXTERNAL supertux/tile_set.cpp supertux/tile.cpp video/color.cpp math/rectf.cpp
@@ -288,6 +327,34 @@ make_unit_test(TileSetTest SOURCE tile_set_test.cpp tile_test_stub.cpp autotile_
 # splitting, trailing-newline handling, interior empty lines, exhaustion.
 make_unit_test(LineIteratorTest SOURCE line_iterator_test.cpp
   EXTERNAL util/line_iterator.cpp)
+
+# TileSetParserTest: supertux/tile_set_parser.cpp — end-to-end tileset parsing
+# (tiles, tilegroups with range filter + offsets) via real temp files. Reuses
+# the AutotileParserTest stub strategy (stdio-backed PHYSFS shims).
+make_unit_test(TileSetParserTest SOURCE tile_set_parser_test.cpp autotile_parser_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm PkgConfig::PhysFS CURL::libcurl
+            "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp;SDL_SavePNG;SDL3_image>"
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL supertux/tile_set_parser.cpp supertux/tile_set.cpp supertux/tile.cpp
+           supertux/autotile_parser.cpp supertux/autotile.cpp
+           video/color.cpp math/rectf.cpp math/rect.cpp
+           util/gettext.cpp util/string_util.cpp
+           util/log.cpp util/file_system.cpp supertux/globals.cpp
+           supertux/colorscheme.cpp util/writer.cpp
+           util/reader_document.cpp util/reader_mapping.cpp
+           util/reader_collection.cpp util/reader_iterator.cpp
+           util/reader_object.cpp physfs/util.cpp
+           supertux/gameconfig.cpp video/surface.cpp video/sdl_surface.cpp
+           video/texture.cpp video/texture_manager.cpp video/surface_batch.cpp
+           video/sampler.cpp video/drawing_context.cpp video/canvas.cpp
+           control/joystick_config.cpp control/keyboard_config.cpp
+           physfs/ifile_stream.cpp physfs/ifile_streambuf.cpp
+           physfs/ofile_stream.cpp physfs/ofile_streambuf.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
 
 # Coverage for UTF8Iterator (util/utf8_iterator.hpp): 1-4 byte decoding,
 # malformed-sequence handling, and the 4-byte off-by-one regression. Logging
@@ -432,6 +499,37 @@ make_unit_test(CollisionMathTest SOURCE collision_math_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
   EXTERNAL collision/collision.cpp math/rectf.cpp math/aatriangle.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
+
+# GameObjectChangeTest: supertux/game_object_change.cpp — the undo/redo
+# data model. Round-trips GameObjectChange/GameObjectChangeSet through the
+# ostream Writer and parses back via ReaderIterator (the same path the
+# production parser uses). Reuses writer_test_stub.cpp's logging stubs.
+make_unit_test(GameObjectChangeTest SOURCE game_object_change_test.cpp gameobject_change_test_stub.cpp
+  LIBRARIES "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
+  EXTERNAL supertux/game_object_change.cpp util/writer.cpp util/log.cpp
+           video/color.cpp supertux/globals.cpp util/gettext.cpp
+           util/reader_document.cpp util/reader_mapping.cpp
+           util/reader_collection.cpp util/reader_iterator.cpp
+           util/reader_object.cpp
+  INCLUDES ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
+           ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include
+           ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/libs/squirrel/include
+           ${CMAKE_BINARY_DIR})
+
+# TimerTest: supertux/timer.cpp (start/check/stop/pause/resume, cyclic timers,
+# progress helpers) + supertux/sequence.cpp (Sequence<->string mapping).
+# Engine-free: Timer only reads the global float g_game_time, which the tests
+# drive directly; log.cpp's Console references are satisfied by timer_test_stub.
+make_unit_test(TimerTest SOURCE timer_test.cpp timer_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+  EXTERNAL supertux/timer.cpp supertux/sequence.cpp supertux/globals.cpp util/log.cpp video/color.cpp
   INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include
            ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
            ${SUPERTUX_SOURCE_DIR}/external/simplesquirrel/include

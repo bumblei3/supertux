@@ -24,6 +24,10 @@
 #include "util/log.hpp"
 #include "util/file_system.hpp"
 
+// WriterTest does NOT link util/log.cpp, so the logging globals/functions
+// must be provided here. Targets that DO link log.cpp must not use this stub
+// (see autotile_parser_test_stub.cpp for that variant).
+// (WriterTest does not link util/log.cpp, so logging symbols are defined here.)
 LogLevel g_log_level = LOG_NONE;
 bool g_log_tinygettext = false;
 
@@ -31,6 +35,11 @@ std::ostream& log_debug_f(const char*, int, bool) { static std::ostream s(nullpt
 std::ostream& log_info_f(const char*, int) { static std::ostream s(nullptr); return s; }
 std::ostream& log_warning_f(const char*, int) { static std::ostream s(nullptr); return s; }
 std::ostream& log_fatal_f(const char*, int) { static std::ostream s(nullptr); return s; }
+
+// NOTE: util/log.cpp is linked into some targets using this stub (e.g.
+// AutotileParserTest) and defines the log_*_f functions itself; defining
+// them here too would clash. Targets that DON'T link log.cpp but need
+// these symbols should link log.cpp instead (preferred) or use another stub.
 
 // ReaderDocument::get_directory() references FileSystem::dirname; provide a
 // no-op so the translation unit links without dragging in physfs.
@@ -48,4 +57,26 @@ std::string dirname(const std::string& filename) { return filename; }
 
 OFileStream::OFileStream(const std::string&) : std::ostream(nullptr) {}
 IFileStream::IFileStream(const std::string&) : std::istream(nullptr) {}
-std::ostream& operator<<(std::ostream& os, const UID&) { return os; }
+std::ostream& operator<<(std::ostream& os, const UID& uid) { return os << uid.m_value; }
+
+// game_object_change.cpp pulls in util/log.cpp, whose logging paths reference
+// the engine console. Never executed at LOG_NONE, but the linker needs them.
+#include "supertux/console.hpp"
+
+bool Console::hasFocus() const { return false; }
+void Console::open() {}
+
+ConsoleStreamBuffer ConsoleBuffer::s_outputBuffer;
+std::ostream ConsoleBuffer::output(&ConsoleBuffer::s_outputBuffer);
+void ConsoleBuffer::flush(ConsoleStreamBuffer&) {}
+
+Console::~Console() = default;
+
+// ssq::VM vtable/dtor referenced through Console's Currenton member.
+#include <simplesquirrel/vm.hpp>
+ssq::VM::~VM() = default;
+ssq::Object::~Object() = default;
+
+// UID stream output used by Writer::write(name, uid) — real implementation
+// (mirrors src/util/uid.cpp; the stub above with an empty body is the one
+// kept only for WriterTest, which never writes UIDs).
