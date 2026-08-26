@@ -112,7 +112,7 @@ make_unit_test(VersionTest SOURCE version_test.cpp
 # references, keeping this a self-contained logic test.
 make_unit_test(UIDTest SOURCE uid_test.cpp uid_test_stub.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
-  EXTERNAL util/uid_generator.cpp)
+  EXTERNAL util/uid_generator.cpp util/uid.cpp)
 
 # UIDGenerator composition tests: magic/id packing, per-generator magic
 # distinctness, consecutive-id increments. Same stub/link setup as UIDTest.

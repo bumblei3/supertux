@@ -49,3 +49,57 @@ TEST(StringUtilStTest, split_keeps_empty_middle_field)
   ASSERT_EQ(out.size(), 3u);
   EXPECT_TRUE(out[1].empty());
 }
+
+TEST(StringUtilStTest, split_trailing_empty_field)
+{
+  std::vector<std::string> out;
+  StringUtil::split(out, "a,b,", ',');
+  ASSERT_EQ(out.size(), 3u);
+  EXPECT_EQ("a", out[0]);
+  EXPECT_EQ("b", out[1]);
+  EXPECT_TRUE(out[2].empty());
+}
+
+TEST(StringUtilStTest, split_leading_empty_field)
+{
+  std::vector<std::string> out;
+  StringUtil::split(out, ",b,c", ',');
+  ASSERT_EQ(out.size(), 3u);
+  EXPECT_TRUE(out[0].empty());
+  EXPECT_EQ("b", out[1]);
+  EXPECT_EQ("c", out[2]);
+}
+
+TEST(StringUtilStTest, split_empty_string_yields_empty)
+{
+  std::vector<std::string> out;
+  StringUtil::split(out, "", ',');
+  ASSERT_EQ(out.size(), 1u);
+  EXPECT_TRUE(out[0].empty());
+}
+
+TEST(StringUtilStTest, split_no_delimiter_returns_whole)
+{
+  std::vector<std::string> out;
+  StringUtil::split(out, "hello", ',');
+  ASSERT_EQ(out.size(), 1u);
+  EXPECT_EQ("hello", out[0]);
+}
+
+TEST(StringUtilStTest, replace_all_consecutive_delimiters)
+{
+  EXPECT_EQ(StringUtil::replace_all("a,,b,,c", ",,", "|"),
+            "a|b|c");
+}
+
+TEST(StringUtilStTest, replace_all_overlapping_matches)
+{
+  // Non-overlapping: "aba", needle "aba" -> "x"
+  EXPECT_EQ(StringUtil::replace_all("aba", "aba", "x"), "x");
+}
+
+TEST(StringUtilStTest, replace_all_multibyte)
+{
+  EXPECT_EQ(StringUtil::replace_all("äöü", "ö", "Opcode"),
+            "äOpcodeü");
+}
