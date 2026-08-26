@@ -98,4 +98,47 @@ TEST(RectTest, from_rectf_and_stream)
   ASSERT_EQ(os.str(), "Rect(10, 20, 110, 220)");
 }
 
+TEST(RectTest, grown_expands_equally)
+{
+  Rect r(10, 20, 110, 220);
+  Rect grown = r.grown(5);
+  ASSERT_EQ(Rect(5, 15, 115, 225), grown);
+}
+
+TEST(RectTest, set_left_keep_height)
+{
+  // Nur left ändern → right bleibt, width ändert sich
+  Rect r(10, 20, 110, 220);
+  r.left = 30;
+  ASSERT_EQ(Rect(30, 20, 110, 220), r);
+}
+
+TEST(RectTest, set_top_keep_height)
+{
+  // Nur top ändern → bottom bleibt, height ändert sich
+  Rect r(10, 20, 110, 220);
+  r.top = 40;
+  ASSERT_EQ(Rect(10, 40, 110, 220), r);
+}
+
+TEST(RectTest, set_right_keep_height)
+{
+  Rect r(10, 20, 110, 220);
+  r.right = 200;
+  ASSERT_EQ(Rect(10, 20, 200, 220), r);
+}
+
+TEST(RectTest, set_bottom_keep_height)
+{
+  Rect r(10, 20, 110, 220);
+  r.bottom = 300;
+  ASSERT_EQ(Rect(10, 20, 110, 300), r);
+}
+
+TEST(RectTest, moved_by_zero_is_identity)
+{
+  Rect r(100, 200, 300, 400);
+  ASSERT_EQ(r, r.moved(0, 0));
+}
+
 /* EOF */

@@ -87,10 +87,12 @@ make_unit_test(FileSystemTest SOURCE file_system_test.cpp file_system_test_stub.
            ${SUPERTUX_SOURCE_DIR}/external/sexp-cpp/include
            ${CMAKE_BINARY_DIR})
 
-make_unit_test(RectfTest SOURCE rectf_test.cpp
-  LIBRARIES GTest::gtest GTest::gtest_main
+make_unit_test(RectfTest SOURCE rectf_test.cpp rectf_test_stub.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm tinygettext
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
-  EXTERNAL math/rectf.cpp math/rect.cpp)
+  EXTERNAL math/rectf.cpp math/rect.cpp math/anchor_point.cpp
+  INCLUDES ${CMAKE_BINARY_DIR}
+           ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include)
 
 make_unit_test(RandomTest SOURCE random_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
@@ -194,11 +196,6 @@ make_unit_test(AATriangleTest SOURCE aatriangle_test.cpp
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
   EXTERNAL math/aatriangle.cpp)
 
-make_unit_test(CollisionTest SOURCE collision_test.cpp
-  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
-  DEFINITIONS GLM_ENABLE_EXPERIMENTAL
-  EXTERNAL math/rectf.cpp)
-
 # CollisionModuleTest: regression coverage for the previously-untested
 # collision/ module (Constraints, set_rectangle_rectangle_constraints,
 # line_intersects_line, intersects_line, rectangle_aatriangle slope math).
@@ -206,6 +203,14 @@ make_unit_test(CollisionModuleTest SOURCE collision_module_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
   EXTERNAL collision/collision.cpp math/rectf.cpp math/aatriangle.cpp)
+
+# NOTE: CollisionTest (collision_test.cpp) was removed; coverage is now provided
+# by collision_geom_test, collision_module_test, and collision_math_test.
+# Uncomment only if a standalone CollisionTest is added back:
+# make_unit_test(CollisionTest SOURCE collision_test.cpp
+#   LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
+#   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
+#   EXTERNAL collision/collision.cpp math/rectf.cpp math/aatriangle.cpp)
 
 # EasingTest: covers math/easing.cpp (the elastic easing overshoots by design).
 make_unit_test(EasingTest SOURCE easing_test.cpp

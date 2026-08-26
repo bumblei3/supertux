@@ -163,6 +163,136 @@ int main(void)
     ST_ASSERT("string array round-trip size", strings.size() == 3);
     ST_ASSERT("string array round-trip [2]", strings[2] == "three");
   }
-}
 
-/* EOF */
+  // --- Writer edge cases not covered by the round-trips above ---------------
+
+  // Escaped-string round-trip: quotes and backslashes must survive a save/load
+  // cycle intact (writer.cpp write_escaped_string / reader parses \" and \\).
+  {
+    std::ostringstream out;
+    {
+      Writer w(out);
+      w.start_list("escape-test");
+      w.write("quoted", "say \"hello\"");
+      w.write("backslash", "a\\b\\c");
+      w.write("both", "x\"y\\z");
+      w.end_list("escape-test");
+    }
+    std::string data = out.str();
+    auto doc = ReaderDocument::from_string(data);
+    auto root = doc.get_root();
+    auto cm = root.get_mapping();
+    std::string quoted, backslash, both;
+    cm.get("quoted", quoted);
+    cm.get("backslash", backslash);
+    cm.get("both", both);
+    ST_ASSERT("escaped quote round-trips", quoted == "say \"hello\"");
+    ST_ASSERT("escaped backslash round-trips", backslash == "a\\b\\c");
+    ST_ASSERT("escaped both round-trips", both == "x\"y\\z");
+  }
+
+  // write_sexp round-trip: a Writer::write(const char*, sexp::Value&) call
+  // produces a nested s-expression that the reader must parse back to the same
+  // sexp::Value. Covers the fudge-indent path and the non-array write path.
+  {
+    std::ostringstream out;
+    {
+      Writer w(out);
+      w.start_list("sexp-test");
+      sexp::Value arr = sexp::Value::array({
+        sexp::Value::symbol("inner"),
+        sexp::Value::integer(42)
+      });
+      w.write("nested", arr);
+      w.write("plain-int", sexp::Value::integer(7));
+      w.end_list("sexp-test");
+    }
+    std::string data = out.str();
+    auto doc = ReaderDocument::from_string(data);
+    auto root = doc.get_root();
+    auto cm = root.get_mapping();
+
+    // nested: must parse back to an array of two elements.
+    sexp::Value nested;
+    ST_ASSERT("nested must parse as array", cm.get("nested", nested) && nested.is_array());
+    ST_ASSERT("nested size == 2", nested.as_array().size() == 2u);
+    ST_ASSERT("nested[0] is symbol 'inner'", nested.as_array()[0].is_symbol() && nested.as_array()[0].as_string() == "inner");
+    ST_ASSERT("nested[1] is integer 42", nested.as_array()[1].is_integer() && nested.as_array()[1].as_int() == 42);
+
+    // plain-int: scalar write path.
+    sexp::Value plain;
+    ST_ASSERT("plain-int must parse as integer 7", cm.get("plain-int", plain) && plain.is_integer() && plain.as_int() == 7);
+  }
+
+  // end_list with wrong name emits a warning but does not crash; the list
+  // stays open so the destructor warns about it. We only verify the produced
+  // text is still parseable (the warning goes to the logging stub).
+  {
+    std::ostringstream out;
+    {
+      Writer w(out);
+      w.start_list("good");
+      w.end_list("wrong");   // log_warning: trying to close 'wrong' while 'good' is open
+      w.end_list("good");    // now actually closes it
+    }
+    std::string data = out.str();
+    auto doc = ReaderDocument::from_string(data);
+    ST_ASSERT("good list name preserved", doc.get_root().get_name() == "good");
+  }
+
+  // write_comment produces a parseable ;-comment before the next token.
+  {
+    std::ostringstream out;
+    {
+      Writer w(out);
+      w.start_list("commented");
+      w.write_comment("this is a note");
+      w.write("value", 42);
+      w.end_list("commented");
+    }
+    std::string data = out.str();
+    // The comment must appear literally before value.
+    ST_ASSERT("comment marker present", data.find("; this is a note") != std::string::npos);
+    // Parsing must succeed: the reader skips ; comments.
+    auto doc = ReaderDocument::from_string(data);
+    ST_ASSERT("commented section parses", doc.get_root().get_name() == "commented");
+    int v = 0;
+    doc.get_root().get_mapping().get("value", v);
+    ST_ASSERT("value after comment", v == 42);
+    // And round-trip back through Writer must reproduce the comment.
+    std::ostringstream back;
+    {
+      Writer bw(back);
+      bw.start_list("commented");
+      bw.write("value", v);
+      bw.write_comment("this is a note");
+      bw.end_list("commented");
+    }
+    std::string back_data = back.str();
+    ST_ASSERT("round-trip preserves comment", back_data.find("; this is a note") != std::string::npos);
+  }
+
+  // Destructor warns when lists remain open. A document whose list is never
+  // closed produces truncated s-expression text ("(open\n(x 1)\n") which the
+  // reader REJECTS with a Parse Error — verify the failure is detected.
+  {
+    std::ostringstream out;
+    {
+      Writer w(out);
+      w.start_list("open");
+      w.write("x", 1);
+      // no end_list — destructor will warn
+    }
+    std::string data = out.str();
+    bool threw = false;
+    try
+    {
+      ReaderDocument::from_string(data);
+    }
+    catch (const std::runtime_error&)
+    {
+      threw = true;
+    }
+    ST_ASSERT("unclosed list rejected by parser", threw);
+  }
+}

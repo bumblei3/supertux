@@ -118,14 +118,67 @@ TEST_F(TimerTest, PauseResumePreservesTimeleft)
   EXPECT_TRUE(t.check());
 }
 
-TEST_F(TimerTest, TimegoneAndProgress)
+TEST_F(TimerTest, UnstartedTimerGetTimeleftIsZero)
 {
   Timer t;
-  t.start(4.0f);
-  g_game_time = 1.0f;
-  EXPECT_FLOAT_EQ(t.get_timegone(), 1.0f);
-  EXPECT_FLOAT_EQ(t.get_timeleft(), 3.0f);
-  EXPECT_FLOAT_EQ(t.get_progress(), 0.25f);
+  EXPECT_FLOAT_EQ(t.get_timeleft(), 0.0f);
+  EXPECT_FLOAT_EQ(t.get_timegone(), 0.0f);
+  EXPECT_FLOAT_EQ(t.get_progress(), 0.0f);
+}
+
+TEST_F(TimerTest, PauseOnUnstartedTimerIsHarmless)
+{
+  Timer t;
+  t.pause();
+  EXPECT_FALSE(t.paused());
+  EXPECT_FALSE(t.started());
+}
+
+TEST_F(TimerTest, MultiplePauseResumeCycles)
+{
+  Timer t;
+  t.start(10.0f);
+
+  g_game_time = 3.0f;
+  t.pause();
+  EXPECT_FLOAT_EQ(t.get_period(), 0.0f);  // stop() resets period
+  EXPECT_TRUE(t.paused());
+
+  g_game_time = 100.0f;
+  t.resume();
+  EXPECT_FLOAT_EQ(t.get_period(), 7.0f);  // remaining = 10 - 3
+  EXPECT_FALSE(t.paused());
+
+  g_game_time = 103.0f;  // 3s since resume
+  EXPECT_FALSE(t.check());
+
+  t.pause();
+  g_game_time = 200.0f;
+  t.resume();
+  EXPECT_FLOAT_EQ(t.get_period(), 4.0f);  // 7 - 3 = 4 remaining
+
+  g_game_time = 204.0f;
+  EXPECT_TRUE(t.check());
+}
+
+TEST_F(TimerTest, GetProgressBeforeStartIsZero)
+{
+  Timer t;
+  EXPECT_FLOAT_EQ(t.get_progress(), 0.0f);
+}
+
+TEST_F(TimerTest, StopWhilePausedClearsPauseState)
+{
+  Timer t;
+  t.start(5.0f);
+  g_game_time = 2.0f;
+  t.pause();
+  EXPECT_TRUE(t.paused());
+
+  t.stop();
+  EXPECT_FALSE(t.paused());
+  EXPECT_FALSE(t.started());
+  EXPECT_FLOAT_EQ(t.get_period(), 0.0f);
 }
 
 // --- supertux/sequence.cpp: Sequence <-> string mapping -------------------

@@ -159,6 +159,79 @@ TEST(ReaderTest, get_compressed)
   }
 }
 
+TEST(ReaderTest, get_compressed_empty_list)
+{
+  // Empty (myempty) key should return an empty vector, no exception.
+  std::istringstream in(
+    "(supertux-test\n"
+    "   (myempty)\n"
+    ")\n");
+
+  auto doc = ReaderDocument::from_stream(in);
+  auto root = doc.get_root();
+  ASSERT_EQ("supertux-test", root.get_name());
+  auto mapping = root.get_mapping();
+
+  std::vector<unsigned int> result;
+  ASSERT_TRUE(mapping.get_compressed("myempty", result));
+  ASSERT_TRUE(result.empty());
+}
+
+TEST(ReaderTest, get_compressed_rejects_negative_repeater_at_end)
+{
+  // Trailing negative value without a following positive is a syntax error.
+  std::istringstream in(
+    "(supertux-test\n"
+    "   (bad -3 10 -2)\n"
+    ")\n");
+
+  auto doc = ReaderDocument::from_stream(in);
+  auto root = doc.get_root();
+  auto mapping = root.get_mapping();
+
+  std::vector<unsigned int> result;
+  EXPECT_THROW(
+    {mapping.get_compressed("bad", result);},
+    std::runtime_error);
+}
+
+TEST(ReaderTest, get_compressed_multi_repeater_chain)
+{
+  // -3 10 20 -1 30 -> five 10s, one 20, one 30
+  std::istringstream in(
+    "(supertux-test\n"
+    "   (chain -3 10 20 -1 30)\n"
+    ")\n");
+
+  auto doc = ReaderDocument::from_stream(in);
+  auto root = doc.get_root();
+  ASSERT_EQ("supertux-test", root.get_name());
+  auto mapping = root.get_mapping();
+
+  std::vector<unsigned int> result;
+  ASSERT_TRUE(mapping.get_compressed("chain", result));
+  ASSERT_EQ(std::vector<unsigned int>({10, 10, 10, 20, 30}), result);
+}
+
+TEST(ReaderTest, get_compressed_chain_with_repeater_after_repeater_is_error)
+{
+  // Negative value while repeater is active is a syntax error.
+  // -1 sets repeater=1, then -2 arrives while repeater is active → error.
+  std::istringstream in(
+    "(supertux-test\n"
+    "   (mid -1 -2 8)\n"
+    ")\n");
+
+  auto doc = ReaderDocument::from_stream(in);
+  auto root = doc.get_root();
+  auto mapping = root.get_mapping();
+
+  std::vector<unsigned int> result;
+  EXPECT_THROW(
+    {mapping.get_compressed("mid", result);},
+    std::runtime_error);
+}
+
 TEST(ReaderTest, syntax_error)
 {
   std::istringstream in(
