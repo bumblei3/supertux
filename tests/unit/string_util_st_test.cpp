@@ -17,29 +17,35 @@
 // Coverage for util/string_util.hpp using the st_assert.hpp harness (no gtest/glm/SDL).
 // Focuses on replace_all edge cases (including the empty-needle infinite loop fix)
 // and split behaviour not exercised by the existing string_util_test.cpp.
+//
+// Converted from ST_ASSERT harness to GoogleTest for better failure diagnostics.
 
-#include "st_assert.hpp"
+#include <gtest/gtest.h>
+
 #include "util/string_util.hpp"
 
 #include <string>
 #include <vector>
 
-int main(void)
+TEST(StringUtilStTest, replace_all_empty_needle_is_noop)
 {
-  // replace_all: empty needle must not loop forever (treated as no-op).
-  ST_ASSERT("replace_all: empty needle is a no-op",
-            StringUtil::replace_all("abc", "", "x") == "abc");
-  ST_ASSERT("replace_all: basic replacement",
-            StringUtil::replace_all("a.b.c", ".", "/") == "a/b/c");
-  ST_ASSERT("replace_all: empty replacement deletes needle",
-            StringUtil::replace_all("aXXb", "XX", "") == "ab");
+  EXPECT_EQ(StringUtil::replace_all("abc", "", "x"), "abc");
+}
 
-  // split: empty delimiter field is preserved.
-  {
-    std::vector<std::string> out;
-    StringUtil::split(out, "x,,y", ',');
-    ST_ASSERT("split: keeps empty middle field", out.size() == 3 && out[1] == "");
-  }
+TEST(StringUtilStTest, replace_all_basic_replacement)
+{
+  EXPECT_EQ(StringUtil::replace_all("a.b.c", ".", "/"), "a/b/c");
+}
 
-  return 0;
+TEST(StringUtilStTest, replace_all_empty_replacement_deletes_needle)
+{
+  EXPECT_EQ(StringUtil::replace_all("aXXb", "XX", ""), "ab");
+}
+
+TEST(StringUtilStTest, split_keeps_empty_middle_field)
+{
+  std::vector<std::string> out;
+  StringUtil::split(out, "x,,y", ',');
+  ASSERT_EQ(out.size(), 3u);
+  EXPECT_TRUE(out[1].empty());
 }
