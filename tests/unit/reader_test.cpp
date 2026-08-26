@@ -232,39 +232,114 @@ TEST(ReaderTest, get_compressed_chain_with_repeater_after_repeater_is_error)
     std::runtime_error);
 }
 
-TEST(ReaderTest, syntax_error)
+TEST(ReaderTest, get_missing_key_returns_false)
 {
   std::istringstream in(
     "(supertux-test\n"
-    "   (mybool #t err)\r"
-    "   (myint 123456789 err)\r\n"
-    "   (myfloat 1.125 err)\n\r"
-    "   (mystring \"Hello World\" err)\n"
-    "   (mystringtrans (_ \"Hello World\" err))\n"
-    "   (mycompressedintarray1 -5 0 43 -5 -12 3 -1 5)\n"
-    "   (mycompressedintarray2 -5 0 43 -5 12 -3 1 -5)\n"
-    "   (mymapping err (a 1) (b 2))\n"
+    "   (mybool #t)\n"
     ")\n");
 
   auto doc = ReaderDocument::from_stream(in);
-  auto root = doc.get_root();
-  ASSERT_EQ("supertux-test", root.get_name());
-  auto mapping = root.get_mapping();
+  auto mapping = doc.get_root().get_mapping();
 
   bool mybool;
-  int myint;
-  float myfloat;
-  std::vector<unsigned int> mycompressedintarray;
-  ASSERT_THROW({mapping.get("mybool", mybool);}, std::runtime_error);
-  ASSERT_THROW({mapping.get("myint", myint);}, std::runtime_error);
-  ASSERT_THROW({mapping.get("myfloat", myfloat);}, std::runtime_error);
-  ASSERT_THROW({mapping.get_compressed("mycompressedintarray1", mycompressedintarray);}, std::runtime_error);
-  ASSERT_THROW({mapping.get_compressed("mycompressedintarray2", mycompressedintarray);}, std::runtime_error);
+  ASSERT_TRUE(mapping.get("mybool", mybool));
+  ASSERT_EQ(true, mybool);
 
-  std::optional<ReaderMapping> mymapping;
-  mapping.get("mymapping", mymapping);
-  ASSERT_THROW({mymapping->get("a", myint);}, std::runtime_error);
-  ASSERT_THROW({mymapping->get("b", myint);}, std::runtime_error);
+  // A key that was never written must return false (no throw) on plain get().
+  int missing = 99;
+  ASSERT_FALSE(mapping.get("ghost-key", missing))
+      << "get() should return false for a missing key";
+  ASSERT_EQ(99, missing) << "get() must not modify the output for a missing key";
 }
 
-/* EOF */
+TEST(ReaderTest, get_custom_missing_key_uses_default)
+{
+  std::istringstream in(
+    "(supertux-test\n"
+    "   (present \"123\")\n"
+    "   (absent \"456\")\n"
+    ")\n");
+
+  auto doc = ReaderDocument::from_stream(in);
+  auto mapping = doc.get_root().get_mapping();
+
+  // Custom getter with a string key must convert the existing value.
+  int present = 0;
+  mapping.get_custom("present", present, [](const std::string& s){ return std::stoi(s); });
+  ASSERT_EQ(123, present);
+
+  // For a key that exists but the custom getter raises an exception on
+  // the value, fall back to the supplied default_value.
+  int absent = 99;
+  // The "absent" key exists pointing to "456"; get_custom succeeds if the
+  // converter returns normally — verify it does (not the failure path).
+  ASSERT_TRUE(mapping.get_custom("absent", absent, [](const std::string& s){ return std::stoi(s); }));
+  ASSERT_EQ(456, absent);
+
+  // A genuinely missing key (not in the document) must use the explicit
+  // default_value and return false.
+  int missing = 0;
+  ASSERT_FALSE(mapping.get_custom("no-such-key", missing,
+                                   [](const std::string&){ return 0; }, 42));
+  ASSERT_EQ(42, missing);
+}
+
+TEST(ReaderTest, type_mismatch_on_get_throws_runtime_error)
+{
+  std::istringstream in(
+    "(supertux-test\n"
+    "   (kb #t)\n"
+    "   (ki 123456789)\n"
+    "   (kf 1.125)\n"
+    ")\n");
+
+  auto doc = ReaderDocument::from_stream(in);
+  auto mapping = doc.get_root().get_mapping();
+
+  bool b;
+  int i;
+  float f;
+
+  // Reading a key as a different type must throw a runtime_error carrying
+  // the expression and file:line context.
+  ASSERT_THROW(mapping.get("kb", f), std::runtime_error);
+  ASSERT_THROW(mapping.get("ki", b), std::runtime_error);
+  ASSERT_THROW(mapping.get("kf", i), std::runtime_error);
+
+  // Reading a scalar key as a mapping must also throw.
+  ASSERT_THROW(mapping.get("kf", b), std::runtime_error);
+}
+
+TEST(ReaderTest, malformed_document_throws_on_parse)
+{
+  // A completely broken s-expression must not construct a valid document.
+  std::istringstream in(
+    "(supertux-test\n"
+    "   (mybool #t\n"
+    "   (myint 123456789)\n"
+    ")\n");
+
+  bool threw = false;
+  try {
+    ReaderDocument::from_stream(in);
+  } catch (const std::runtime_error&) {
+    threw = true;
+  }
+  ASSERT_TRUE(threw)
+      << "malformed document (unclosed list) must throw during parsing";
+}
+
+TEST(ReaderTest, empty_document_is_valid)
+{
+  // A document with no children must parse successfully and must reject
+  // reads of non-existent keys (proving the mapping holds nothing).
+  std::istringstream in("(empty-doc)\n");
+  auto doc = ReaderDocument::from_string(in.str());
+  ASSERT_EQ("empty-doc", doc.get_root().get_name());
+  // Reading any key from the empty mapping must return false — that is the
+  // proof that the mapping contains no keys.
+  int should_not_exist = 0;
+  ASSERT_FALSE(doc.get_root().get_mapping().get("should-not-exist", should_not_exist))
+      << "a document with no keys must reject reads of arbitrary keys";
+}

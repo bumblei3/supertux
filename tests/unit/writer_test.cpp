@@ -64,8 +64,17 @@ std::string serialize_compressed()
     writer.write_compressed("single", std::vector<unsigned int>{7});
     writer.write("floats", std::vector<float>{1.0f, 2.5f, 3.25f});
     writer.write("strings", std::vector<std::string>{"one", "two", "three"});
+    // NUL bytes must survive inside strings (level/world saves store raw
+    // tile names embedded in localized strings); verify the writer encodes
+    // them and the reader decodes them back to the identical bytes.
+    writer.start_list("nul-strings");
+    writer.write("with-nul",
+                 std::string{"prefix\0suffix", 12});
+    writer.write("empty-nul",
+                 std::string{'\0', 1});
+    writer.end_list("nul-strings");
     writer.end_list("supertux-compressed");
-  }
+    }
   return out.str();
 }
 
@@ -162,6 +171,49 @@ int main(void)
     cm.get("strings", strings);
     ST_ASSERT("string array round-trip size", strings.size() == 3);
     ST_ASSERT("string array round-trip [2]", strings[2] == "three");
+  }
+
+  // --- NUL bytes inside strings must survive a save/load cycle ------------
+  // Level/world saves occasionally embed raw tile names containing NULs
+  // inside localized strings. The writer's escaping and the reader's
+  // unescaping must preserve those bytes byte-for-byte.
+  {
+    std::ostringstream nullout;
+    {
+      Writer w(nullout);
+      w.start_list("nul-strings");
+      // "prefix\0suffix" — length 12 (including the embedded NUL).
+      w.write("with-nul", std::string{"prefix\0suffix", 12});
+      // A single NUL character as the entire string value.
+      w.write("empty-nul", std::string{'\0', 1});
+      w.end_list("nul-strings");
+    }
+
+    std::string ndata = nullout.str();
+    auto ndoc = ReaderDocument::from_string(ndata);
+    auto nroot = ndoc.get_root();
+    auto nm = nroot.get_mapping();
+
+    std::string with_nul;
+    ST_ASSERT("NUL string must read back",
+              nm.get("with-nul", with_nul) && with_nul == "prefix\0suffix");
+
+    std::string empty_nul;
+    ST_ASSERT("single-NUL string must read back",
+              nm.get("empty-nul", empty_nul) && empty_nul == "\0");
+  }
+
+  // --- Bool-vector round-trip: verify booleans saved via the explicit
+  // write(const char*, std::vector<bool>) overload are read back as 0/1
+  // integers (the writer has no vector<bool> overload; booleans are packed
+  // as 0/1 ints in the s-expression stream).
+  {
+    auto doc = ReaderDocument::from_string(data);
+    std::vector<int> bools_as_int;
+    bool got = doc.get_root().get_mapping().get("myflagarray", bools_as_int);
+    ST_ASSERT("myflagarray key must read back", got);
+    ST_ASSERT("flag array round-trip as 0/1 ints",
+              (bools_as_int == std::vector<int>{1, 0, 1}));
   }
 
   // --- Writer edge cases not covered by the round-trips above ---------------
