@@ -371,7 +371,7 @@ make_unit_test(UTF8IteratorTest SOURCE utf8_iterator_test.cpp utf8_iterator_test
 # monotonicity, and the modified-lightness estimate. Links video/color.cpp
 # (needs SDL3 via color.hpp) with logging stubbed.
 make_unit_test(ColorspaceOklabTest SOURCE colorspace_oklab_test.cpp colorspace_oklab_test_stub.cpp
-  LIBRARIES SDL3::SDL3
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3
   EXTERNAL util/colorspace_oklab.cpp video/color.cpp)
 
 # Coverage for video/color.hpp string (de)serialization: deserialize_from_hex,
