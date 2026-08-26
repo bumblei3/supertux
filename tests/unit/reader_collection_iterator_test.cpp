@@ -474,6 +474,40 @@ TEST(ReaderMappingTest, uid_get_positive_and_zero_value)
 
 // --- Back-door API coverage ----------------------------------------------
 
+TEST(ReaderObjectTest, get_name_on_non_object_throws)
+{
+  // get_name() requires an array whose head is a symbol. A bare string or
+  // integer item is NOT an object — the reader asserts with a runtime_error.
+  auto doc = parse("(supertux-test\n  \"just-a-string\"\n)\n");
+  auto objects = doc.get_root().get_collection().get_objects();
+  ASSERT_EQ(1u, objects.size());
+  EXPECT_THROW(objects[0].get_name(), std::runtime_error);
+
+  auto idoc = parse("(supertux-test\n  42\n)\n");
+  auto iobjects = idoc.get_root().get_collection().get_objects();
+  ASSERT_EQ(1u, iobjects.size());
+  EXPECT_THROW(iobjects[0].get_name(), std::runtime_error);
+}
+
+TEST(ReaderObjectTest, get_mapping_on_symbol_head_reads_pairs)
+{
+  // get_mapping() works on any object regardless of shape; reading a key
+  // that does not exist simply fails (returns false), no throw.
+  std::string text =
+    "(supertux-test\n"
+    "  (tile (zpos -100))\n"
+    ")\n";
+  auto doc = parse(text);
+  auto objects = doc.get_root().get_collection().get_objects();
+  ASSERT_EQ("tile", objects[0].get_name());
+  int zpos = 0;
+  ASSERT_TRUE(objects[0].get_mapping().get("zpos", zpos));
+  ASSERT_EQ(-100, zpos);
+  int absent = -5;
+  ASSERT_FALSE(objects[0].get_mapping().get("nope", absent));
+  ASSERT_EQ(-5, absent);  // untouched on miss
+}
+
 TEST(ReaderMappingTest, get_sexp_value_overload)
 {
   // get(const char*, sexp::Value&) returns the raw sexp value for a key.
