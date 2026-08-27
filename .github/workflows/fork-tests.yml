@@ -167,6 +167,17 @@ jobs:
 
       - name: Run unit tests under sanitizers
         working-directory: build-san
+        env:
+          # detect_leaks=0: SDL allocates a small touch-device buffer in
+          # Config::Config() (gameconfig.cpp:150) that it frees only in its
+          # own atexit handler, AFTER LeakSanitizer scans at exit. That is a
+          # known SDL/LSan false positive in the test fixture (global Config
+          # object in autotile_parser_test.cpp / tile_set_parser_test.cpp),
+          # not a real leak — all gtest assertions pass. halt_on_error=1
+          # keeps real ASan/UBSan findings fatal; only the end-of-run LSan
+          # scan is suppressed. Mirrors the sanitizers-e2e job below.
+          ASAN_OPTIONS: detect_leaks=0:halt_on_error=1
+          UBSAN_OPTIONS: halt_on_error=1
         run: |
           ctest --output-on-failure -E 'test_sexp'
 
