@@ -405,7 +405,7 @@ make_unit_test(AnchorPointTest SOURCE anchor_point_test.cpp anchor_point_test_st
 # get_point_at_length/_by_length). The draw_curve() rendering path is not
 # exercised. glm for Vector; logging stubbed (bezier_test_stub.cpp).
 make_unit_test(BezierTest SOURCE bezier_test.cpp bezier_test_stub.cpp
-  LIBRARIES SDL3::SDL3 glm
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
   EXTERNAL math/bezier.cpp video/color.cpp
   INCLUDES ${CMAKE_BINARY_DIR})

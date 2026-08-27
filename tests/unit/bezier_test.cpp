@@ -19,7 +19,7 @@
 // collinear/linear case, midpoint symmetry, arc-length approximation, and
 // get_point_at_length. Logging stubbed (bezier_test_stub.cpp).
 
-#include "st_assert.hpp"
+#include <gtest/gtest.h>
 #include "math/bezier.hpp"
 #include "math/vector.hpp"
 
