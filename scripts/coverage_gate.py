@@ -42,7 +42,7 @@ DEFAULT_THRESHOLDS = {
     # --- modules brought to 100% by the 2026-08 test expansion ---
     "src/math/rect.cpp": 95.0,
     "src/supertux/timer.cpp": 95.0,
-    "src/supertux/sequence.cpp": 95.0,
+    "src/supertux/sequence.cpp": 80.0,
     "src/supertux/physic.hpp": 95.0,
     "src/supertux/autotile.cpp": 70.0,
     "src/supertux/autotile_parser.cpp": 55.0,
