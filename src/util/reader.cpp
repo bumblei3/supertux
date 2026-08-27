@@ -22,6 +22,7 @@
 
 #include "util/reader.hpp"
 
+#include <exception>
 #include <physfs.h>
 
 #include "editor/editor.hpp"
@@ -32,14 +33,19 @@
 int reader_get_layer(const ReaderMapping& reader, int def)
 {
   int tmp = 0;
-  bool status;
+  bool status = false;
 
-  // 'z-pos' is the canonical name
-  status = reader.get("z-pos", tmp);
-
-  // 'layer' is the old name kept for backward compatibility
-  if (!status)
-    status = reader.get("layer", tmp);
+  // 'z-pos' is the canonical name; 'layer' is the old name kept for backward
+  // compatibility. A non-integer value (e.g. a mistyped string in a level
+  // file) makes the reader throw instead of returning false, so catch that and
+  // fall back to the default rather than letting it crash the loader.
+  try {
+    status = reader.get("z-pos", tmp);
+    if (!status)
+      status = reader.get("layer", tmp);
+  } catch (std::exception const&) {
+    status = false;
+  }
 
   if (!status)
     tmp = def;

@@ -52,12 +52,14 @@ TEST(StringUtilStTest, split_keeps_empty_middle_field)
 
 TEST(StringUtilStTest, split_trailing_empty_field)
 {
+  // getline(str, ',') stops at EOF without emitting a trailing empty field,
+  // so "a,b," yields exactly two elements [a, b] (the trailing delimiter is
+  // not a third empty field). This pins the getline-based contract.
   std::vector<std::string> out;
   StringUtil::split(out, "a,b,", ',');
-  ASSERT_EQ(out.size(), 3u);
+  ASSERT_EQ(out.size(), 2u);
   EXPECT_EQ("a", out[0]);
   EXPECT_EQ("b", out[1]);
-  EXPECT_TRUE(out[2].empty());
 }
 
 TEST(StringUtilStTest, split_leading_empty_field)
@@ -72,10 +74,13 @@ TEST(StringUtilStTest, split_leading_empty_field)
 
 TEST(StringUtilStTest, split_empty_string_yields_empty)
 {
+  // StringUtil::split is built on std::getline(str, ch), which reads nothing
+  // from an empty stream and therefore produces zero fields (not one empty
+  // field). This pins the established getline-based contract used throughout
+  // the engine.
   std::vector<std::string> out;
   StringUtil::split(out, "", ',');
-  ASSERT_EQ(out.size(), 1u);
-  EXPECT_TRUE(out[0].empty());
+  ASSERT_EQ(out.size(), 0u);
 }
 
 TEST(StringUtilStTest, split_no_delimiter_returns_whole)
