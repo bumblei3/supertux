@@ -97,6 +97,14 @@ TEST(ReaderGetLayerTest, string_z_pos_falls_back_to_default)
   EXPECT_EQ(99, get_layer("   (z-pos \"abc\")\n", 99));
 }
 
+TEST(ReaderGetLayerTest, string_layer_falls_back_to_default)
+{
+  // The legacy 'layer' name also throws on a non-integer value; the same
+  // try/catch guard must catch it and fall back to the default (regression
+  // guard for the reader_get_layer() robustness fix).
+  EXPECT_EQ(7, get_layer("   (layer \"xyz\")\n", 7));
+}
+
 TEST(ReaderGetLayerTest, negative_layer_is_preserved)
 {
   // Legacy 'layer' field can also be negative.
