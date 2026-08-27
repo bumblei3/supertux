@@ -126,6 +126,12 @@ make_unit_test(UniqueNameTest SOURCE unique_name_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL util/unique_name.cpp)
 
+# FileWatcher: util/file_watcher.cpp — mtime probing + poll callback contract.
+# Engine-free: only <sys/stat.h> + std containers, links headless with no stub.
+make_unit_test(FileWatcherTest SOURCE file_watcher_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL util/file_watcher.cpp)
+
 # Reader: parses the lisp-style config format. Pulls in reader_document/
 # reader_mapping/reader_collection plus the tinygettext and sexp-cpp libraries
 # (both already built as static libs). The engine logging/filesystem layer is
