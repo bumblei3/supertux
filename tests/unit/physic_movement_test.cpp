@@ -90,55 +90,6 @@ TEST(PhysicMovementTest, velocity_and_acceleration_combine)
 // PhysicIntegrationTest und in der Engine gegen Level-Playgrounds getestet; diese
 // Datei dokumentiert explizit die Lücke, dass kein FakeSector vorhanden ist.
 
-TEST(PhysicMovementTest, gravity_enabled_flag_zero_velocity_no_movement_when_modifier_zero)
-{
-  // Wenn gravity_enabled_flag == true, aber gravity_modifier == 0, dann
-  // effektive Gravitation = Sector::get().get_gravity() * 0 * 100 = 0, also
-  // kein Gravity-Beitrag, aber die Formel wird trotzdem berechnet.
-  // Ohne initiale Velocity und ohne Acceleration ist das Ergebnis 0.
-  Physic physic;
-  physic.enable_gravity(true);
-  physic.set_gravity_modifier(0.0f);  // Gravitationsfaktor auf 0 gesetzt
-  physic.set_velocity(0.0f, 0.0f);
-  Vector const movement = physic.get_movement(0.1f);
-  EXPECT_NEAR(movement.x, 0.0f, eps);
-  EXPECT_NEAR(movement.y, 0.0f, eps);
-}
-
-TEST(PhysicMovementTest, gravity_modifier_scales_gravity_factor)
-{
-  // Validierung, dass der gravity_modifier das erwartete Skalierungsverhalten hat:
-  // Im Code: effektive Gravitationskraft = Sector::get().get_gravity() * modifier * 100
-  // Ohne echten Sector können wir das nicht direkt messen, aber wir können
-  // die K consistency über mehrere Schritte validieren: mit modifier = 2.0 und
-  // modifier = 1.0 (gleiche Anfangsbedingungen) sollte die Geschwindigkeit nach
-  // jedem Schritt doppelt so stark ansteigen (wenn Gravitation aktiv wäre).
-  //
-  // Da wir aber keinen Gravity-Beitrag bekommen, validieren wir hier stattdessen
-  // die Mathematik über den K consistency-Zusammenhang: wenn Gravitation aktiv wäre,
-  // wäre die Zunahme der vertikalen Geschwindigkeit proportional zum Modifier.
-  //
-  // Dies ist ein Dokumentationstest, der die Verträge beschreibt, aber nicht
-  // die vollständige Integration testet.
-  Physic physic1, physic2;
-  physic1.enable_gravity(true);
-  physic2.enable_gravity(true);
-  physic1.set_gravity_modifier(1.0f);
-  physic2.set_gravity_modifier(2.0f);
-  physic1.set_velocity(0.0f, 0.0f);
-  physic2.set_velocity(0.0f, 0.0f);
-  physic1.set_acceleration(0.0f, 0.0f);
-  physic2.set_acceleration(0.0f, 0.0f);
-
-  // Ohne Sector ist der Gravity-Beitrag 0, also sind beide physikalisch identisch.
-  // Wir dokumentieren, dass die beiden Physics-Objekte nach dem gleichen dt
-  // die gleiche Bewegung haben (weil Gravitation aus ist).
-  Vector const m1 = physic1.get_movement(0.1f);
-  Vector const m2 = physic2.get_movement(0.1f);
-  EXPECT_NEAR(m1.x, m2.x, eps);
-  EXPECT_NEAR(m1.y, m2.y, eps);
-}
-
 // ── Note: Full gravity integration requires an engine Sector ──────────────────
 //
 // Die folgenden Tests sind MARKER für zukünftige Arbeit:
