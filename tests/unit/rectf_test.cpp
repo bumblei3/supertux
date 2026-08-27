@@ -24,6 +24,7 @@
 #include <gtest/gtest.h>
 
 #include "math/rectf.hpp"
+#include "math/rect.hpp"
 
 TEST(RectfTest, contains_point)
 {
@@ -192,4 +193,41 @@ TEST(RectfTest, distance_rect_to_rect_default_anchor)
   Rectf b(20.0f, 0.0f, 30.0f, 10.0f);  // middle (25,5)
   // Distance between middles: sqrt((25-5)^2 + (5-5)^2) = 20.
   EXPECT_NEAR(a.distance(b), 20.0f, 1e-4f);
+}
+
+// --- .cpp implementation coverage (rectf.cpp) ---------------------------
+// These exercise the three functions defined in src/math/rectf.cpp, which
+// the header-only API tests above do not reach.
+
+TEST(RectfTest, ctor_from_int_rect)
+{
+  // Rectf(const Rect&) converts integer edges to floats.
+  Rect ri(10, 20, 110, 220);  // left, top, right, bottom
+  Rectf rf(ri);
+  EXPECT_FLOAT_EQ(rf.get_left(), 10.0f);
+  EXPECT_FLOAT_EQ(rf.get_top(), 20.0f);
+  EXPECT_FLOAT_EQ(rf.get_right(), 110.0f);
+  EXPECT_FLOAT_EQ(rf.get_bottom(), 220.0f);
+  EXPECT_FLOAT_EQ(rf.get_width(), 100.0f);
+  EXPECT_FLOAT_EQ(rf.get_height(), 200.0f);
+}
+
+TEST(RectfTest, to_rect_rounds_down)
+{
+  // to_rect() truncates float edges to ints.
+  Rectf rf(10.5f, 20.9f, 110.4f, 220.1f);
+  Rect ri = rf.to_rect();
+  EXPECT_EQ(ri.left, 10);
+  EXPECT_EQ(ri.top, 20);
+  EXPECT_EQ(ri.right, 110);
+  EXPECT_EQ(ri.bottom, 220);
+}
+
+TEST(RectfTest, stream_operator)
+{
+  // operator<< prints "Rectf(l, t, r, b)".
+  Rectf rf(1.0f, 2.0f, 3.0f, 4.0f);
+  std::ostringstream os;
+  os << rf;
+  EXPECT_EQ(os.str(), "Rectf(1, 2, 3, 4)");
 }
