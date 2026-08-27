@@ -177,7 +177,15 @@ jobs:
           # keeps real ASan/UBSan findings fatal; only the end-of-run LSan
           # scan is suppressed. Mirrors the sanitizers-e2e job below.
           ASAN_OPTIONS: detect_leaks=0:halt_on_error=1
-          UBSAN_OPTIONS: halt_on_error=1
+          # enum=0: UBSan's strict enum check flags loading a deliberately
+          # invalid enum value (e.g. getEasingByName(static_cast<EasingMode>(-1))
+          # in easing_test.cpp:215, or an unknown Sequence in timer_test.cpp)
+          # as UB. These values are intentional — the code has a `default:`
+          # fallback (easing.cpp:380 returns LinearInterpolation) and the
+          # tests assert exactly that fallback. enum=0 suppresses the
+          # overzealous load check; halt_on_error=1 keeps every other
+          # UBSan finding fatal.
+          UBSAN_OPTIONS: halt_on_error=1:enum=0
         run: |
           ctest --output-on-failure -E 'test_sexp'
 
