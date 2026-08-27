@@ -517,7 +517,8 @@ make_unit_test(CollisionMathTest SOURCE collision_math_test.cpp
 # ostream Writer and parses back via ReaderIterator (the same path the
 # production parser uses). Reuses writer_test_stub.cpp's logging stubs.
 make_unit_test(GameObjectChangeTest SOURCE game_object_change_test.cpp gameobject_change_test_stub.cpp
-  LIBRARIES "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
+  GTEST
+  LIBRARIES SDL3::SDL3 tinygettext sexp
   EXTERNAL supertux/game_object_change.cpp util/writer.cpp util/log.cpp
            video/color.cpp supertux/globals.cpp util/gettext.cpp
            util/reader_document.cpp util/reader_mapping.cpp
