@@ -53,16 +53,14 @@ TEST(UIDTest, copy)
 
 TEST(UIDTest, unique)
 {
-  if ((false)) {
-    UIDGenerator generator;
-    std::unordered_set<UID> uids;
+  UIDGenerator generator;
+  std::unordered_set<UID> uids;
 
-    for(int i = 0; i < 0xffffff; ++i)
-    {
-      UID uid = generator.next();
-      ASSERT_TRUE(uids.find(uid) == uids.end());
-      uids.insert(uid);
-    }
+  for(int i = 0; i < 0xffffff; ++i)
+  {
+    UID uid = generator.next();
+    ASSERT_TRUE(uids.find(uid) == uids.end());
+    uids.insert(uid);
   }
 }
 

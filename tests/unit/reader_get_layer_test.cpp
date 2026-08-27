@@ -75,4 +75,40 @@ TEST(ReaderGetLayerTest, default_below_limit_is_not_clamped)
   EXPECT_EQ(LAYER_GUI - 200, get_layer("   (nothing 0)\n", LAYER_GUI - 200));
 }
 
+TEST(ReaderGetLayerTest, negative_z_pos_is_preserved)
+{
+  // Negative z-pos values (e.g. background layers) are not clamped.
+  EXPECT_EQ(LAYER_BACKGROUND0, get_layer("   (z-pos -300)\n", 0));
+  EXPECT_EQ(LAYER_BACKGROUND1, get_layer("   (z-pos -200)\n", 0));
+}
+
+TEST(ReaderGetLayerTest, z_pos_and_layer_same_value_z_pos_wins)
+{
+  // When both fields are present with the same value, z-pos still takes
+  // precedence (the earlier test already verifies preference, this pins
+  // the edge case where the values are identical).
+  EXPECT_EQ(10, get_layer("   (z-pos 10)\n   (layer 10)\n", 0));
+}
+
+TEST(ReaderGetLayerTest, string_z_pos_falls_back_to_default)
+{
+  // A non-integer z-pos value causes get<int> to fail, so we fall back to
+  // the default.
+  EXPECT_EQ(99, get_layer("   (z-pos \"abc\")\n", 99));
+}
+
+TEST(ReaderGetLayerTest, string_layer_falls_back_to_default)
+{
+  // The legacy 'layer' name also throws on a non-integer value; the same
+  // try/catch guard must catch it and fall back to the default (regression
+  // guard for the reader_get_layer() robustness fix).
+  EXPECT_EQ(7, get_layer("   (layer \"xyz\")\n", 7));
+}
+
+TEST(ReaderGetLayerTest, negative_layer_is_preserved)
+{
+  // Legacy 'layer' field can also be negative.
+  EXPECT_EQ(-50, get_layer("   (layer -50)\n", 0));
+}
+
 /* EOF */

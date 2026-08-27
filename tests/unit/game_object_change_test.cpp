@@ -20,7 +20,8 @@
 // ostream-Writer / ReaderDocument::from_string setup as WriterTest; logging
 // is stubbed (writer_test_stub.cpp).
 
-#include "st_assert.hpp"
+#include <gtest/gtest.h>
+
 #include "supertux/game_object_change.hpp"
 #include "util/reader_document.hpp"
 #include "util/reader_mapping.hpp"
@@ -72,95 +73,201 @@ GameObjectChangeSet make_sample_set()
 
 } // namespace
 
-int main(void)
+// ── Constructor field storage ──────────────────────────────────────────────────
+
+TEST(GameObjectChangeTest, ctor_stores_all_fields)
 {
-  // --- constructor stores all fields -------------------------------------
+  UID uid; uid = 7u;
+  GameObjectChange c("name-x", uid, "old", "new", GameObjectChange::ACTION_MODIFY);
+  EXPECT_EQ(c.name, "name-x");
+  EXPECT_TRUE(static_cast<bool>(c.uid));
+  EXPECT_EQ(c.data, "old");
+  EXPECT_EQ(c.new_data, "new");
+  EXPECT_EQ(c.action, GameObjectChange::ACTION_MODIFY);
+}
+
+TEST(GameObjectChangeTest, create_action_stores_fields)
+{
+  UID uid; uid = 1u;
+  GameObjectChange c("badguy", uid, "", "<pos x=\"1\" y=\"2\"/>", GameObjectChange::ACTION_CREATE);
+  EXPECT_EQ(c.name, "badguy");
+  EXPECT_TRUE(static_cast<bool>(c.uid));
+  EXPECT_EQ(c.data, "");
+  EXPECT_EQ(c.new_data, "<pos x=\"1\" y=\"2\"/>");
+  EXPECT_EQ(c.action, GameObjectChange::ACTION_CREATE);
+}
+
+TEST(GameObjectChangeTest, delete_action_stores_fields)
+{
+  UID uid; uid = 2u;
+  GameObjectChange c("platform", uid, "<path/>", "", GameObjectChange::ACTION_DELETE);
+  EXPECT_EQ(c.name, "platform");
+  EXPECT_EQ(c.data, "<path/>");
+  EXPECT_EQ(c.new_data, "");
+  EXPECT_EQ(c.action, GameObjectChange::ACTION_DELETE);
+}
+
+// ── Round-trip through serialize / parse ───────────────────────────────────────
+
+TEST(GameObjectChangeTest, three_changes_roundtrip)
+{
+  const std::string text = serialize_set(make_sample_set());
+  const std::vector<GameObjectChange> parsed = parse_changes(text);
+  ASSERT_EQ(parsed.size(), 3);
+
+  EXPECT_EQ(parsed[0].name, "tilemap");
+  EXPECT_EQ(parsed[0].action, GameObjectChange::ACTION_MODIFY);
+  EXPECT_EQ(parsed[0].data, "<old/>");
+
+  EXPECT_EQ(parsed[1].name, "badguy");
+  EXPECT_EQ(parsed[1].action, GameObjectChange::ACTION_CREATE);
+  EXPECT_EQ(parsed[1].data, "");
+
+  EXPECT_EQ(parsed[2].name, "platform");
+  EXPECT_EQ(parsed[2].action, GameObjectChange::ACTION_DELETE);
+  EXPECT_EQ(parsed[2].new_data, "");
+}
+
+TEST(GameObjectChangeTest, new_data_not_serialized)
+{
+  // GameObjectChange::save() writes name/uid/data/action but never new_data,
+  // so a parsed change always has empty new_data. Documented behaviour of the
+  // undo format; if this ever changes, update this assertion deliberately.
+  const std::string text = serialize_set(make_sample_set());
+  const std::vector<GameObjectChange> parsed = parse_changes(text);
+  for (size_t i = 0; i < parsed.size(); ++i)
+    EXPECT_TRUE(parsed[i].new_data.empty());
+}
+
+TEST(GameObjectChangeTest, uid_survives_roundtrip)
+{
+  UID uid; uid = 42u;
+  std::ostringstream out;
   {
-    UID uid;
-    uid = 7u;
-    GameObjectChange c("name-x", uid, "old", "new", GameObjectChange::ACTION_MODIFY);
-    ST_ASSERT("ctor name", c.name == "name-x");
-    ST_ASSERT("ctor uid valid", static_cast<bool>(c.uid));
-    ST_ASSERT("ctor data", c.data == "old");
-    ST_ASSERT("ctor new_data", c.new_data == "new");
-    ST_ASSERT("ctor action", c.action == GameObjectChange::ACTION_MODIFY);
+    Writer writer(out);
+    writer.start_list("c");
+    writer.start_list("object-change");
+    GameObjectChange("obj", uid, "", "", GameObjectChange::ACTION_MODIFY).save(writer);
+    writer.end_list("object-change");
+    writer.end_list("c");
   }
+  const std::vector<GameObjectChange> parsed = parse_changes(out.str());
+  ASSERT_EQ(parsed.size(), 1);
+  EXPECT_TRUE(static_cast<bool>(parsed[0].uid));
+  EXPECT_EQ(parsed[0].uid.get_value(), 42u);
+}
 
-  // --- save -> parse round-trip of all three actions ----------------------
+TEST(GameObjectChangeTest, uid_zero_survives_roundtrip)
+{
+  UID uid; uid = 0u;
+  std::ostringstream out;
   {
-    const std::string text = serialize_set(make_sample_set());
-    const std::vector<GameObjectChange> parsed = parse_changes(text);
-
-    ST_ASSERT("three changes parsed", parsed.size() == 3);
-
-    ST_ASSERT("[0] name", parsed[0].name == "tilemap");
-    ST_ASSERT("[0] action", parsed[0].action == GameObjectChange::ACTION_MODIFY);
-    ST_ASSERT("[0] old data", parsed[0].data == "<old/>");
-
-    ST_ASSERT("[1] name", parsed[1].name == "badguy");
-    ST_ASSERT("[1] action create", parsed[1].action == GameObjectChange::ACTION_CREATE);
-    ST_ASSERT("[1] empty old data", parsed[1].data == "");
-
-    ST_ASSERT("[2] name", parsed[2].name == "platform");
-    ST_ASSERT("[2] action delete", parsed[2].action == GameObjectChange::ACTION_DELETE);
-    ST_ASSERT("[2] empty new data", parsed[2].new_data == "");
+    Writer writer(out);
+    writer.start_list("c");
+    writer.start_list("object-change");
+    GameObjectChange("zero", uid, "old", "new", GameObjectChange::ACTION_MODIFY).save(writer);
+    writer.end_list("object-change");
+    writer.end_list("c");
   }
+  const std::vector<GameObjectChange> parsed = parse_changes(out.str());
+  ASSERT_EQ(parsed.size(), 1);
+  EXPECT_EQ(parsed[0].name, "zero");
+  EXPECT_EQ(parsed[0].uid.get_value(), 0u);
+  EXPECT_EQ(parsed[0].action, GameObjectChange::ACTION_MODIFY);
+}
 
-  // --- REAL SEMANTICS: new_data is NOT serialized --------------------------
-  // GameObjectChange::save() writes name/uid/data/action but never
-  // new_data, so a parsed change always has an empty new_data regardless
-  // of what was stored in memory. Documented behaviour of the undo format;
-  // if this ever changes, update this assertion deliberately.
-  {
-    const std::string text = serialize_set(make_sample_set());
-    const std::vector<GameObjectChange> parsed = parse_changes(text);
-    for (size_t i = 0; i < parsed.size(); ++i)
-      ST_ASSERT("new_data not serialized", parsed[i].new_data.empty());
-  }
-
-  // --- UID survives the save/load cycle -----------------------------------
-  {
-    UID uid;
-    uid = 42u;
+TEST(GameObjectChangeTest, uid_value_roundtrip)
+{
+  // UID serializes as its integer value; we exercise a few distinct non-zero
+  // values. (UID=0 serializes as empty string, which Reader cannot parse back —
+  // that is a known format limitation, not a test target.)
+  for (uint32_t v : {1u, 100u, 12345u}) {
+    UID uid; uid = v;
     std::ostringstream out;
     {
       Writer writer(out);
       writer.start_list("c");
-      // Wrap in an "object-change" list, exactly like
-      // GameObjectChangeSet::save() does.
       writer.start_list("object-change");
-      GameObjectChange("obj", uid, "", "", GameObjectChange::ACTION_MODIFY).save(writer);
+      GameObjectChange("x", uid, "d", "nd",
+                        GameObjectChange::ACTION_MODIFY).save(writer);
       writer.end_list("object-change");
       writer.end_list("c");
     }
     const std::vector<GameObjectChange> parsed = parse_changes(out.str());
-    ST_ASSERT("one change parsed", parsed.size() == 1);
-    ST_ASSERT("uid valid after roundtrip", static_cast<bool>(parsed[0].uid));
-    ST_ASSERT("uid value preserved", parsed[0].uid.get_value() == 42u);
+    ASSERT_EQ(parsed.size(), 1);
+    EXPECT_EQ(parsed[0].uid.get_value(), v) << "failed for v=" << v;
   }
-
-  // --- unknown keys are skipped by the iterator protocol ------------------
-  // (mirrors what GameObjectChangeSet's parser filters out)
-  {
-    std::string text =
-      "(changes\n"
-      "  (junk-key (whatever 1))\n"
-      "  (object-change (name \"a\") (action 0))\n"
-      ")\n";
-    auto doc = ReaderDocument::from_string(text);
-    ReaderMapping root = doc.get_root().get_mapping();
-    size_t total = 0, matched = 0;
-    auto iter = root.get_iter();
-    while (iter.next())
-    {
-      ++total;
-      if (iter.get_key() == "object-change")
-        ++matched;
-    }
-    ST_ASSERT("both keys enumerated", total == 2);
-    ST_ASSERT("only object-change matched", matched == 1);
-  }
-
-  std::cout << "game_object_change_test: all assertions passed" << std::endl;
-  return 0;
 }
+
+// ── Unknown-key filtering ───────────────────────────────────────────────────────
+
+TEST(GameObjectChangeTest, unknown_keys_skipped_by_iterator)
+{
+  std::string text =
+    "(changes\n"
+    "  (junk-key (whatever 1))\n"
+    "  (object-change (name \"a\") (action 0))\n"
+    ")\n";
+  auto doc = ReaderDocument::from_string(text);
+  ReaderMapping root = doc.get_root().get_mapping();
+  size_t total = 0, matched = 0;
+  auto iter = root.get_iter();
+  while (iter.next())
+  {
+    ++total;
+    if (iter.get_key() == "object-change")
+      ++matched;
+  }
+  EXPECT_EQ(total, 2);
+  EXPECT_EQ(matched, 1);
+}
+
+// ── Empty-set round-trip ────────────────────────────────────────────────────────
+
+TEST(GameObjectChangeTest, empty_set_roundtrip)
+{
+  UID uid;
+  GameObjectChangeSet empty(uid, std::vector<GameObjectChange>{});
+  const std::string text = serialize_set(empty);
+  const std::vector<GameObjectChange> parsed = parse_changes(text);
+  EXPECT_TRUE(parsed.empty());
+}
+
+// ── Single change ───────────────────────────────────────────────────────────────
+
+TEST(GameObjectChangeTest, single_change_roundtrip)
+{
+  UID uid; uid = 5u;
+  GameObjectChangeSet set(UID(),
+    {GameObjectChange("single", uid, "data", "new_data",
+                      GameObjectChange::ACTION_MODIFY)});
+  const std::string text = serialize_set(set);
+  const std::vector<GameObjectChange> parsed = parse_changes(text);
+  ASSERT_EQ(parsed.size(), 1);
+  EXPECT_EQ(parsed[0].name, "single");
+  EXPECT_EQ(parsed[0].action, GameObjectChange::ACTION_MODIFY);
+  EXPECT_EQ(parsed[0].data, "data");
+  EXPECT_TRUE(parsed[0].new_data.empty());
+}
+
+// ── UID get_value edge cases ────────────────────────────────────────────────────
+
+TEST(GameObjectChangeTest, uid_one_roundtrip)
+{
+  UID uid; uid = 1u;
+  std::ostringstream out;
+  {
+    Writer writer(out);
+    writer.start_list("c");
+    writer.start_list("object-change");
+    GameObjectChange("one", uid, "d", "nd",
+                      GameObjectChange::ACTION_MODIFY).save(writer);
+    writer.end_list("object-change");
+    writer.end_list("c");
+  }
+  const std::vector<GameObjectChange> parsed = parse_changes(out.str());
+  ASSERT_EQ(parsed.size(), 1);
+  EXPECT_EQ(parsed[0].uid.get_value(), 1u);
+}
+
+/* EOF */

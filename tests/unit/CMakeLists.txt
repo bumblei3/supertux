@@ -112,7 +112,7 @@ make_unit_test(VersionTest SOURCE version_test.cpp
 # references, keeping this a self-contained logic test.
 make_unit_test(UIDTest SOURCE uid_test.cpp uid_test_stub.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
-  EXTERNAL util/uid_generator.cpp)
+  EXTERNAL util/uid_generator.cpp util/uid.cpp)
 
 # UIDGenerator composition tests: magic/id packing, per-generator magic
 # distinctness, consecutive-id increments. Same stub/link setup as UIDTest.
@@ -125,6 +125,12 @@ make_unit_test(UIDGeneratorTest SOURCE uid_generator_test.cpp uid_test_stub.cpp
 make_unit_test(UniqueNameTest SOURCE unique_name_test.cpp
   LIBRARIES GTest::gtest GTest::gtest_main
   EXTERNAL util/unique_name.cpp)
+
+# FileWatcher: util/file_watcher.cpp — mtime probing + poll callback contract.
+# Engine-free: only <sys/stat.h> + std containers, links headless with no stub.
+make_unit_test(FileWatcherTest SOURCE file_watcher_test.cpp
+  LIBRARIES GTest::gtest GTest::gtest_main
+  EXTERNAL util/file_watcher.cpp)
 
 # Reader: parses the lisp-style config format. Pulls in reader_document/
 # reader_mapping/reader_collection plus the tinygettext and sexp-cpp libraries
@@ -221,12 +227,14 @@ make_unit_test(EasingTest SOURCE easing_test.cpp
 # Dependency-free coverage for string_util (st_assert harness, no gtest/SDL).
 # Covers the replace_all empty-needle infinite-loop fix.
 make_unit_test(StringUtilStTest SOURCE string_util_st_test.cpp
+  GTEST
   EXTERNAL util/string_util.cpp)
 
 # Dependency-free coverage for DynamicScopedRef (header-only). Re-enables the
 # test the original author had left disabled; the ST_ASSERT presence checks use
 # static_cast<bool>() because DynamicScopedRef's operator bool() is explicit.
-make_unit_test(DynamicScopedTest SOURCE dynamic_scoped_test.cpp)
+make_unit_test(DynamicScopedTest SOURCE dynamic_scoped_test.cpp
+  GTEST)
 
 # FadeHelperTest: util/fade_helper.cpp (timed interpolation, bound value,
 # completion clamping). Only needs math/easing.
@@ -326,6 +334,7 @@ make_unit_test(TileSetTest SOURCE tile_set_test.cpp tile_test_stub.cpp autotile_
 # Dependency-free coverage for LineIterator (util/line_iterator.hpp): newline
 # splitting, trailing-newline handling, interior empty lines, exhaustion.
 make_unit_test(LineIteratorTest SOURCE line_iterator_test.cpp
+  GTEST
   EXTERNAL util/line_iterator.cpp)
 
 # TileSetParserTest: supertux/tile_set_parser.cpp — end-to-end tileset parsing
@@ -360,6 +369,7 @@ make_unit_test(TileSetParserTest SOURCE tile_set_parser_test.cpp autotile_parser
 # malformed-sequence handling, and the 4-byte off-by-one regression. Logging
 # is stubbed (utf8_iterator_test_stub.cpp) to avoid the engine console layer.
 make_unit_test(UTF8IteratorTest SOURCE utf8_iterator_test.cpp utf8_iterator_test_stub.cpp
+  GTEST
   EXTERNAL util/utf8_iterator.cpp)
 
 # Coverage for ColorOKLCh (util/colorspace_oklab.hpp): sRGB->OKLab LCh
@@ -367,13 +377,14 @@ make_unit_test(UTF8IteratorTest SOURCE utf8_iterator_test.cpp utf8_iterator_test
 # monotonicity, and the modified-lightness estimate. Links video/color.cpp
 # (needs SDL3 via color.hpp) with logging stubbed.
 make_unit_test(ColorspaceOklabTest SOURCE colorspace_oklab_test.cpp colorspace_oklab_test_stub.cpp
-  LIBRARIES SDL3::SDL3
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3
   EXTERNAL util/colorspace_oklab.cpp video/color.cpp)
 
 # Coverage for video/color.hpp string (de)serialization: deserialize_from_hex,
 # deserialize_from_rgb, and the serialize/deserialize round-trips (valid
 # parsing, out-of-range rejection, malformed-input handling). Logging stubbed.
 make_unit_test(ColorParseTest SOURCE color_parse_test.cpp color_parse_test_stub.cpp
+  GTEST
   LIBRARIES SDL3::SDL3
   EXTERNAL video/color.cpp)
 
@@ -382,6 +393,7 @@ make_unit_test(ColorParseTest SOURCE color_parse_test.cpp color_parse_test_stub.
 # collision.cpp pulls in math/aatriangle.hpp + supertux/physic.hpp (both
 # header-only); logging stubbed (collision_geom_test_stub.cpp).
 make_unit_test(CollisionGeomTest SOURCE collision_geom_test.cpp collision_geom_test_stub.cpp
+  GTEST
   EXTERNAL collision/collision.cpp
   INCLUDES ${CMAKE_BINARY_DIR})
 
@@ -390,6 +402,7 @@ make_unit_test(CollisionGeomTest SOURCE collision_geom_test.cpp collision_geom_t
 # round-trips. gettext/logging stubbed (anchor_point_test_stub.cpp); tinygettext
 # include path is needed because gettext.hpp pulls in its header.
 make_unit_test(AnchorPointTest SOURCE anchor_point_test.cpp anchor_point_test_stub.cpp
+  GTEST
   LIBRARIES tinygettext
   EXTERNAL math/anchor_point.cpp
   INCLUDES ${SUPERTUX_SOURCE_DIR}/external/tinygettext/include ${CMAKE_BINARY_DIR})
@@ -398,7 +411,7 @@ make_unit_test(AnchorPointTest SOURCE anchor_point_test.cpp anchor_point_test_st
 # get_point_at_length/_by_length). The draw_curve() rendering path is not
 # exercised. glm for Vector; logging stubbed (bezier_test_stub.cpp).
 make_unit_test(BezierTest SOURCE bezier_test.cpp bezier_test_stub.cpp
-  LIBRARIES SDL3::SDL3 glm
+  LIBRARIES GTest::gtest GTest::gtest_main SDL3::SDL3 glm
   DEFINITIONS GLM_ENABLE_EXPERIMENTAL
   EXTERNAL math/bezier.cpp video/color.cpp
   INCLUDES ${CMAKE_BINARY_DIR})
@@ -510,7 +523,8 @@ make_unit_test(CollisionMathTest SOURCE collision_math_test.cpp
 # ostream Writer and parses back via ReaderIterator (the same path the
 # production parser uses). Reuses writer_test_stub.cpp's logging stubs.
 make_unit_test(GameObjectChangeTest SOURCE game_object_change_test.cpp gameobject_change_test_stub.cpp
-  LIBRARIES "$<LINK_GROUP:RESCAN,SDL3::SDL3;tinygettext;sexp>"
+  GTEST
+  LIBRARIES SDL3::SDL3 tinygettext sexp
   EXTERNAL supertux/game_object_change.cpp util/writer.cpp util/log.cpp
            video/color.cpp supertux/globals.cpp util/gettext.cpp
            util/reader_document.cpp util/reader_mapping.cpp

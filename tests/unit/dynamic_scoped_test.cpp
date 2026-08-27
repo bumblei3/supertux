@@ -18,45 +18,62 @@
 // Uses the st_assert harness; the header is self-contained so no extra
 // engine linkage is required. DynamicScopedRef only exposes an explicit
 // operator bool(), hence the static_cast<bool>(...) around the presence checks.
+//
+// Converted from ST_ASSERT harness to GoogleTest for better failure diagnostics.
 
-#include "st_assert.hpp"
+#include <gtest/gtest.h>
+
 #include "util/dynamic_scoped_ref.hpp"
 
 DynamicScopedRef<const int> d_value;
 
-int main(void)
+TEST(DynamicScopedRefTest, guard1_binding)
+{
+  int v1 = 1;
+  auto guard1 = d_value.bind(v1);
+
+  EXPECT_TRUE(static_cast<bool>(d_value));
+  EXPECT_EQ(*d_value, 1);
+  EXPECT_EQ(*d_value.get(), 1);
+}
+
+TEST(DynamicScopedRefTest, nested_guard2_binding)
 {
   int v1 = 1;
   int v2 = 2;
-  int v3 = 3;
+
+  auto guard1 = d_value.bind(v1);
+  EXPECT_EQ(*d_value, 1);
 
   {
-    auto guard1 = d_value.bind(v1);
+    auto guard2 = d_value.bind(v2);
+    EXPECT_TRUE(static_cast<bool>(d_value));
+    EXPECT_EQ(*d_value, 2);
+    EXPECT_EQ(*d_value.get(), 2);
 
-    ST_ASSERT("guard1 is bound test", static_cast<bool>(d_value));
-    ST_ASSERT("v1 access check", *d_value == 1);
-    ST_ASSERT("check function for v1", *d_value.get() == 1);
+    int v3 = 3;
     {
-      auto guard2 = d_value.bind(v2);
-
-      ST_ASSERT("guard2 is bound test", static_cast<bool>(d_value));
-      ST_ASSERT("v2 access check", *d_value == 2);
-      ST_ASSERT("check function for v2", *d_value.get() == 2);
-      {
-        auto guard3 = d_value.bind(v3);
-        ST_ASSERT("v3 access check", *d_value == 3);
-        ST_ASSERT("check function for v3", *d_value.get() == 3);
-      }
-      ST_ASSERT("guard3 scope check", static_cast<bool>(d_value));
-      ST_ASSERT("v2 access check again", *d_value == 2);
-      ST_ASSERT("check function for v2 again", *d_value.get() == 2);
+      auto guard3 = d_value.bind(v3);
+      EXPECT_EQ(*d_value, 3);
+      EXPECT_EQ(*d_value.get(), 3);
     }
-    ST_ASSERT("guard2 scope check", static_cast<bool>(d_value));
-    ST_ASSERT("v1 access check again", *d_value == 1);
-    ST_ASSERT("check function for v1 again", *d_value.get() == 1);
+
+    EXPECT_TRUE(static_cast<bool>(d_value));
+    EXPECT_EQ(*d_value, 2);
+    EXPECT_EQ(*d_value.get(), 2);
   }
 
-  ST_ASSERT("see if the guards actually work (false check)", !d_value);
+  EXPECT_TRUE(static_cast<bool>(d_value));
+  EXPECT_EQ(*d_value, 1);
+  EXPECT_EQ(*d_value.get(), 1);
 }
 
-/* EOF */
+TEST(DynamicScopedRefTest, unbind_after_all_guards)
+{
+  int v1 = 1;
+  {
+    auto guard1 = d_value.bind(v1);
+    // empty
+  }
+  EXPECT_FALSE(d_value);
+}

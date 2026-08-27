@@ -17,29 +17,94 @@
 // Coverage for util/string_util.hpp using the st_assert.hpp harness (no gtest/glm/SDL).
 // Focuses on replace_all edge cases (including the empty-needle infinite loop fix)
 // and split behaviour not exercised by the existing string_util_test.cpp.
+//
+// Converted from ST_ASSERT harness to GoogleTest for better failure diagnostics.
 
-#include "st_assert.hpp"
+#include <gtest/gtest.h>
+
 #include "util/string_util.hpp"
 
 #include <string>
 #include <vector>
 
-int main(void)
+TEST(StringUtilStTest, replace_all_empty_needle_is_noop)
 {
-  // replace_all: empty needle must not loop forever (treated as no-op).
-  ST_ASSERT("replace_all: empty needle is a no-op",
-            StringUtil::replace_all("abc", "", "x") == "abc");
-  ST_ASSERT("replace_all: basic replacement",
-            StringUtil::replace_all("a.b.c", ".", "/") == "a/b/c");
-  ST_ASSERT("replace_all: empty replacement deletes needle",
-            StringUtil::replace_all("aXXb", "XX", "") == "ab");
+  EXPECT_EQ(StringUtil::replace_all("abc", "", "x"), "abc");
+}
 
-  // split: empty delimiter field is preserved.
-  {
-    std::vector<std::string> out;
-    StringUtil::split(out, "x,,y", ',');
-    ST_ASSERT("split: keeps empty middle field", out.size() == 3 && out[1] == "");
-  }
+TEST(StringUtilStTest, replace_all_basic_replacement)
+{
+  EXPECT_EQ(StringUtil::replace_all("a.b.c", ".", "/"), "a/b/c");
+}
 
-  return 0;
+TEST(StringUtilStTest, replace_all_empty_replacement_deletes_needle)
+{
+  EXPECT_EQ(StringUtil::replace_all("aXXb", "XX", ""), "ab");
+}
+
+TEST(StringUtilStTest, split_keeps_empty_middle_field)
+{
+  std::vector<std::string> out;
+  StringUtil::split(out, "x,,y", ',');
+  ASSERT_EQ(out.size(), 3u);
+  EXPECT_TRUE(out[1].empty());
+}
+
+TEST(StringUtilStTest, split_trailing_empty_field)
+{
+  // getline(str, ',') stops at EOF without emitting a trailing empty field,
+  // so "a,b," yields exactly two elements [a, b] (the trailing delimiter is
+  // not a third empty field). This pins the getline-based contract.
+  std::vector<std::string> out;
+  StringUtil::split(out, "a,b,", ',');
+  ASSERT_EQ(out.size(), 2u);
+  EXPECT_EQ("a", out[0]);
+  EXPECT_EQ("b", out[1]);
+}
+
+TEST(StringUtilStTest, split_leading_empty_field)
+{
+  std::vector<std::string> out;
+  StringUtil::split(out, ",b,c", ',');
+  ASSERT_EQ(out.size(), 3u);
+  EXPECT_TRUE(out[0].empty());
+  EXPECT_EQ("b", out[1]);
+  EXPECT_EQ("c", out[2]);
+}
+
+TEST(StringUtilStTest, split_empty_string_yields_empty)
+{
+  // StringUtil::split is built on std::getline(str, ch), which reads nothing
+  // from an empty stream and therefore produces zero fields (not one empty
+  // field). This pins the established getline-based contract used throughout
+  // the engine.
+  std::vector<std::string> out;
+  StringUtil::split(out, "", ',');
+  ASSERT_EQ(out.size(), 0u);
+}
+
+TEST(StringUtilStTest, split_no_delimiter_returns_whole)
+{
+  std::vector<std::string> out;
+  StringUtil::split(out, "hello", ',');
+  ASSERT_EQ(out.size(), 1u);
+  EXPECT_EQ("hello", out[0]);
+}
+
+TEST(StringUtilStTest, replace_all_consecutive_delimiters)
+{
+  EXPECT_EQ(StringUtil::replace_all("a,,b,,c", ",,", "|"),
+            "a|b|c");
+}
+
+TEST(StringUtilStTest, replace_all_overlapping_matches)
+{
+  // Non-overlapping: "aba", needle "aba" -> "x"
+  EXPECT_EQ(StringUtil::replace_all("aba", "aba", "x"), "x");
+}
+
+TEST(StringUtilStTest, replace_all_multibyte)
+{
+  EXPECT_EQ(StringUtil::replace_all("äöü", "ö", "Opcode"),
+            "äOpcodeü");
 }
