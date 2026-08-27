@@ -210,9 +210,10 @@ TEST(EasingTest, getEasingByName_matches_direct)
   EXPECT_EQ(LinearInterpolation(0.3), getEasingByName(EaseNone)(0.3));
   EXPECT_EQ(QuadraticEaseIn(0.3), getEasingByName(EaseQuadIn)(0.3));
   EXPECT_EQ(BounceEaseOut(0.7), getEasingByName(EaseBounceOut)(0.7));
-  // Unknown enum falls back to linear.
+  // Unknown name falls back to linear (valid EaseNone value, no invalid
+  // enum load — UBSan's strict enum check would flag static_cast<-1>).
   EXPECT_EQ(LinearInterpolation(0.5),
-            getEasingByName(static_cast<EasingMode>(-1))(0.5));
+            getEasingByName(EasingMode_from_string("NotAnEasing"))(0.5));
 }
 
 TEST(EasingTest, name_roundtrip)

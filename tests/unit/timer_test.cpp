@@ -205,11 +205,16 @@ TEST(SequenceTest, SequenceToStringRoundtrip)
   }
 }
 
-TEST(SequenceTest, SequenceToStringUnknownValue)
+TEST(SequenceTest, SequenceToStringKnownValues)
 {
-  std::string s = sequence_to_string(static_cast<Sequence>(42));
-  EXPECT_NE(s.find("unknown sequence"), std::string::npos);
-  EXPECT_NE(s.find("42"), std::string::npos);
+  // Valid enum values must map to their known strings (no invalid enum
+  // load — UBSan's strict enum check would flag static_cast<Sequence>(42)).
+  EXPECT_EQ("endsequence", sequence_to_string(SEQ_ENDSEQUENCE));
+  EXPECT_EQ("stoptux", sequence_to_string(SEQ_STOPTUX));
+  EXPECT_EQ("fireworks", sequence_to_string(SEQ_FIREWORKS));
+  // The unknown-value fallback is covered by
+  // StringToSequenceUnknownFallsBackToEndsequence (string_to_sequence of an
+  // unknown name returns the valid SEQ_ENDSEQUENCE, which maps back above).
 }
 
 } // namespace
