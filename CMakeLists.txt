@@ -87,6 +87,11 @@ else()
     set(INSTALL_SUBDIR_BIN "SuperTux.app/Contents/MacOS" CACHE STRING "Installation subdir for binaries")
     set(INSTALL_SUBDIR_SHARE "SuperTux.app/Contents/Resources/data" CACHE STRING "Installation subdir for data")
     set(INSTALL_SUBDIR_DOC "SuperTux.app/Contents/Resources" CACHE STRING "Installation subdir for docs")
+  elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    # Relative to the CPack Bundle generator's Resources root (Contents/Resources/).
+    set(INSTALL_SUBDIR_BIN "bin" CACHE STRING "Installation subdir for binaries")
+    set(INSTALL_SUBDIR_SHARE "share/supertux2" CACHE STRING "Installation subdir for data")
+    set(INSTALL_SUBDIR_DOC "share/doc/supertux2" CACHE STRING "Installation subdir for docs")
   else()
     set(INSTALL_SUBDIR_BIN "games" CACHE STRING "Installation subdir for binaries")
     set(INSTALL_SUBDIR_SHARE "share/games/supertux2" CACHE STRING "Installation subdir for data")
@@ -124,7 +129,7 @@ else()
 endif()
 
 ## Determine whether static linking for SimpleSquirrel should be defaulted to
-if(MSVC OR ANDROID OR EMSCRIPTEN)
+if(WIN32 OR ANDROID OR EMSCRIPTEN)
   option(USE_STATIC_SIMPLESQUIRREL "Statically link the SimpleSquirrel library" ON)
 else()
   option(USE_STATIC_SIMPLESQUIRREL "Statically link the SimpleSquirrel library" OFF)
@@ -294,17 +299,22 @@ endif()
 include(SuperTux/BuildDocumentation)
 include(SuperTux/BuildMessagePot)
 
+if(WIN32)
+  ## Add an icon
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/mk/msvc/icon_rc.template" "${PROJECT_BINARY_DIR}/tmp/icon.rc")
+endif()
+
 ## Build list of sources for supertux binary
 set(SUPERTUX_SOURCES_C ${CMAKE_CURRENT_SOURCE_DIR})
 
-file(GLOB SUPERTUX_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/*/*.cpp src/supertux/menu/*.cpp src/video/sdl/*.cpp src/video/null/*.cpp)
-file(GLOB SUPERTUX_SOURCES_HXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/*/*.hpp src/supertux/menu/*.hpp src/video/sdl/*.hpp src/video/null/*.hpp)
-file(GLOB SUPERTUX_RESOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${PROJECT_BINARY_DIR}/tmp/*.rc")
+file(GLOB SUPERTUX_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPENDS src/*/*.cpp src/supertux/menu/*.cpp src/video/sdl/*.cpp src/video/null/*.cpp)
+file(GLOB SUPERTUX_SOURCES_HXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPENDS  src/*/*.hpp src/supertux/menu/*.hpp src/video/sdl/*.hpp src/video/null/*.hpp)
+file(GLOB SUPERTUX_RESOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPENDS "${PROJECT_BINARY_DIR}/tmp/*.rc")
 
 if(HAVE_OPENGL)
   message(STATUS "Adding OpenGL sources")
-  file(GLOB SUPERTUX_OPENGL_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/video/gl/*.cpp)
-  file(GLOB SUPERTUX_OPENGL_SOURCES_HXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/video/gl/*.hpp)
+  file(GLOB SUPERTUX_OPENGL_SOURCES_CXX RELATIVE  ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPENDS src/video/gl/*.cpp)
+  file(GLOB SUPERTUX_OPENGL_SOURCES_HXX RELATIVE  ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPENDS src/video/gl/*.hpp)
   set(SUPERTUX_SOURCES_CXX ${SUPERTUX_SOURCES_CXX} ${SUPERTUX_OPENGL_SOURCES_CXX})
   set(SUPERTUX_SOURCES_HXX ${SUPERTUX_SOURCES_HXX} ${SUPERTUX_OPENGL_SOURCES_HXX})
 endif()
@@ -386,9 +396,9 @@ if(SUPERTUX_PCH)
     # PhysicsFS
     <physfs.h>
     # SDL
-    <SDL.h>
-    <SDL_ttf.h>
-    <SDL_image.h>
+    <SDL3/SDL.h>
+    <SDL3_ttf/SDL_ttf.h>
+    <SDL3_image/SDL_image.h>
     # FMT
     <fmt/format.h>
     "${proj_headers}"
@@ -488,6 +498,14 @@ if(ANDROID)
   target_compile_definitions(supertux2 PUBLIC -D__ANDROID__ -DANDROID)
 endif()
 
+if(APPLE AND NOT DISABLE_CPACK_BUNDLING)
+  # Find the dependencies that BuildCPack.cmake's RUNTIME_DEPENDENCY_SET
+  # install places inside the bundle (Contents/Resources/MacOS)
+  set_target_properties(supertux2 PROPERTIES
+    INSTALL_RPATH "@executable_path/../MacOS"
+    BUILD_WITH_INSTALL_RPATH FALSE)
+endif()
+
 ## Install stuff
 include(SuperTux/BuildInstall)
 
@@ -506,7 +524,7 @@ if(ANDROID)
     file(MAKE_DIRECTORY "${ANDROID_ASSETS_DIR}")
   endif()
 
-  file(GLOB DATA_CONTENTS RELATIVE "${DATA_DIR}" "${DATA_DIR}/*")
+  file(GLOB DATA_CONTENTS RELATIVE "${DATA_DIR}" CONFIGURE_DEPENDS "${DATA_DIR}/*")
   add_custom_command(
     OUTPUT "${ANDROID_DATA_ZIP}"
     COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${ANDROID_DATA_ZIP}" --format=zip ${DATA_CONTENTS}

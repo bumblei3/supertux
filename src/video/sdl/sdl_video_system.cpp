@@ -93,6 +93,7 @@ SDLVideoSystem::create_window()
   {
     std::stringstream msg;
     msg << "Couldn't create SDL_Renderer: " << SDL_GetError();
+    SDL_ClearError();
     throw std::runtime_error(msg.str());
   }
 }
@@ -155,20 +156,23 @@ SDLVideoSystem::flip()
 SDLSurfacePtr
 SDLVideoSystem::make_screenshot()
 {
+  SDL_ClearError();
+
   int width;
   int height;
-  if (SDL_GetCurrentRenderOutputSize(m_renderer->get_sdl_renderer(), &width, &height) != 0)
+  if (!SDL_GetCurrentRenderOutputSize(m_renderer->get_sdl_renderer(), &width, &height))
   {
     log_warning << "SDL_GetRenderOutputSize failed: " << SDL_GetError() << std::endl;
+    SDL_ClearError();
     return {};
   }
   else
   {
     auto surface = SDL_RenderReadPixels(m_renderer->get_sdl_renderer(), nullptr);
-
-    if (SDL_GetError() != 0)
+    if (surface == nullptr)
     {
       log_warning << "SDL_RenderReadPixels failed: " << SDL_GetError() << std::endl;
+      SDL_ClearError();
       return {};
     }
     else

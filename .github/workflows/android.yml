@@ -27,10 +27,6 @@ on:
       - '*'
   pull_request: {2485}
 
-concurrency:
-  group: android-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   android:
     strategy:
@@ -40,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # SUPERTUX_VERSION is set later using git describe.
-      SDL_TAG: 3.4.12
+      SDL_TAG: 3.4.18
       B_T_VERSION: 35.0.0
       NDK_VERSION: 29.0.14206865
       SDK_VERSION: 35
@@ -64,92 +60,51 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/vcpkg
-          # Bump the suffix when the installed package set or the way we
-          # invoke vcpkg changes, so a stale cache (e.g. one created while
-          # VCPKG_TRIPLET was empty and 'vcpkg install' aborted before
-          # populating vcpkg/installed/) is not reused.
-          key: android-${{ matrix.arch }}-vcpkg-installed-v3-${{ hashFiles('.github/workflows/android.yml') }}
+          key: android-${{ matrix.arch }}-vcpkg-${{ hashFiles('.github/workflows/android.yml') }}
 
       - name: Bootstrap custom vcpkg
         if: steps.cache-dependencies.outputs.cache-hit != 'true'
         run: |
+          case "${{ matrix.arch }}" in
+            arm64-v8a) export VCPKG_TRIPLET=arm64-android ;;
+            armeabi-v7a) export VCPKG_TRIPLET=arm-neon-android ;;
+            x86) export VCPKG_TRIPLET=x86-android ;;
+            x86_64) export VCPKG_TRIPLET=x64-android ;;
+            *) exit 67 ;;
+          esac
+          echo "VCPKG_TRIPLET=$VCPKG_TRIPLET" >> $GITHUB_ENV
+          echo "VCPKG_ROOT=$VCPKG_ROOT" >> $GITHUB_ENV
+
           git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
           cd vcpkg
           ./bootstrap-vcpkg.sh
 
-      # Set the vcpkg triplet for the current matrix arch. Must run
-      # unconditionally (NOT inside the cache-guarded bootstrap step) so
-      # VCPKG_TRIPLET is defined even when the vcpkg cache is reused;
-      # otherwise `--triplet=` is empty and vcpkg errors with
-      # "Invalid triplet:". Exported to $GITHUB_ENV so the Build/Install
-      # steps both see it.
-      - name: Set vcpkg triplet
-        run: |
-          case "${{ matrix.arch }}" in
-            arm64-v8a) echo "VCPKG_TRIPLET=arm64-android" >> $GITHUB_ENV
-                       echo "ANDROID_ABI=arm64-v8a" >> $GITHUB_ENV ;;
-            armeabi-v7a) echo "VCPKG_TRIPLET=arm-neon-android" >> $GITHUB_ENV
-                         echo "ANDROID_ABI=armeabi-v7a" >> $GITHUB_ENV ;;
-            x86) echo "VCPKG_TRIPLET=x86-android" >> $GITHUB_ENV
-                 echo "ANDROID_ABI=x86" >> $GITHUB_ENV ;;
-            x86_64) echo "VCPKG_TRIPLET=x64-android" >> $GITHUB_ENV
-                    echo "ANDROID_ABI=x86_64" >> $GITHUB_ENV ;;
-          esac
+          ./vcpkg install --classic --triplet=$VCPKG_TRIPLET \
+            fmt     \
+            libogg   \
+            libvorbis \
+            libraqm    \
+            freetype    \
+            physfs      \
+            glm         \
+            libpng      \
+            zlib        \
+            sdl3        \
+            sdl3-image[jpeg,png]  \
+            sdl3-ttf    \
+            curl        \
+            openal-soft \
+            libogg      \
+            libvorbis
 
-      - name: Install dependencies
-        run: |
-          cd vcpkg
-          # Manifest mode (reads vcpkg.json at repo root): generates the
-          # per-triplet toolchain file vcpkg/<triplet>.cmake that the Build
-          # step passes to -DCMAKE_TOOLCHAIN_FILE. Classic mode
-          # (--classic) does NOT emit that file, so the build fails with
-          # "Could not find toolchain file: vcpkg/<triplet>.cmake".
-          # In manifest mode the package set comes from vcpkg.json, so no
-          # packages are listed on the command line.
-          ./vcpkg install --triplet=$VCPKG_TRIPLET
-
-      - name: Build
-        run: |
-          # Use the STANDARD vcpkg toolchain as PRIMARY (it wires up
-          # find_package / CMAKE_PREFIX_PATH to vcpkg_installed/) and
-          # CHAINLOAD the Android NDK toolchain via
-          # VCPKG_CHAINLOAD_TOOLCHAIN_FILE (correct spelling + direction:
-          # the NDK supplies the cross-compiler, vcpkg supplies package
-          # discovery). Passing ONLY the vcpkg toolchain left the host
-          # compiler ("/usr/bin/cc") -> link failed against arm64
-          # libSDL3_ttf.a ("Relocations in generic ELF"). Passing ONLY the
-          # NDK toolchain lost vcpkg package discovery ("libpng not
-          # found").
-          # ANDROID_ABI (set per-arch above) selects the target arch.
-          # GITHUB_JOBS is NOT set anywhere in this workflow; a bare -j
-          # would spawn unlimited parallel cc1plus processes and OOM the
-          # 7 GB runner (observed: "Killed signal terminated program
-          # cc1plus"). Cap at 2 -- Android NDK cross-compiles are heavy.
-          JOBS=2
-          # GitHub runners preinstall NDKs under $ANDROID_HOME/ndk/<ver>
-          # (there is no ndk-bundle); pick the newest by version sort.
-          NDK_CMAKE=$(ls -d $ANDROID_HOME/ndk/* | sort -V | tail -1)
-          echo "Using NDK toolchain: $NDK_CMAKE"
-          cmake -B build -S . \
-            -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-            -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$NDK_CMAKE/build/cmake/android.toolchain.cmake \
-            -DANDROID_ABI=$ANDROID_ABI \
-            -DANDROID_PLATFORM=android-$SDK_VERSION \
-            -DVCPKG_TARGET_TRIPLET=$VCPKG_TRIPLET \
-            -DSUPERTUX_JOBS=$JOBS \
-            -DCMAKE_BUILD_TYPE=Release
-          cmake --build build --target supertux2 -j$JOBS
+          find $VCPKG_ROOT/installed -name '*.pc' -exec sed -i -E 's/-lc\+\+//g' {} \;
 
       - name: Prepare SDL Android project
         run: |
-          # Bootstraps mk/android from SDL ${SDL_TAG}'s android-project
-          # (gradlew, wrapper jar, Java activity). Without it there is no
-          # way to package an APK -- the CPack 'package' target only
-          # produces tarballs.
+          # Has to be the same version as the one found in vcpkg!!
           ./tools/bootstrap-android-project.sh ${SDL_TAG}
 
           echo "vcpkg_root=$VCPKG_ROOT" > mk/android/local.properties
-          echo "ndk_home=$NDK_CMAKE" >> mk/android/local.properties
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -158,49 +113,99 @@ jobs:
           java-version: 21
           cache: 'gradle'
 
+      - name: Setup Android environment
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-${{ env.SDK_VERSION }} ndk;${{ env.NDK_VERSION }} build-tools;${{ env.B_T_VERSION }}'
+
+      - name: Run slugify
+        id: slugify
+        uses: eltimn/slugify-action@v2.0.2
+
       - name: Build APK
         working-directory: mk/android/
+        env:
+          # Using git rev-parse gives incorrect values when querying the branch
+          # so, use slugify instead
+          GIT_HASH: ${{ steps.slugify.outputs.sha }}
+          GIT_BRANCH: ${{ steps.slugify.outputs.branch }}
         run: |
+          tree
+
           chmod +x ./gradlew
-          # Gradle re-runs CMake itself (externalNativeBuild) with the NDK
-          # toolchain primary and vcpkg chainloaded (Android.cmake). Point
-          # it at the SAME installed tree our manifest-mode install
-          # populated, and keep manifest mode ON so vcpkg autorestores any
-          # missing package into that tree. VCPKG_MANIFEST_MODE=OFF in
-          # app/build.gradle is overridden here via cmake_args.
-          ./gradlew assembleRelease -Pcpuarch="${{ matrix.arch }}" \
-            -Pcmake_args="-DVCPKG_MANIFEST_MODE=ON;-DVCPKG_INSTALLED_DIR=$GITHUB_WORKSPACE/build/vcpkg_installed;--no-warn-unused-cli"
+          ./gradlew assembleRelease \
+            -Pcpuarch="${{ matrix.arch }}" \
+            -Pcmake_args="-DGIT_HASH=$GIT_HASH;-DGIT_BRANCH=$GIT_BRANCH" \
+            --info
 
       - name: Rename APK
         run: |
           mv mk/android/app/build/outputs/apk/release/app-release-unsigned.apk \
             mk/android/app/build/outputs/apk/release/SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}-unsigned.apk
 
+      ### Not really a point, but kept around for now
+      #
+      # - name: Upload unsigned APK
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: "Unsigned APK ${{ matrix.arch }}"
+      #     path: "mk/android/app/build/outputs/apk/release/SuperTux-${{ env.SUPERTUX_VERSION }}-${{ matrix.arch }}-unsigned.apk"
+
+      - name: Fetch keys
+        working-directory: mk/android/app/build/outputs/apk/release
+        run: |
+          if [[ "${{ secrets.ANDROID_SIGNING_KEY }}" ]]
+          then
+            echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > supertux.keystore
+          else
+            echo "Key wasn't found. Skipping..."
+          fi
+
       - name: Sign APK
         working-directory: mk/android/app/build/outputs/apk/release
         run: |
-          # CI fallback key (no secrets on the fork).
+          # Note: this is created before, but just some fallback logic for later
           if [ ! -f supertux.keystore ]
           then
+            echo "!!! Generating a new key."
             keytool -genkey -v \
               -keystore supertux.keystore \
               -alias supertux \
               -storepass hunter2 \
-              -dname "cn=SuperTux CI, O=SuperTux, L=Antarctica, ST=Antarctica, C=aq" \
+              -dname "cn=MatusBro, ou=Contributor, O=SuperTux Team, L=Antarctica, ST=Antarctica, C=aq" \
               -keyalg RSA -keysize 2048 -validity 10000
           fi
 
           cp ./SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}-unsigned.apk ./SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}.apk
 
-          $ANDROID_SDK_ROOT/build-tools/${B_T_VERSION}/apksigner sign \
-            --ks supertux.keystore \
-            --ks-key-alias supertux \
-            --ks-pass pass:hunter2 \
-            ./SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}.apk
+          if [[ "${{ secrets.ANDROID_SIGNING_KEY }}" ]]
+          then
+            $ANDROID_SDK_ROOT/build-tools/${B_T_VERSION}/apksigner sign \
+              --ks supertux.keystore \
+              --ks-key-alias supertux \
+              --ks-pass pass:"${{ secrets.ANDROID_SIGNING_PW }}" \
+              ./SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}.apk
+          else
+            # More fallback logic; our key should exist
+            echo "!!! WARNING: Signing with manual CI key. Check your shit ;-/"
+            $ANDROID_SDK_ROOT/build-tools/${B_T_VERSION}/apksigner sign \
+              --ks supertux.keystore \
+              --ks-key-alias supertux \
+              --ks-pass pass:hunter2 \
+              ./SuperTux-${SUPERTUX_VERSION}-${{ matrix.arch }}.apk
+          fi
 
-      - name: Upload APK
+      - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: supertux2-${{ matrix.arch }}.apk
+          name: "Signed SuperTux APK ${{ matrix.arch }}"
           path: "mk/android/app/build/outputs/apk/release/SuperTux-${{ env.SUPERTUX_VERSION }}-${{ matrix.arch }}.apk"
-          if-no-files-found: error
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: "build/upload/*"
+          draft: true

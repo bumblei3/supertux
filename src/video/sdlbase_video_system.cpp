@@ -36,10 +36,11 @@ SDLBaseVideoSystem::SDLBaseVideoSystem() :
 //  SDL_VideoInit(nullptr);
 //#endif
 #ifndef __ANDROID__
-  SDL_DisplayID const prim_display = SDL_GetPrimaryDisplay();
+  SDL_DisplayID prim_display = SDL_GetPrimaryDisplay();
   if (prim_display == 0)
   {
     log_warning << "Couldn't get primary display: " << SDL_GetError() << std::endl;
+    SDL_ClearError();
     return; // at this point, we just give up.
   }
 
@@ -47,6 +48,7 @@ SDLBaseVideoSystem::SDLBaseVideoSystem() :
   if (mode == nullptr)
   {
     log_warning << "Couldn't get desktop display mode: " << SDL_GetError() << std::endl;
+    SDL_ClearError();
     return;
   }
 
@@ -95,41 +97,15 @@ SDLBaseVideoSystem::create_sdl_window(Uint32 flags)
   Size size;
   if (g_config->use_fullscreen)
   {
-    // Set SDL_WINDOW_FULLSCREEN at creation time. Some Wayland compositors
-    // (notably Mutter/GNOME under Xwayland) do not reliably honor a later
-    // SDL_SetWindowFullscreen(true) call on a window that was created windowed,
-    // so the window never actually enters fullscreen even though SDL reports
-    // success. Requesting fullscreen at creation lets the compositor pick a
-    // valid mode up front.
-    //
-    // We always use the desktop size here, never a possibly stale config
-    // fullscreen_size (e.g. 640x480), so we never ask the compositor for a
-    // non-enumerated mode that it would reject and that previously aborted
-    // startup.
     flags |= SDL_WINDOW_FULLSCREEN;
-    if (m_desktop_size != Size(0, 0))
+
+    if (g_config->fullscreen_size == Size(0, 0))
     {
       size = m_desktop_size;
     }
     else
     {
-      // m_desktop_size may still be (0,0) if the Wayland compositor has not
-      // published display info yet (it is queried asynchronously during
-      // construction). Re-query it now so we don't fall back to a fixed
-      // window_size, which would make SDL try to find a matching fullscreen
-      // mode instead of using the desktop mode.
-      SDL_DisplayID const display = SDL_GetPrimaryDisplay();
-      if (display != 0)
-      {
-        const SDL_DisplayMode* mode = SDL_GetDesktopDisplayMode(display);
-        if (mode != nullptr)
-        {
-          size.width = mode->w;
-          size.height = mode->h;
-        }
-      }
-      if (size == Size(0, 0))
-        size = g_config->window_size;
+      size = g_config->fullscreen_size;
     }
   }
   else
@@ -147,10 +123,13 @@ SDLBaseVideoSystem::create_sdl_window(Uint32 flags)
   {
     std::ostringstream msg;
     msg << "Couldn't set video mode " << size.width << "x" << size.height << ": " << SDL_GetError();
+    SDL_ClearError();
     throw std::runtime_error(msg.str());
   }
 
 #ifdef __EMSCRIPTEN__
+  // Forcibly set autofit to true
+  // TODO: Remove the autofit parameter entirely - it should always be true
   g_config->fit_window = true;
 
   if (g_config->fit_window)
@@ -171,6 +150,7 @@ SDLBaseVideoSystem::apply_video_mode()
   {
     log_warning << "Unable to get display index of window: "
                 << SDL_GetError() << std::endl;
+    SDL_ClearError();
     return;
   }
 
@@ -180,6 +160,7 @@ SDLBaseVideoSystem::apply_video_mode()
     log_warning << "Unable to get information for display number "
                 << displayidx << ": "
                 << SDL_GetError() << std::endl;
+    SDL_ClearError();
     return;
   }
 
@@ -187,7 +168,7 @@ SDLBaseVideoSystem::apply_video_mode()
 
   if (!g_config->use_fullscreen)
   {
-    SDL_SetWindowFullscreen(m_sdl_window.get(), false);
+    SDL_SetWindowFullscreen(m_sdl_window.get(), 0);
 
 #if 0
     // After un-fullscreening, the window border likely gets hidden offscreen,
@@ -212,17 +193,11 @@ SDLBaseVideoSystem::apply_video_mode()
   {
     if (g_config->fullscreen_size == Size(0, 0))
     {
-      // SDL3: SDL_SetWindowFullscreen takes a bool and returns bool
-      // (true == success), unlike SDL2 which took an int flag and returned
-      // int with 0 == success. Passing SDL_WINDOW_FULLSCREEN as the argument
-      // (a flag bit, not a bool) and checking `!= 0` on the return value
-      // would both be wrong: the return check is inverted, logging a false
-      // "failed to switch to desktop fullscreen" warning on every successful
-      // switch. Use `true` and a negated check.
-      if (!SDL_SetWindowFullscreen(m_sdl_window.get(), true))
+      if (SDL_SetWindowFullscreen(m_sdl_window.get(), true) == false)
       {
         log_warning << "failed to switch to desktop fullscreen mode: "
                     << SDL_GetError() << std::endl;
+        SDL_ClearError();
       }
       else
       {
@@ -231,57 +206,35 @@ SDLBaseVideoSystem::apply_video_mode()
     }
     else
     {
-      // Resolve the configured fullscreen size to a mode the display actually
-      // supports. Building an SDL_DisplayMode by hand leaves its opaque
-      // 'internal' pointer uninitialized, and a mode the compositor does not
-      // enumerate (e.g. a stale 640x480 entry) makes SDL_SetWindowFullscreenMode
-      // fail and previously aborted startup. SDL_GetClosestFullscreenDisplayMode
-      // returns a valid, accepted mode near the requested size (or nullptr).
-      SDL_DisplayMode closest;
-      SDL_memset(&closest, 0, sizeof(closest));
-      const bool found = SDL_GetClosestFullscreenDisplayMode(
-        SDL_GetDisplayForWindow(m_sdl_window.get()),
-        g_config->fullscreen_size.width,
-        g_config->fullscreen_size.height,
-        static_cast<float>(g_config->fullscreen_refresh_rate),
-        false, &closest);
+      SDL_DisplayMode mode{};
+      mode.format = SDL_PIXELFORMAT_XRGB8888;
+      mode.w = g_config->fullscreen_size.width;
+      mode.h = g_config->fullscreen_size.height;
+      mode.refresh_rate_numerator = g_config->fullscreen_refresh_rate_numerator;
+      mode.refresh_rate_denominator = g_config->fullscreen_refresh_rate_denominator;
+      mode.refresh_rate = g_config->fullscreen_refresh_rate;
+      mode.pixel_density = g_config->fullscreen_pixel_density;
 
-      if (!found)
-      {
-        log_warning << "no fullscreen mode near "
-                    << g_config->fullscreen_size.width << "x"
-                    << g_config->fullscreen_size.height << ", "
-                    << "falling back to desktop fullscreen" << std::endl;
-        if (!SDL_SetWindowFullscreen(m_sdl_window.get(), true))
-        {
-          log_warning << "failed to switch to desktop fullscreen mode: "
-                      << SDL_GetError() << std::endl;
-        }
-      }
-      else if (SDL_SetWindowFullscreenMode(m_sdl_window.get(), &closest) == false)
+      if (SDL_SetWindowFullscreenMode(m_sdl_window.get(), &mode) == false)
       {
         log_warning << "failed to set fullscreen mode: "
-                    << closest.w << "x" << closest.h << "@" << closest.refresh_rate << ": "
+                    << mode.w << "x" << mode.h << "@" << mode.refresh_rate << ": "
                     << SDL_GetError() << std::endl;
-        log_info << "falling back to desktop fullscreen" << std::endl;
-        if (!SDL_SetWindowFullscreen(m_sdl_window.get(), true))
-        {
-          log_warning << "failed to switch to desktop fullscreen mode: "
-                      << SDL_GetError() << std::endl;
-        }
+        SDL_ClearError();
       }
       else
       {
         if (SDL_SetWindowFullscreen(m_sdl_window.get(), true) == false)
         {
           log_warning << "failed to switch to fullscreen mode: "
-                      << closest.w << "x" << closest.h << "@" << closest.refresh_rate << ": "
+                      << mode.w << "x" << mode.h << "@" << mode.refresh_rate << ": "
                       << SDL_GetError() << std::endl;
+          SDL_ClearError();
         }
         else
         {
           log_info << "switched to fullscreen mode: "
-                   << closest.w << "x" << closest.h << "@" << closest.refresh_rate << std::endl;
+                   << mode.w << "x" << mode.h << "@" << mode.refresh_rate << std::endl;
         }
       }
     }

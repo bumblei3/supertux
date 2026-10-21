@@ -15,7 +15,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "editor/overlay_widget.hpp"
-#include "editor/tile_replacement.hpp"
 
 #include <fmt/format.h>
 
@@ -267,25 +266,25 @@ namespace {
     // An integer position (x, y) contains all floating point vectors in
     // [x, x+1) x [y, y+1)
     std::vector<Vector> positions;
-    Vector const diff = pos2 - pos1;
+    Vector diff = pos2 - pos1;
     if (fabsf(diff.x) > fabsf(diff.y))
     {
       // Go along X, from left to right
       if (diff.x < 0)
       {
-        Vector const tmp = pos1;
+        Vector tmp = pos1;
         pos1 = pos2;
         pos2 = tmp;
       }
       positions.emplace_back(pos1);
       float y_prev = pos1.y;
-      float const y_step = diff.y / diff.x;
+      float y_step = diff.y / diff.x;
       // The x coordinate of the first vertical grid line right of pos1
-      float const x_first_gridline = floorf(pos1.x + 1.0f);
+      float x_first_gridline = floorf(pos1.x + 1.0f);
       for (float x = x_first_gridline; x < pos2.x; ++x)
       {
         // The y coordinate where our line intersects the vertical grid line
-        float const y = pos1.y + (x - pos1.x) * y_step;
+        float y = pos1.y + (x - pos1.x) * y_step;
         if (floorf(y) != floorf(y_prev))
         {
           // The current position is one horizontal grid line higher than
@@ -309,17 +308,17 @@ namespace {
       // Go along Y, from top to bottom
       if (diff.y < 0)
       {
-        Vector const tmp = pos1;
+        Vector tmp = pos1;
         pos1 = pos2;
         pos2 = tmp;
       }
       positions.emplace_back(pos1);
       float x_prev = pos1.x;
-      float const x_step = diff.x / diff.y;
-      float const y_first_gridline = floorf(pos1.y + 1.0f);
+      float x_step = diff.x / diff.y;
+      float y_first_gridline = floorf(pos1.y + 1.0f);
       for (float y = y_first_gridline; y < pos2.y; ++y)
       {
-        float const x = pos1.x + (y - pos1.y) * x_step;
+        float x = pos1.x + (y - pos1.y) * x_step;
         if (floorf(x) != floorf(x_prev))
         {
           positions.emplace_back(Vector(x, y - 0.5f));
@@ -340,7 +339,7 @@ void
 EditorOverlayWidget::put_next_tiles()
 {
   auto time_now = std::chrono::steady_clock::now();
-  int const expired_ms = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(time_now - m_time_prev_put_tile).count());
+  int expired_ms = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(time_now - m_time_prev_put_tile).count());
   m_time_prev_put_tile = time_now;
   if (expired_ms > 70)
   {
@@ -366,8 +365,8 @@ EditorOverlayWidget::preview_rectangle()
   Rectf dr = drag_rect();
   dr.set_p1(glm::floor(sp_to_tp(dr.p1())));
   dr.set_p2(glm::floor(sp_to_tp(dr.p2())));
-  bool const sgn_x = m_drag_start.x < m_sector_pos.x;
-  bool const sgn_y = m_drag_start.y < m_sector_pos.y;
+  bool sgn_x = m_drag_start.x < m_sector_pos.x;
+  bool sgn_y = m_drag_start.y < m_sector_pos.y;
 
   m_rectangle_preview->m_tiles.clear();
   m_rectangle_preview->m_width = static_cast<int>(dr.get_width()) + 1;
@@ -407,7 +406,7 @@ EditorOverlayWidget::fill()
   if (!tilemap) return;
 
   // The tile that is going to be replaced:
-  uint32_t const replace_tile = tilemap->get_tile_id(m_hovered_tile);
+  uint32_t replace_tile = tilemap->get_tile_id(m_hovered_tile);
 
   if (replace_tile == tiles->pos(0, 0))
   {
@@ -426,8 +425,8 @@ EditorOverlayWidget::fill()
       return;
     }
 
-    Vector const pos = pos_stack.back();
-    Vector const tpos = pos - m_hovered_tile;
+    Vector pos = pos_stack.back();
+    Vector tpos = pos - m_hovered_tile;
 
     // Tests for being inside tilemap:
     if (!is_position_inside_tilemap(tilemap, pos))
@@ -506,18 +505,20 @@ void
 EditorOverlayWidget::replace()
 {
   auto tilemap = m_editor.get_selected_tilemap();
+  
+  if (!tilemap)
+    return;
+
   auto tiles = m_editor.get_selected_tiles();
   auto tiles_width = tiles->m_width;
   auto tiles_height = tiles->m_height;
 
-  uint32_t const replace_tile = tilemap->get_tile_id(m_hovered_tile);
+  if (tiles_width == 0 || tiles_height == 0) return;
 
-  // Skip degenerate/redundant replacements. Extracted into a pure, testable
-  // helper (editor::should_skip_tile_replacement) so the regression logic is
-  // covered by unit tests without requiring the editor/SDL to be spun up.
-  // Fixes the division-by-zero crash with a zero-sized selection (issue #3810).
-  if (editor::should_skip_tile_replacement(tiles_width, tiles_height, replace_tile, tiles->pos(0, 0)))
-    return;
+  uint32_t replace_tile = tilemap->get_tile_id(m_hovered_tile);
+
+  // Don't do anything if the old and new tiles are the same tile.
+  if (tiles_width == 1 && tiles_height == 1 && replace_tile == tiles->pos(0, 0)) return;
 
   tilemap->save_state();
   for (int x = 0; x < tilemap->get_width(); ++x)
@@ -541,7 +542,7 @@ EditorOverlayWidget::hover_object()
   m_object_tip->set_visible(false);
   m_hovered_object = nullptr;
 
-  BezierMarker const* marker_hovered_without_ctrl = nullptr;
+  BezierMarker* marker_hovered_without_ctrl = nullptr;
 
   bool cache_is_marker = false;
   int cache_layer = INT_MIN;
@@ -586,7 +587,7 @@ EditorOverlayWidget::hover_object()
         //   3. If many objects are on the highest layer, pick the last created one
         //      (Which will be the one rendererd on top)
 
-        bool const is_marker = dynamic_cast<MarkerObject*>(&moving_object);
+        bool is_marker = dynamic_cast<MarkerObject*>(&moving_object);
         // The "=" part of ">=" ensures that for equal layer, the last object is picked; don't remove the "="!
         if ((is_marker && !cache_is_marker) || moving_object.get_layer() >= cache_layer)
         {
@@ -796,7 +797,7 @@ void
 EditorOverlayWidget::rubber_rect()
 {
   delete_markers();
-  Rectf const dr = drag_rect();
+  Rectf dr = drag_rect();
   for (auto& moving_object : m_editor.get_sector()->get_objects_by_type<MovingObject>())
   {
     const Rectf& bbox = moving_object.get_bbox();
@@ -1058,7 +1059,7 @@ EditorOverlayWidget::update_tile_selection()
       }
       else
       {
-        uint32_t const tile_id = tilemap->get_tile_id(x, y);
+        uint32_t tile_id = tilemap->get_tile_id(x, y);
         if (tileset->get(tile_id).is_deprecated())
         {
           set_warning(_("Cannot select deprecated tiles"), 3.f);
@@ -1089,13 +1090,11 @@ EditorOverlayWidget::on_mouse_button_up(const SDL_MouseButtonEvent& button)
         m_rectangle_preview->m_tiles.clear();
       }
 
-      // The selected tilemap may be null for a short window between the
-      // widget's creation and the first update() (which calls
-      // refresh_layers()). Guard against a null dereference here, otherwise
-      // releasing the mouse button quickly (before the editor finished
-      // loading) crashes. See issue #3809.
-      if (auto* tilemap = m_editor.get_selected_tilemap())
-        tilemap->check_state();
+      auto selected_tilemap = m_editor.get_selected_tilemap();
+      if (selected_tilemap != nullptr)
+      {
+        selected_tilemap->check_state();
+      }
     }
     else
     {
@@ -1208,7 +1207,7 @@ EditorOverlayWidget::on_mouse_motion(const SDL_MouseMotionEvent& motion)
 bool
 EditorOverlayWidget::on_key_up(const SDL_KeyboardEvent& key)
 {
-  std::uint16_t const mod = key.mod;
+  std::uint16_t mod = key.mod;
 
   if (!m_editor.m_ctrl_pressed)
   {
@@ -1234,8 +1233,8 @@ EditorOverlayWidget::on_key_up(const SDL_KeyboardEvent& key)
 bool
 EditorOverlayWidget::on_key_down(const SDL_KeyboardEvent& key)
 {
-  SDL_Keycode const sym = key.key;
-  std::uint16_t const mod = key.mod;
+  SDL_Keycode sym = key.key;
+  std::uint16_t mod = key.mod;
 
   if (sym == SDLK_F8)
   {
@@ -1299,12 +1298,16 @@ EditorOverlayWidget::update_pos()
 
   if (m_last_hovered_tile != m_hovered_tile)
   {
-    const uint32_t hovered_id = m_editor.get_selected_tilemap()->get_tile_id(m_hovered_tile);
-    if ((!m_dragging || hovered_id != 0) &&
-        m_editor.get_selected_tiles()->pos(0, 0) == 0 && // Erasing
-        m_editor.get_selected_tilemap()->get_tile_id(m_last_hovered_tile) != hovered_id)
+    auto selected_tilemap = m_editor.get_selected_tilemap();
+    if (selected_tilemap)
     {
-      update_autotileset();
+      const uint32_t hovered_id = selected_tilemap->get_tile_id(m_hovered_tile);
+      if ((!m_dragging || hovered_id != 0) &&
+          m_editor.get_selected_tiles()->pos(0, 0) == 0 && // Erasing
+          selected_tilemap->get_tile_id(m_last_hovered_tile) != hovered_id)
+      {
+        update_autotileset();
+      }
     }
 
     m_last_hovered_tile = m_hovered_tile;
@@ -1317,12 +1320,16 @@ EditorOverlayWidget::update_pos()
 void
 EditorOverlayWidget::update_autotileset()
 {
-  AutotileSet const* old_autotileset = get_current_autotileset();
+  auto selected_tilemap = m_editor.get_selected_tilemap();
+  if (!selected_tilemap)
+    return;
+
+  AutotileSet* old_autotileset = get_current_autotileset();
   auto selected_tiles = m_editor.get_selected_tiles();
 
   if (selected_tiles->pos(0, 0) == 0) // Erasing
   {
-    const uint32_t current_tile = m_editor.get_selected_tilemap()->get_tile_id(m_hovered_tile);
+    const uint32_t current_tile = selected_tilemap->get_tile_id(m_hovered_tile);
     m_available_autotilesets = m_editor.get_tileset()->get_autotilesets_from_tile(current_tile);
   }
   else
@@ -1379,7 +1386,7 @@ EditorOverlayWidget::draw_tile_tip(DrawingContext& context)
     {
       for (drawn_tile.y = static_cast<float>(tiles->m_height) - 1.0f; drawn_tile.y >= 0.0f; drawn_tile.y--)
       {
-        Vector const on_tile = m_hovered_tile + drawn_tile;
+        Vector on_tile = m_hovered_tile + drawn_tile;
 
         if (!is_position_inside_tilemap(tilemap, on_tile) ||
             on_tile.x >= ceilf(screen_corner.x / 32) ||
@@ -1387,7 +1394,7 @@ EditorOverlayWidget::draw_tile_tip(DrawingContext& context)
         {
           continue;
         }
-        uint32_t const tile_id = tiles->pos(static_cast<int>(drawn_tile.x), static_cast<int>(drawn_tile.y));
+        uint32_t tile_id = tiles->pos(static_cast<int>(drawn_tile.x), static_cast<int>(drawn_tile.y));
         m_editor.get_tileset()->get(tile_id).draw(context.color(),
                                                   align_to_tilemap(on_tile),
                                                   LAYER_GUI - 11, Color(1, 1, 1, 0.5));
@@ -1409,9 +1416,9 @@ EditorOverlayWidget::draw_rectangle_preview(DrawingContext& context)
 
   if (m_rectangle_preview->empty()) return;
 
-  Vector const screen_corner = context.get_cliprect().p2();
+  Vector screen_corner = context.get_cliprect().p2();
   Vector drawn_tile(0.0f, 0.0f);
-  Vector const corner(std::min(sp_to_tp(m_drag_start).x, m_hovered_tile.x),
+  Vector corner(std::min(sp_to_tp(m_drag_start).x, m_hovered_tile.x),
                 std::min(sp_to_tp(m_drag_start).y, m_hovered_tile.y));
   auto tiles = m_rectangle_preview.get();
 
@@ -1419,7 +1426,7 @@ EditorOverlayWidget::draw_rectangle_preview(DrawingContext& context)
   {
     for (drawn_tile.y = static_cast<float>(tiles->m_height) - 1.0f; drawn_tile.y >= 0.0f; drawn_tile.y--)
     {
-      Vector const on_tile = corner + drawn_tile;
+      Vector on_tile = corner + drawn_tile;
 
       if (!is_position_inside_tilemap(tilemap, on_tile) ||
           on_tile.x >= ceilf(screen_corner.x / 32) ||
@@ -1427,7 +1434,7 @@ EditorOverlayWidget::draw_rectangle_preview(DrawingContext& context)
       {
         continue;
       }
-      uint32_t const tile_id = tiles->pos(static_cast<int>(drawn_tile.x), static_cast<int>(drawn_tile.y));
+      uint32_t tile_id = tiles->pos(static_cast<int>(drawn_tile.x), static_cast<int>(drawn_tile.y));
       m_editor.get_tileset()->get(tile_id).draw(context.color(),
                                                 align_to_tilemap(on_tile),
                                                 LAYER_GUI - 11, Color(1, 1, 1, 0.5));
@@ -1449,8 +1456,8 @@ EditorOverlayWidget::draw_tile_grid(DrawingContext& context, int tile_size, bool
   Vector end = sp_to_tp( Vector(draw_rect.get_right(), draw_rect.get_bottom()), tile_size );
   start.x = std::max(0.0f, start.x);
   start.y = std::max(0.0f, start.y);
-  end.x = std::min(static_cast<float>(current_tm->get_width()) * 32.0f / tile_size, end.x);
-  end.y = std::min(static_cast<float>(current_tm->get_height()) * 32.0f / tile_size, end.y);
+  end.x = std::min(static_cast<float>(current_tm->get_width() * (32 / tile_size)), end.x);
+  end.y = std::min(static_cast<float>(current_tm->get_height() * (32 / tile_size)), end.y);
 
   Vector line_start(0.0f, 0.0f);
   Vector line_end(0.0f, 0.0f);
@@ -1458,9 +1465,10 @@ EditorOverlayWidget::draw_tile_grid(DrawingContext& context, int tile_size, bool
   {
     context.color().draw_line(from, to, col, current_tm->get_layer());
   };
+
   if (draw_shadow)
   {
-    Vector const viewport_scale = VideoSystem::current()->get_viewport().get_scale();
+    Vector viewport_scale = VideoSystem::current()->get_viewport().get_scale();
     const Color shadow_colour(0.0f, 0.0f, 0.0f, 0.05f);
     const Vector shadow_offset(1.0f / viewport_scale.x,
       1.0f / viewport_scale.y);
@@ -1505,13 +1513,11 @@ EditorOverlayWidget::draw_tilemap_border(DrawingContext& context)
   auto current_tm = m_editor.get_selected_tilemap();
   if (!current_tm) return;
 
-  Vector const start = tile_screen_pos( Vector(0, 0) );
-  Vector const end = tile_screen_pos( Vector(static_cast<float>(current_tm->get_width()),
+  Vector start = tile_screen_pos( Vector(0, 0) );
+  Vector end = tile_screen_pos( Vector(static_cast<float>(current_tm->get_width()),
                                        static_cast<float>(current_tm->get_height())) );
-  context.color().draw_line(start, Vector(start.x, end.y), Color(1, 0, 1), current_tm->get_layer());
-  context.color().draw_line(start, Vector(end.x, start.y), Color(1, 0, 1), current_tm->get_layer());
-  context.color().draw_line(Vector(start.x, end.y), end, Color(1, 0, 1), current_tm->get_layer());
-  context.color().draw_line(Vector(end.x, start.y), end, Color(1, 0, 1), current_tm->get_layer());
+  Rectf rect = Rectf(start, end);
+  context.color().draw_rect(rect, Color(1, 0, 1), current_tm->get_layer());
 }
 
 void
@@ -1520,13 +1526,13 @@ EditorOverlayWidget::draw_tilemap_outer_shading(DrawingContext& context)
   auto current_tm = m_editor.get_selected_tilemap();
   if (!current_tm) return;
 
-  Vector const start = tile_screen_pos( Vector(0, 0) );
-  Vector const end = tile_screen_pos( Vector(static_cast<float>(current_tm->get_width()),
+  Vector start = tile_screen_pos( Vector(0, 0) );
+  Vector end = tile_screen_pos( Vector(static_cast<float>(current_tm->get_width()),
                                        static_cast<float>(current_tm->get_height())) );
 
   const Color& bg_color = { 0, 0, 0, 0.15 };
   const Camera& camera = m_editor.get_sector()->get_camera();
-  float const height = camera.get_screen_height() * camera.get_current_scale();
+  float height = camera.get_screen_height() * camera.get_current_scale();
   // Left
   context.color().draw_filled_rect({0,0,start.x,height}, bg_color, current_tm->get_layer());
   // Top
@@ -1543,17 +1549,17 @@ EditorOverlayWidget::draw_tilemap_outer_shading(DrawingContext& context)
 void
 EditorOverlayWidget::draw_path(DrawingContext& context)
 {
-  if (!m_edited_path) return;
-  if (!m_selected_object) return;
-  if (!m_selected_object->is_valid()) return;
-  if (!m_edited_path->is_valid()) return;
+  if (!m_edited_path || !m_edited_path->is_valid())
+    return;
+  if (!m_selected_object || !m_selected_object->is_valid())
+    return;
 
   auto path_nodes = m_edited_path->get_path().m_nodes;
 
   for (auto i = path_nodes.begin(); i != path_nodes.end(); ++i)
   {
     auto j = i+1;
-    Path::Node const* node1 = &(*i);
+    Path::Node* node1 = &(*i);
     Path::Node* node2;
     if (j == path_nodes.end())
     {
@@ -1611,6 +1617,9 @@ EditorOverlayWidget::draw(DrawingContext& context)
     }
   }
 
+  draw_tilemap_outer_shading(context);
+  draw_tilemap_border(context);
+
   m_object_tip->draw(context, m_mouse_pos);
 
   // Draw zoom indicator.
@@ -1634,10 +1643,8 @@ EditorOverlayWidget::draw(DrawingContext& context)
       !g_config->editor_show_deprecated_tiles) // If showing deprecated tiles is enabled, this is redundant, since tiles are indicated without the need of hovering over.
   {
     // Deprecated tiles in active tilemaps should have indication, when hovered
-    // The selected tilemap may be null briefly during editor load (issue #3809).
     auto sel_tilemap = m_editor.get_selected_tilemap();
-    if (sel_tilemap &&
-        m_editor.get_tileset()->get(sel_tilemap->get_tile_id(m_hovered_tile)).is_deprecated())
+    if (sel_tilemap && m_editor.get_tileset()->get(sel_tilemap->get_tile_id(m_hovered_tile)).is_deprecated())
       context.color().draw_text(Resources::normal_font, "!",
                                 tp_to_sp(Vector(static_cast<int>(m_hovered_tile.x), static_cast<int>(m_hovered_tile.y))) + Vector(16, 8),
                                 ALIGN_CENTER, LAYER_GUI - 10, Color::RED);
@@ -1657,8 +1664,8 @@ EditorOverlayWidget::draw(DrawingContext& context)
       std::swap(p0.y, p3.y);
     }
 
-    Vector const p1 = Vector(p0.x, p3.y);
-    Vector const p2 = Vector(p3.x, p0.y);
+    Vector p1 = Vector(p0.x, p3.y);
+    Vector p2 = Vector(p3.x, p0.y);
 
     context.color().draw_filled_rect(Rectf(p0, p1 + Vector(2, 2)),
                                        Color(0.0f, 1.0f, 0.0f, 1.0f), 0.0f, LAYER_GUI-5);
@@ -1703,7 +1710,7 @@ EditorOverlayWidget::draw(DrawingContext& context)
     auto selected_tiles = m_editor.get_selected_tiles();
     if (m_autotile_mode)
     {
-      AutotileSet const* autotileset = get_current_autotileset();
+      AutotileSet* autotileset = get_current_autotileset();
       if (selected_tiles && selected_tiles->pos(0, 0) == 0)
       {
         if (autotileset)
@@ -1747,7 +1754,7 @@ EditorOverlayWidget::tp_to_sp(const Vector& tp, int tile_size) const
   auto tilemap = m_editor.get_selected_tilemap();
   if (!tilemap) return Vector(0, 0);
 
-  Vector const sp = tp * static_cast<float>(tile_size);
+  Vector sp = tp * static_cast<float>(tile_size);
   return sp + tilemap->get_offset();
 }
 
@@ -1757,14 +1764,14 @@ EditorOverlayWidget::sp_to_tp(const Vector& sp, int tile_size) const
   auto tilemap = m_editor.get_selected_tilemap();
   if (!tilemap) return Vector(0, 0);
 
-  Vector const sp_ = sp - tilemap->get_offset();
+  Vector sp_ = sp - tilemap->get_offset();
   return sp_ / static_cast<float>(tile_size);
 }
 
 Vector
 EditorOverlayWidget::tile_screen_pos(const Vector& tp, int tile_size) const
 {
-  Vector const sp = tp_to_sp(tp, tile_size);
+  Vector sp = tp_to_sp(tp, tile_size);
   auto& camera = m_editor.get_sector()->get_camera();
   return (sp - camera.get_translation()) * camera.get_current_scale();
 }
@@ -1775,6 +1782,6 @@ EditorOverlayWidget::align_to_tilemap(const Vector& sp, int tile_size) const
   auto tilemap = m_editor.get_selected_tilemap();
   if (!tilemap) return Vector(0, 0);
 
-  Vector const sp_ = sp + tilemap->get_offset() / static_cast<float>(tile_size);
+  Vector sp_ = sp + tilemap->get_offset() / static_cast<float>(tile_size);
   return glm::trunc(sp_) * static_cast<float>(tile_size);
 }

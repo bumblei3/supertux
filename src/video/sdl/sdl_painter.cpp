@@ -617,6 +617,7 @@ SDLPainter::set_clip_rect(const Rect& rect)
   if (ret < 0)
   {
     log_warning << "SDLPainter::set_clip_rect(): SDL_RenderSetClipRect() failed: " << SDL_GetError() << std::endl;
+    SDL_ClearError();
   }
 }
 
@@ -629,6 +630,7 @@ SDLPainter::clear_clip_rect()
   if (ret < 0)
   {
     log_warning << "SDLPainter::clear_clip_rect(): SDL_SetRenderClipRect() failed: " << SDL_GetError() << std::endl;
+    SDL_ClearError();
   }
 }
 
@@ -646,10 +648,10 @@ SDLPainter::get_pixel(const DrawingRequest& draw_req) const
   srcrect.h = 1;
 
   auto surface = SDL_RenderReadPixels(m_sdl_renderer, &srcrect);
-  auto error = SDL_GetError();
-  if (error != nullptr)
+  if (surface == nullptr)
   {
-    log_warning << "failed to read pixels: " << error << std::endl;
+    log_warning << "failed to read pixels: " << SDL_GetError() << std::endl;
+    SDL_ClearError();
   }
 
   auto pixel = static_cast<Uint8*>(surface->pixels);
