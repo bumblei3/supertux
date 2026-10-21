@@ -65,3 +65,11 @@ add_test(
   NAME SmokeRendererChoice
   COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_renderer_choice.sh" "${SUPERTUX_BIN}"
 )
+
+# Editor smoke test: boots the real binary in editor mode on a .stl level
+# under xvfb and asserts it does not crash. Exercises the editor code path
+# (Editor, OverlayWidget, tile converters) the gameplay E2E never reaches.
+add_test(
+  NAME SmokeEditor
+  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/smoke_editor.sh" "${SUPERTUX_BIN}" "${CMAKE_SOURCE_DIR}"
+)
