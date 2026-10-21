@@ -22,6 +22,7 @@ WarningsAsErrors: >
   bugprone-nullptr-arithmetic,
   clang-analyzer-core.NullDereference,
   clang-analyzer-core.CallAndMessage,
-  clang-analyzer-cplusplus.NewDelete
+  clang-analyzer-cplusplus.NewDelete,
+  bugprone-parent-virtual-call
 HeaderFilterRegex: 'src/.*hpp'
 ...
