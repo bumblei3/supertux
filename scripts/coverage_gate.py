@@ -32,7 +32,7 @@ import xml.etree.ElementTree as ET
 #   included so that work stays enforced.
 DEFAULT_THRESHOLDS = {
     # --- pre-existing gate (kept) ---
-    "src/collision/collision.cpp": 70.0,
+    "src/collision/collision.cpp": 85.0,
     "src/math/aatriangle.cpp": 95.0,
     "src/math/easing.cpp": 75.0,
     "src/math/random.cpp": 95.0,

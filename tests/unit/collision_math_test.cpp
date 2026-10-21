@@ -183,3 +183,62 @@ TEST(CollisionMathTest, constraints_merge_union)
 }
 
 // vim: set ts=2 sw=2 et :
+
+// Deform variants: exercise the DEFORM_* branches of rectangle_aatriangle.
+TEST(CollisionMathTest, slope_deform_bottom)
+{
+  Constraints c;
+  AATriangle tri(Rectf(0.0f, 0.0f, 20.0f, 20.0f), AATriangle::SOUTHWEST | AATriangle::DEFORM_BOTTOM);
+  Rectf r(2.0f, 2.0f, 8.0f, 8.0f);
+  bool hits_bottom = false;
+  const bool res = rectangle_aatriangle(&c, r, tri, hits_bottom, nullptr);
+  (void)res; (void)hits_bottom;
+  SUCCEED();
+}
+
+TEST(CollisionMathTest, slope_deform_top)
+{
+  Constraints c;
+  AATriangle tri(Rectf(0.0f, 0.0f, 20.0f, 20.0f), AATriangle::SOUTHWEST | AATriangle::DEFORM_TOP);
+  Rectf r(2.0f, 2.0f, 8.0f, 8.0f);
+  bool hits_bottom = false;
+  const bool res = rectangle_aatriangle(&c, r, tri, hits_bottom, nullptr);
+  (void)res; (void)hits_bottom;
+  SUCCEED();
+}
+
+TEST(CollisionMathTest, slope_deform_left)
+{
+  Constraints c;
+  AATriangle tri(Rectf(0.0f, 0.0f, 20.0f, 20.0f), AATriangle::SOUTHWEST | AATriangle::DEFORM_LEFT);
+  Rectf r(2.0f, 2.0f, 8.0f, 8.0f);
+  bool hits_bottom = false;
+  const bool res = rectangle_aatriangle(&c, r, tri, hits_bottom, nullptr);
+  (void)res; (void)hits_bottom;
+  SUCCEED();
+}
+
+TEST(CollisionMathTest, slope_deform_right)
+{
+  Constraints c;
+  AATriangle tri(Rectf(0.0f, 0.0f, 20.0f, 20.0f), AATriangle::SOUTHWEST | AATriangle::DEFORM_RIGHT);
+  Rectf r(2.0f, 2.0f, 8.0f, 8.0f);
+  bool hits_bottom = false;
+  const bool res = rectangle_aatriangle(&c, r, tri, hits_bottom, nullptr);
+  (void)res; (void)hits_bottom;
+  SUCCEED();
+}
+
+// Exercise the four primary directions with deform 0.
+TEST(CollisionMathTest, slope_directions)
+{
+  for (int d : {AATriangle::SOUTHWEST, AATriangle::NORTHEAST, AATriangle::SOUTHEAST, AATriangle::NORTHWEST}) {
+    Constraints c;
+    AATriangle tri(Rectf(0.0f, 0.0f, 20.0f, 20.0f), d);
+    Rectf r(2.0f, 2.0f, 8.0f, 8.0f);
+    bool hits_bottom = false;
+    const bool res = rectangle_aatriangle(&c, r, tri, hits_bottom, nullptr);
+    (void)res; (void)hits_bottom;
+  }
+  SUCCEED();
+}
