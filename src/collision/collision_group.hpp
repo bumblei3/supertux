@@ -17,7 +17,9 @@
 
 #pragma once
 
-enum CollisionGroup {
+#include <cstdint>
+
+enum CollisionGroup : std::uint8_t {
   /** Objects in DISABLED group are not tested for collisions */
   COLGROUP_DISABLED = 0,
 
