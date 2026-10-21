@@ -187,3 +187,325 @@ TEST_F(AutotileParserTest, missing_id_parameter_throws)
   AutotileParser parser(sets, path);
   EXPECT_THROW(parser.parse(), std::runtime_error);
 }
+
+TEST_F(AutotileParserTest, missing_solid_parameter_throws_for_non_corner)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset\n"
+    "    (name \"broken\")\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (mask \"11111111\")\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path);
+  EXPECT_THROW(parser.parse(), std::runtime_error);
+}
+
+TEST_F(AutotileParserTest, corner_autotileset_does_not_require_solid)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset-corner\n"
+    "    (name \"corner\")\n"
+    "    (default 0)\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (mask \"1111\")\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path);
+  parser.parse();
+  ASSERT_EQ(1u, sets.size());
+  EXPECT_TRUE(sets[0]->is_corner());
+}
+
+TEST_F(AutotileParserTest, mask_wrong_length_throws)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset\n"
+    "    (name \"badmask\")\n"
+    "    (solid #t)\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (solid #t)\n"
+    "      (mask \"111\")\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path);
+  EXPECT_THROW(parser.parse(), std::runtime_error);
+}
+
+TEST_F(AutotileParserTest, mask_unrecognized_char_throws)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset\n"
+    "    (name \"badchar\")\n"
+    "    (solid #t)\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (solid #t)\n"
+    "      (mask \"1111111X\")\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path);
+  EXPECT_THROW(parser.parse(), std::runtime_error);
+}
+
+TEST_F(AutotileParserTest, corner_mask_wrong_length_throws)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset\n"
+    "    (name \"badcorner\")\n"
+    "    (autotileset-corner\n"
+    "      (name \"c\")\n"
+    "      (autotile\n"
+    "        (id 1)\n"
+    "        (mask \"11\")\n"
+    "      )\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  // wrapped: outer must be autotiles root
+  const std::string p2 = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset-corner\n"
+    "    (name \"c\")\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (mask \"11\")\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, p2);
+  EXPECT_THROW(parser.parse(), std::runtime_error);
+}
+
+TEST_F(AutotileParserTest, alt_id_period_mismatch_is_skipped)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset\n"
+    "    (name \"alt\")\n"
+    "    (solid #t)\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (solid #t)\n"
+    "      (mask \"11111111\")\n"
+    "      (alt-id\n"
+    "        (id 2)\n"
+    "        (period-x 1 2 3)\n"
+    "        (period-y 0 0)\n"
+    "      )\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path);
+  parser.parse();
+  ASSERT_EQ(1u, sets.size());
+  EXPECT_TRUE(sets[0]->is_member(1u));
+  EXPECT_FALSE(sets[0]->is_member(2u));
+}
+
+TEST_F(AutotileParserTest, alt_id_outside_range_is_skipped)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset\n"
+    "    (name \"alt2\")\n"
+    "    (solid #t)\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (solid #t)\n"
+    "      (mask \"11111111\")\n"
+    "      (alt-id\n"
+    "        (id 999)\n"
+    "      )\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path, 0, 10);
+  parser.parse();
+  ASSERT_EQ(1u, sets.size());
+  EXPECT_TRUE(sets[0]->is_member(1u));
+  EXPECT_FALSE(sets[0]->is_member(999u));
+}
+
+TEST_F(AutotileParserTest, alt_id_missing_id_is_skipped)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset\n"
+    "    (name \"alt3\")\n"
+    "    (solid #t)\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (solid #t)\n"
+    "      (mask \"11111111\")\n"
+    "      (alt-id\n"
+    "        (weight 0.5)\n"
+    "      )\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path);
+  parser.parse();
+  ASSERT_EQ(1u, sets.size());
+  EXPECT_TRUE(sets[0]->is_member(1u));
+}
+
+TEST_F(AutotileParserTest, empty_autotileset_is_not_registered)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset\n"
+    "    (name \"empty\")\n"
+    "    (solid #t)\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path);
+  parser.parse();
+  EXPECT_TRUE(sets.empty());
+}
+
+TEST_F(AutotileParserTest, unknown_symbol_in_root_is_ignored)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (foobar\n"
+    "    (name \"x\")\n"
+    "  )\n"
+    "  (autotileset\n"
+    "    (name \"s\")\n"
+    "    (solid #t)\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (solid #t)\n"
+    "      (mask \"11111111\")\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path);
+  parser.parse();
+  ASSERT_EQ(1u, sets.size());
+}
+
+TEST_F(AutotileParserTest, unknown_symbol_in_autotileset_is_ignored)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset\n"
+    "    (name \"s\")\n"
+    "    (solid #t)\n"
+    "    (foobar 1)\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (solid #t)\n"
+    "      (mask \"11111111\")\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path);
+  parser.parse();
+  ASSERT_EQ(1u, sets.size());
+}
+
+TEST_F(AutotileParserTest, negative_end_returns_early)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset\n"
+    "    (name \"s\")\n"
+    "    (solid #t)\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (solid #t)\n"
+    "      (mask \"11111111\")\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path, 0, -1);
+  parser.parse();
+  EXPECT_TRUE(sets.empty());
+}
+
+TEST_F(AutotileParserTest, missing_name_logs_warning_but_parses)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset\n"
+    "    (solid #t)\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (solid #t)\n"
+    "      (mask \"11111111\")\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path);
+  parser.parse();
+  ASSERT_EQ(1u, sets.size());
+  EXPECT_EQ("[unnamed]", sets[0]->get_name());
+}
+
+TEST_F(AutotileParserTest, missing_default_logs_warning_but_parses)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset\n"
+    "    (name \"nodef\")\n"
+    "    (solid #t)\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (solid #t)\n"
+    "      (mask \"11111111\")\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path);
+  parser.parse();
+  ASSERT_EQ(1u, sets.size());
+  EXPECT_EQ(0u, sets[0]->get_default_tile());
+}
+
+TEST_F(AutotileParserTest, solid_parameter_not_needed_for_corner_logs_warning)
+{
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset-corner\n"
+    "    (name \"c\")\n"
+    "    (solid #t)\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (solid #t)\n"
+    "      (mask \"1111\")\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path);
+  parser.parse();
+  ASSERT_EQ(1u, sets.size());
+}
