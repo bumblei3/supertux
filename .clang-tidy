@@ -24,6 +24,7 @@ WarningsAsErrors: >
   clang-analyzer-core.CallAndMessage,
   clang-analyzer-cplusplus.NewDelete,
   bugprone-parent-virtual-call,
-  performance-avoid-endl
+  performance-avoid-endl,
+  performance-unnecessary-value-param
 HeaderFilterRegex: 'src/.*hpp'
 ...

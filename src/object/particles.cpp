@@ -26,7 +26,6 @@
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
 
-//TODO: remove this function in favor of the one below
 Particles::Particles(const Vector& epicenter, int min_angle, int max_angle,
                      const Vector& initial_velocity, const Vector& acceleration, int number,
                      Color color_, int size_, float life_time, int drawing_layer_) :

@@ -242,7 +242,7 @@ public:
 
   /** Get total number of GameObjects of given type */
   template<class T>
-  int get_object_count(std::function<bool(const T&)> predicate = nullptr) const
+  int get_object_count(std::function<bool(const T&)> const& predicate = nullptr) const
   {
     int total = 0;
     for (auto& obj : get_objects_by_type<T>())

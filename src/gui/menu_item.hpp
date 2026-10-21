@@ -34,7 +34,7 @@ public:
   inline void set_text(const std::string& text) { m_text = text; }
   inline const std::string& get_text() const { return m_text; }
 
-  inline void set_font(const FontPtr font) { m_font = font; }
+  inline void set_font(const FontPtr& font) { m_font = font; }
   inline const FontPtr& get_font() const { return m_font; }
 
   /** Draws the menu item. */

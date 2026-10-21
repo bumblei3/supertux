@@ -201,7 +201,7 @@ public:
   bool has_unsaved_changes();
 
   void pack_addon();
-  inline void on_exit(exit_cb_t exit_cb) { m_on_exit_cb = exit_cb; }
+  inline void on_exit(exit_cb_t exit_cb) { m_on_exit_cb = std::move(exit_cb); }
 
 private:
   void set_sector(Sector* sector);
