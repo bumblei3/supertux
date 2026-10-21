@@ -64,9 +64,7 @@ MobileController::MobileController() :
   m_tex_debug(Surface::from_file("/images/engine/mobile/debug.png")),
   m_screen_width(),
   m_screen_height(),
-  m_mobile_controls_scale(),
-  m_haptic(nullptr),//, SDL_HapticClose),
-  m_haptic_timer(0)
+  m_mobile_controls_scale()
 {
 // FIXME: SDL3
 #if 0
