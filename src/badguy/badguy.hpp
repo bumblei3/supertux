@@ -179,7 +179,7 @@ public:
   inline Physic& get_physic() { return m_physic; }
 
 protected:
-  enum State {
+  enum State : std::uint8_t {
     STATE_INIT,
     STATE_INACTIVE,
     STATE_ACTIVE,
