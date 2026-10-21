@@ -44,7 +44,7 @@ DEFAULT_THRESHOLDS = {
     "src/supertux/timer.cpp": 95.0,
     "src/supertux/sequence.cpp": 80.0,
     "src/supertux/physic.hpp": 95.0,
-    "src/supertux/autotile.cpp": 70.0,
+    "src/supertux/autotile.cpp": 85.0,
     "src/supertux/autotile_parser.cpp": 80.0,
     "src/supertux/tile.cpp": 48.0,
     "src/supertux/tile_set_parser.cpp": 40.0,

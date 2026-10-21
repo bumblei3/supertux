@@ -509,3 +509,27 @@ TEST_F(AutotileParserTest, solid_parameter_not_needed_for_corner_logs_warning)
   parser.parse();
   ASSERT_EQ(1u, sets.size());
 }
+
+
+TEST_F(AutotileParserTest, developer_mode_runs_validate)
+{
+  test_config.developer_mode = true;
+  const std::string path = write_temp(
+    "(supertux-autotiles\n"
+    "  (autotileset\n"
+    "    (name \"grass\")\n"
+    "    (default 5)\n"
+    "    (solid #t)\n"
+    "    (autotile\n"
+    "      (id 1)\n"
+    "      (solid #t)\n"
+    "      (mask \"11111111\")\n"
+    "    )\n"
+    "  )\n"
+    ")\n");
+  std::vector<std::unique_ptr<AutotileSet>> sets;
+  AutotileParser parser(sets, path);
+  parser.parse();
+  ASSERT_EQ(1u, sets.size());
+  test_config.developer_mode = false;
+}
