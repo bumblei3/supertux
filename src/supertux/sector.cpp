@@ -89,7 +89,7 @@ Sector::~Sector()
   }
   catch(const std::exception& err)
   {
-    log_warning << err.what() << std::endl;
+    log_warning << err.what() << '\n';
   }
 
   clear_objects();
@@ -113,14 +113,14 @@ Sector::finish_construction(bool editable)
     if (!m_level.is_worldmap() &&
         (get_object_count<Background>() <= 0 && get_object_count<Gradient>() <= 0))
     {
-      log_warning << "sector '" << get_name() << "' does not contain a background or gradient. Setting a default gradient." << std::endl;
+      log_warning << "sector '" << get_name() << "' does not contain a background or gradient. Setting a default gradient." << '\n';
       add<Gradient>();
     }
   }
 
   if (get_all_tilemaps().empty())
   {
-    log_warning << "sector '" << get_name() << "' does not contain any tile layers. Creating an empty solid one." << std::endl;
+    log_warning << "sector '" << get_name() << "' does not contain any tile layers. Creating an empty solid one." << '\n';
 
     TileMap& tilemap = add<TileMap>(TileManager::current()->get_tileset(m_level.get_tileset()));
     tilemap.resize(DEFAULT_SECTOR_WIDTH, DEFAULT_SECTOR_HEIGHT);
@@ -130,11 +130,11 @@ Sector::finish_construction(bool editable)
   {
     if (editable)
     {
-      log_warning << "sector '" << get_name() << "' does not contain a solid tile layer." << std::endl;
+      log_warning << "sector '" << get_name() << "' does not contain a solid tile layer." << '\n';
     }
     else
     {
-      log_warning << "sector '" << get_name() << "' does not contain a solid tile layer. Creating an empty one." << std::endl;
+      log_warning << "sector '" << get_name() << "' does not contain a solid tile layer. Creating an empty one." << '\n';
 
       TileMap& tilemap = add<TileMap>(TileManager::current()->get_tileset(m_level.get_tileset()));
       tilemap.resize(DEFAULT_SECTOR_WIDTH, DEFAULT_SECTOR_HEIGHT);
@@ -144,7 +144,7 @@ Sector::finish_construction(bool editable)
 
   if (!get_object_by_type<Camera>()) {
     if (!m_level.is_worldmap())
-      log_warning << "sector '" << get_name() << "' does not contain a camera." << std::endl;
+      log_warning << "sector '" << get_name() << "' does not contain a camera." << '\n';
     add<Camera>("Camera");
   }
 
@@ -204,7 +204,7 @@ Sector::activate(const std::string& spawnpoint)
 
   if (!sp) {
     if (!m_level.is_worldmap())
-      log_warning << "Spawnpoint '" << spawnpoint << "' not found." << std::endl;
+      log_warning << "Spawnpoint '" << spawnpoint << "' not found." << '\n';
     if (spawnpoint != DEFAULT_SPAWNPOINT_NAME) {
       activate(DEFAULT_SPAWNPOINT_NAME);
     } else {
@@ -342,7 +342,7 @@ Sector::calculate_foremost_layer(bool including_transparent) const
       }
     }
   }
-  log_debug << "Calculated badguy falling layer was: " << layer << std::endl;
+  log_debug << "Calculated badguy falling layer was: " << layer << '\n';
   return layer;
 }
 
@@ -382,7 +382,7 @@ Sector::before_object_add(GameObject& object)
     const auto& objects = get_objects_by_type_index(std::type_index(typeid(object)));
     if (!objects.empty())
     {
-      log_warning << "Can't insert multiple GameObject of type '" << typeid(object).name() << "', ignoring" << std::endl;
+      log_warning << "Can't insert multiple GameObject of type '" << typeid(object).name() << "', ignoring" << '\n';
       return false;
     }
   }
@@ -824,7 +824,7 @@ Sector::convert_tiles2gameobject()
               add_object(std::move(object));
               tm.change(x, y, 0);
             } catch(std::exception& e) {
-              log_warning << e.what() << "" << std::endl;
+              log_warning << e.what() << "" << '\n';
             }
           }
         }

@@ -42,7 +42,7 @@ Ispy::Ispy(const ReaderMapping& reader) :
   reader.get("sticky", m_sticky, false);
 
   if (m_dir == Direction::AUTO)
-    log_warning << "Setting an Ispy's direction to AUTO is no good idea." << std::endl;
+    log_warning << "Setting an Ispy's direction to AUTO is no good idea." << '\n';
 
   set_action("idle", m_dir);
 }

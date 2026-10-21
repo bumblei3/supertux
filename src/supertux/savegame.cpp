@@ -97,7 +97,7 @@ LevelsetState::get_level_state(const std::string& filename) const
   }
   else
   {
-    log_info << "creating new level state for " << filename << std::endl;
+    log_info << "creating new level state for " << filename << '\n';
     LevelState state;
     state.filename = filename;
     return state;
@@ -149,7 +149,7 @@ Savegame::load(bool base_data)
 {
   if (m_world_name.empty())
   {
-    log_debug << "no world name provided for savegame, skipping load" << std::endl;
+    log_debug << "no world name provided for savegame, skipping load" << '\n';
     return;
   }
 
@@ -159,16 +159,16 @@ Savegame::load(bool base_data)
 
   if (!PHYSFS_exists(filename.c_str()))
   {
-    log_info << filename << " doesn't exist, not loading state" << std::endl;
+    log_info << filename << " doesn't exist, not loading state" << '\n';
   }
   else
   {
     if (physfsutil::is_directory(filename))
     {
-      log_info << filename << " is a directory, not loading state" << std::endl;
+      log_info << filename << " is a directory, not loading state" << '\n';
       return;
     }
-    log_debug << "loading savegame from " << filename << std::endl;
+    log_debug << "loading savegame from " << filename << '\n';
 
     try
     {
@@ -241,7 +241,7 @@ Savegame::load(bool base_data)
     }
     catch(const std::exception& e)
     {
-      log_fatal << "Couldn't load savegame: " << e.what() << std::endl;
+      log_fatal << "Couldn't load savegame: " << e.what() << '\n';
     }
   }
 }
@@ -261,20 +261,20 @@ Savegame::save(bool initial)
   using namespace worldmap;
   if (m_world_name.empty())
   {
-    log_debug << "no world name set for savegame, skipping save" << std::endl;
+    log_debug << "no world name set for savegame, skipping save" << '\n';
     return;
   }
 
   const std::string filename = get_filename();
-  log_debug << "saving savegame to " << filename << std::endl;
+  log_debug << "saving savegame to " << filename << '\n';
 
   m_profile.save(); // Make sure profile directory exists, save profile info
 
   if (WorldMap::current())
   {
     log_debug << "Got save version " << m_save_version << " and the current"
-      " save version is " << WorldMap::current()->get_save_version() << std::endl;
-    log_debug << "initial save: " << initial << std::endl;
+      " save version is " << WorldMap::current()->get_save_version() << '\n';
+    log_debug << "initial save: " << initial << '\n';
     // We can't move an initial, empty save!
     if (!initial && WorldMap::current()->get_save_version() != m_save_version)
     {
@@ -346,7 +346,7 @@ Savegame::get_worldmaps()
   }
   catch(const std::exception& err)
   {
-    log_warning << err.what() << std::endl;
+    log_warning << err.what() << '\n';
   }
 
   // ensure that the loaded worldmap names have their canonical form
@@ -361,7 +361,7 @@ Savegame::get_worldmap_state(const std::string& name)
   WorldmapState result;
 
   if (Editor::current())
-    log_warning << "Savegame::get_worldmap_state called while the editor is active" << std::endl;
+    log_warning << "Savegame::get_worldmap_state called while the editor is active" << '\n';
 
   try
   {
@@ -380,7 +380,7 @@ Savegame::get_worldmap_state(const std::string& name)
   }
   catch(const std::exception& err)
   {
-    log_warning << err.what() << std::endl;
+    log_warning << err.what() << '\n';
   }
 
   return result;
@@ -398,7 +398,7 @@ Savegame::get_levelsets()
   }
   catch(const std::exception& err)
   {
-    log_warning << err.what() << std::endl;
+    log_warning << err.what() << '\n';
   }
 
   return results;
@@ -411,7 +411,7 @@ Savegame::get_levelset_state(const std::string& basedir)
   LevelsetState result;
 
   if (Editor::current())
-    log_warning << "Savegame::get_levelset_state called while the editor is active" << std::endl;
+    log_warning << "Savegame::get_levelset_state called while the editor is active" << '\n';
 
   try
   {
@@ -421,7 +421,7 @@ Savegame::get_levelset_state(const std::string& basedir)
   }
   catch(const std::exception& err)
   {
-    log_warning << err.what() << std::endl;
+    log_warning << err.what() << '\n';
   }
 
   return result;
@@ -435,7 +435,7 @@ Savegame::set_levelset_state(const std::string& basedir,
   LevelsetState const state = get_levelset_state(basedir);
 
   if (Editor::current())
-    log_warning << "Savegame::set_levelset_state called while the editor is active" << std::endl;
+    log_warning << "Savegame::set_levelset_state called while the editor is active" << '\n';
 
   try
   {
@@ -449,6 +449,6 @@ Savegame::set_levelset_state(const std::string& basedir,
   }
   catch(const std::exception& err)
   {
-    log_warning << err.what() << std::endl;
+    log_warning << err.what() << '\n';
   }
 }

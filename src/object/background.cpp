@@ -208,7 +208,7 @@ Background::Background(const ReaderMapping& reader) :
     }
     else
     {
-      log_warning << "Background: invalid alignment: '" << alignment_str << "'" << std::endl;
+      log_warning << "Background: invalid alignment: '" << alignment_str << "'" << '\n';
       m_alignment = NO_ALIGNMENT;
     }
   }

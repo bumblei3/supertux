@@ -79,7 +79,7 @@ LevelsetScreen::setup()
   {
     if (!Editor::current())
     {
-      log_info << "Saving Levelset state" << std::endl;
+      log_info << "Saving Levelset state" << '\n';
       // this gets called when the GameSession is done and we return back to the
       m_savegame.set_levelset_state(m_basedir, m_level_filename, m_solved);
       m_savegame.save();
@@ -91,7 +91,7 @@ LevelsetScreen::setup()
     m_level_started = true;
 
     if (Editor::is_active()) {
-      log_warning << "Editor is still active, quitting Levelset screen" << std::endl;
+      log_warning << "Editor is still active, quitting Levelset screen" << '\n';
       ScreenManager::current()->pop_screen();
     } else {
       auto screen = std::make_unique<GameSession>(FileSystem::join(m_basedir, m_level_filename),
@@ -112,7 +112,7 @@ LevelsetScreen::setup()
       }
       catch (const std::runtime_error& e)
       {
-        log_warning << "Couldn't load level: " << e.what() << std::endl;
+        log_warning << "Couldn't load level: " << e.what() << '\n';
         ScreenManager::current()->pop_screen();
       }
     }

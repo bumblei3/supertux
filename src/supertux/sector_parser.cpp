@@ -102,7 +102,7 @@ SectorParser::parse_object(const std::string& name, const ReaderMapping& reader)
     std::string obj_name;
     reader.get("name", obj_name);
 
-    log_warning << "Couldn't parse object of type '" << name << "' with name '" << obj_name << "': " << err.what() << std::endl;
+    log_warning << "Couldn't parse object of type '" << name << "' with name '" << obj_name << "': " << err.what() << '\n';
     return {};
   }
 }
@@ -168,7 +168,7 @@ SectorParser::parse(const ReaderMapping& reader)
         std::vector<float> vColor;
         bool const hasColor = reader.get("ambient-light", vColor);
         if (vColor.size() < 3 || !hasColor) {
-          log_warning << "(ambient-light) requires a color as argument" << std::endl;
+          log_warning << "(ambient-light) requires a color as argument" << '\n';
         } else {
           m_sector.add<AmbientLight>(Color(vColor));
         }
@@ -210,7 +210,7 @@ SectorParser::parse_old_format(const ReaderMapping& reader)
     if (backgroundimage == "ocean.png") backgroundimage = "ocean.jpg";
     backgroundimage = "images/background/" + backgroundimage;
     if (!PHYSFS_exists(backgroundimage.c_str())) {
-      log_warning << "Background image \"" << backgroundimage << "\" not found. Ignoring." << std::endl;
+      log_warning << "Background image \"" << backgroundimage << "\" not found. Ignoring." << '\n';
       backgroundimage = "";
     }
   }
@@ -312,7 +312,7 @@ SectorParser::parse_old_format(const ReaderMapping& reader)
           m_sector.add<SpawnPointMarker>(DEFAULT_SPAWNPOINT_NAME, sp_pos);
         }
       } else {
-        log_warning << "Unknown token '" << iter.get_key() << "' in reset-points." << std::endl;
+        log_warning << "Unknown token '" << iter.get_key() << "' in reset-points." << '\n';
       }
     }
   }
@@ -326,7 +326,7 @@ SectorParser::parse_old_format(const ReaderMapping& reader)
       if (object) {
         m_sector.add_object(std::move(object));
       } else {
-        log_warning << "Unknown object '" << obj.get_name() << "' in level." << std::endl;
+        log_warning << "Unknown object '" << obj.get_name() << "' in level." << '\n';
       }
     }
   }
@@ -338,7 +338,7 @@ SectorParser::parse_old_format(const ReaderMapping& reader)
   m_sector.flush_game_objects();
 
   if (m_sector.get_solid_tilemaps().empty()) {
-    log_warning << "sector '" << m_sector.get_name() << "' does not contain a solid tile layer." << std::endl;
+    log_warning << "sector '" << m_sector.get_name() << "' does not contain a solid tile layer." << '\n';
   }
 
   m_sector.finish_construction(m_editable);

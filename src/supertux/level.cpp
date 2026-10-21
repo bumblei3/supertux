@@ -124,7 +124,7 @@ void
 Level::save(const std::string& filepath, bool retry)
 {
   //FIXME: It tests for directory in supertux/data, but saves into .supertux2.
-  log_info << "Attempting to save complete path \"" << filepath << "\"" << std::endl;
+  log_info << "Attempting to save complete path \"" << filepath << "\"" << '\n';
   try {
     { // make sure the level directory exists
       std::string const dirname = FileSystem::dirname(filepath);
@@ -151,14 +151,14 @@ Level::save(const std::string& filepath, bool retry)
     save(writer);
     log_info << "Level saved as " << filepath << "."
              << (StringUtil::has_suffix(filepath, "~") ? " [Autosave]" : "")
-             << std::endl;
+             << '\n';
   } catch(std::exception& e) {
     if (retry) {
       std::stringstream msg;
       msg << "Problem when saving level '" << filepath << "': " << e.what();
       throw std::runtime_error(msg.str());
     } else {
-      log_warning << "Failed to save the level, retrying..." << std::endl;
+      log_warning << "Failed to save the level, retrying..." << '\n';
       { // create the level directory again
         std::string const dirname = FileSystem::dirname(filepath);
         if (!PHYSFS_mkdir(dirname.c_str()))

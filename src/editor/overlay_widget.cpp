@@ -421,7 +421,7 @@ EditorOverlayWidget::fill()
   {
     if (pos_stack.size() > MAX_FILL_STACK_SIZE)
     {
-      log_warning << "More than 1'000'000 tiles in stack to fill, STOP" << std::endl;
+      log_warning << "More than 1'000'000 tiles in stack to fill, STOP" << '\n';
       return;
     }
 
@@ -769,7 +769,7 @@ EditorOverlayWidget::move_object()
     //    if (nm) {
     //      nm->move_other_marker(bm->get_uid(), nm->get_pos() * 2.f - new_pos);
     //    } else {
-    //      log_warning << "Moving bezier handles without parent NodeMarker" << std::endl;
+    //      log_warning << "Moving bezier handles without parent NodeMarker" << '\n';
     //    }
     //  }
     //}

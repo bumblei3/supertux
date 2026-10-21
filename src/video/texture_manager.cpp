@@ -53,7 +53,7 @@ GLenum string2wrap(const std::string& text)
   }
   else
   {
-    log_warning << "unknown texture wrap: " << text << std::endl;
+    log_warning << "unknown texture wrap: " << text << '\n';
     return GL_CLAMP_TO_EDGE;
   }
 }
@@ -70,7 +70,7 @@ GLenum string2filter(const std::string& text)
   }
   else
   {
-    log_warning << "unknown texture filter: " << text << std::endl;
+    log_warning << "unknown texture filter: " << text << '\n';
     return GL_LINEAR;
   }
 }
@@ -81,7 +81,7 @@ SDLSurfacePtr create_image_surface(const std::string& filename)
     return SDLSurface::from_file(filename);
 
   // The image doesn't exist, so attempt to load a ".deprecated" version
-  log_warning << "Image '" << filename << "' doesn't exist. Attempting to load \".deprecated\" version." << std::endl;
+  log_warning << "Image '" << filename << "' doesn't exist. Attempting to load \".deprecated\" version." << '\n';
   return SDLSurface::from_file(FileSystem::strip_extension(filename) + ".deprecated" +
                                FileSystem::extension(filename));
 }
@@ -103,7 +103,7 @@ TextureManager::~TextureManager()
   {
     if (!texture.second.expired())
     {
-      log_warning << "Texture '" << std::get<0>(texture.first) << "' not freed" << std::endl;
+      log_warning << "Texture '" << std::get<0>(texture.first) << "' not freed" << '\n';
     }
   }
   m_image_textures.clear();
@@ -116,7 +116,7 @@ TextureManager::get(const ReaderMapping& mapping, const std::optional<Rect>& reg
   std::string filename;
   if (!mapping.get("file", filename))
   {
-    log_warning << "'file' tag missing" << std::endl;
+    log_warning << "'file' tag missing" << '\n';
   }
   else
   {
@@ -133,7 +133,7 @@ TextureManager::get(const ReaderMapping& mapping, const std::optional<Rect>& reg
     }
     else
     {
-      log_warning << "'rect' requires four elements" << std::endl;
+      log_warning << "'rect' requires four elements" << '\n';
     }
   }
 
@@ -155,7 +155,7 @@ TextureManager::get(const ReaderMapping& mapping, const std::optional<Rect>& reg
     }
     else
     {
-      log_warning << "unknown number of wrap arguments" << std::endl;
+      log_warning << "unknown number of wrap arguments" << '\n';
     }
   }
 
@@ -253,7 +253,7 @@ TextureManager::reap_cache_entry(const Texture::Key& key)
   auto i = m_image_textures.find(key);
   if (i == m_image_textures.end())
   {
-    log_warning << "no cache entry for '" << std::get<0>(key) << "'" << std::endl;
+    log_warning << "no cache entry for '" << std::get<0>(key) << "'" << '\n';
   }
   else
   {
@@ -273,7 +273,7 @@ TextureManager::create_image_texture(const std::string& filename, const Rect& re
   }
   catch(const std::exception& err)
   {
-    log_warning << "Couldn't load texture '" << filename << "' (now using dummy texture): " << err.what() << std::endl;
+    log_warning << "Couldn't load texture '" << filename << "' (now using dummy texture): " << err.what() << '\n';
     m_load_successful = false;
     return create_dummy_texture();
   }
@@ -313,7 +313,7 @@ TextureManager::create_image_surface_raw(const std::string& filename, const Rect
        format->Amask == 0))
   {
     log_debug << "Surface for image " << filename
-              << " is indexed or has an unknown format. Converting to RGBA8888." << std::endl;
+              << " is indexed or has an unknown format. Converting to RGBA8888." << '\n';
     convert.reset(SDL_ConvertSurface(const_cast<SDL_Surface*>(&src_surface), SDL_PIXELFORMAT_RGBA8888));
   }
 
@@ -323,7 +323,7 @@ TextureManager::create_image_surface_raw(const std::string& filename, const Rect
   if (!Rect(0, 0, surface.w, surface.h).contains(rect))
   {
     log_warning << filename << ": invalid subregion requested: image="
-                << surface.w << "x" << surface.h << ", rect=" << rect << std::endl;
+                << surface.w << "x" << surface.h << ", rect=" << rect << '\n';
 
     subimage = SDLSurfacePtr(
       SDL_CreateSurface(rect.get_width(), rect.get_height(), src_surface.format)
@@ -387,7 +387,7 @@ TextureManager::create_image_texture(const std::string& filename, const Sampler&
   }
   catch (const std::exception& err)
   {
-    log_warning << "Couldn't load texture '" << filename << "' (now using dummy texture): " << err.what() << std::endl;
+    log_warning << "Couldn't load texture '" << filename << "' (now using dummy texture): " << err.what() << '\n';
     m_load_successful = false;
     return create_dummy_texture();
   }
@@ -413,7 +413,7 @@ TextureManager::create_dummy_surface()
     }
     else
     {
-      log_warning << "Couldn't load texture '" << s_dummy_texture << "' (now using empty one): " << err.what() << std::endl;
+      log_warning << "Couldn't load texture '" << s_dummy_texture << "' (now using empty one): " << err.what() << '\n';
       return surface;
     }
   }
@@ -439,7 +439,7 @@ TextureManager::reload()
     }
     catch (const std::exception& err)
     {
-      log_warning << "Couldn't load texture '" << surface.first << "' (now using dummy texture): " << err.what() << std::endl;
+      log_warning << "Couldn't load texture '" << surface.first << "' (now using dummy texture): " << err.what() << '\n';
       surface_new = create_dummy_surface();
     }
     surface.second.reset(surface_new);
@@ -459,7 +459,7 @@ TextureManager::reload()
       }
       catch (const std::exception& err)
       {
-        log_warning << "Couldn't load texture '" << std::get<0>(texture.first) << "' (now using dummy texture): " << err.what() << std::endl;
+        log_warning << "Couldn't load texture '" << std::get<0>(texture.first) << "' (now using dummy texture): " << err.what() << '\n';
         surface = create_dummy_surface();
       }
     }
@@ -471,7 +471,7 @@ TextureManager::reload()
       }
       catch (const std::exception& err)
       {
-        log_warning << "Couldn't load texture '" << std::get<0>(texture.first) << "' (now using dummy texture): " << err.what() << std::endl;
+        log_warning << "Couldn't load texture '" << std::get<0>(texture.first) << "' (now using dummy texture): " << err.what() << '\n';
         surface = create_dummy_surface();
       }
     }
@@ -484,7 +484,7 @@ void
 TextureManager::debug_print(std::ostream& out) const
 {
   size_t total_texture_pixels = 0;
-  out << "textures:begin" << std::endl;
+  out << "textures:begin" << '\n';
   for(const auto& it : m_image_textures)
   {
     const auto& key = it.first;
@@ -495,25 +495,25 @@ TextureManager::debug_print(std::ostream& out) const
 
     out << "  texture "
         << " filename:" << std::get<0>(key) << " " << std::get<1>(key)
-        << " " << "use_count:" << it.second.use_count() << std::endl;
+        << " " << "use_count:" << it.second.use_count() << '\n';
   }
-  out << "textures:end" << std::endl;
+  out << "textures:end" << '\n';
 
   size_t total_surface_pixels = 0;
-  out << "surfaces:begin" << std::endl;
+  out << "surfaces:begin" << '\n';
   for(const auto& it : m_surfaces)
   {
     const auto& filename = it.first;
     const auto& surface = it.second;
 
     total_surface_pixels += static_cast<size_t>(surface->w) * static_cast<size_t>(surface->h);
-    out << "  surface filename:" << filename << " " << surface->w << "x" << surface->h << std::endl;
+    out << "  surface filename:" << filename << " " << surface->w << "x" << surface->h << '\n';
   }
-  out << "surfaces:end" << std::endl;
+  out << "surfaces:end" << '\n';
 
-  out << "total texture count:" << m_image_textures.size() << std::endl;
-  out << "total texture pixels:" << total_texture_pixels << std::endl;
+  out << "total texture count:" << m_image_textures.size() << '\n';
+  out << "total texture pixels:" << total_texture_pixels << '\n';
 
-  out << "total surface count:" << m_surfaces.size() << std::endl;
-  out << "total surface pixels:" << total_surface_pixels << std::endl;
+  out << "total surface count:" << m_surfaces.size() << '\n';
+  out << "total surface pixels:" << total_surface_pixels << '\n';
 }

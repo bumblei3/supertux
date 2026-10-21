@@ -34,7 +34,7 @@ StreamSoundSource::StreamSoundSource() :
   }
   catch(std::exception& e)
   {
-    log_warning << e.what() << std::endl;
+    log_warning << e.what() << '\n';
   }
   //add me to update list
   SoundManager::current()->register_for_update( this );
@@ -54,7 +54,7 @@ StreamSoundSource::~StreamSoundSource()
   catch(std::exception& e)
   {
     // Am I bovvered?
-    log_warning << e.what() << std::endl;
+    log_warning << e.what() << '\n';
   }
 }
 
@@ -93,7 +93,7 @@ StreamSoundSource::update()
     }
     catch(std::exception& e)
     {
-      log_warning << e.what() << std::endl;
+      log_warning << e.what() << '\n';
     }
 
     if (fillBufferAndQueue(buffer) == false)
@@ -105,7 +105,7 @@ StreamSoundSource::update()
       return;
 
     // we might have to restart the source if we had a buffer underrun
-    log_info << "Restarting audio source because of buffer underrun" << std::endl;
+    log_info << "Restarting audio source because of buffer underrun" << '\n';
     play();
   }
 
@@ -169,7 +169,7 @@ StreamSoundSource::fillBufferAndQueue(ALuint buffer)
     }
     catch(std::exception& e)
     {
-      log_warning << e.what() << std::endl;
+      log_warning << e.what() << '\n';
     }
   }
 

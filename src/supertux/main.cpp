@@ -103,14 +103,14 @@ ConfigSubsystem::ConfigSubsystem() :
   }
   catch(const std::exception& e)
   {
-    log_info << "Couldn't load config file: " << e.what() << ", using default settings" << std::endl;
+    log_info << "Couldn't load config file: " << e.what() << ", using default settings" << '\n';
   }
 
   // init random number stuff
   gameRandom.seed(m_config.random_seed);
   graphicsRandom.seed(0);
   //const char *how = config->random_seed? ", user fixed.": ", from time().";
-  //log_info << "Using random seed " << config->random_seed << how << std::endl;
+  //log_info << "Using random seed " << config->random_seed << how << '\n';
 }
 
 ConfigSubsystem::~ConfigSubsystem()
@@ -121,7 +121,7 @@ ConfigSubsystem::~ConfigSubsystem()
   }
   catch(std::exception& e)
   {
-    log_warning << "Error saving config: " << e.what() << std::endl;
+    log_warning << "Error saving config: " << e.what() << '\n';
   }
 }
 
@@ -216,7 +216,7 @@ void PhysfsSubsystem::find_mount_datadir()
 #ifdef __ANDROID__
     if (!setup_android_datadir())
     {
-      log_warning << "Couldn't setup android assets: " << PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()) << std::endl;
+      log_warning << "Couldn't setup android assets: " << PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()) << '\n';
     }
 
     return;
@@ -261,12 +261,12 @@ void PhysfsSubsystem::find_mount_datadir()
 
   if (!PHYSFS_mount(std::filesystem::canonical(m_datadir).string().c_str(), nullptr, 1))
   {
-    log_warning << "Couldn't add '" << m_datadir << "' to PhysFS searchpath: " << physfsutil::get_last_error() << std::endl;
+    log_warning << "Couldn't add '" << m_datadir << "' to PhysFS searchpath: " << physfsutil::get_last_error() << '\n';
   }
 #else
   if (!PHYSFS_mount(BUILD_CONFIG_DATA_DIR, nullptr, 1))
   {
-    log_warning << "Couldn't add '" << BUILD_CONFIG_DATA_DIR << "' to PhysFS searchpath: " << physfsutil::get_last_error() << std::endl;
+    log_warning << "Couldn't add '" << BUILD_CONFIG_DATA_DIR << "' to PhysFS searchpath: " << physfsutil::get_last_error() << '\n';
   }
 #endif
 }
@@ -286,7 +286,7 @@ void PhysfsSubsystem::remount_datadir_static() const
   if (FileSystem::exists(userdir_levels) &&
       !PHYSFS_mount(userdir_levels.c_str(), "levels", 0))
   {
-    log_warning << "Couldn't mount levels from the user directory '" << m_userdir << "' to PhysFS searchpath: " << physfsutil::get_last_error() << std::endl;
+    log_warning << "Couldn't mount levels from the user directory '" << m_userdir << "' to PhysFS searchpath: " << physfsutil::get_last_error() << '\n';
   }
 }
 
@@ -295,12 +295,12 @@ void PhysfsSubsystem::add_data_to_search_path(const std::string& dir) const
 #ifndef __EMSCRIPTEN__
   if (!PHYSFS_mount(FileSystem::join(std::filesystem::canonical(m_datadir).string(), dir).c_str(), dir.c_str(), 0))
   {
-    log_warning << "Couldn't add '" << m_datadir << "/" << dir << "' to PhysFS searchpath: " << physfsutil::get_last_error() << std::endl;
+    log_warning << "Couldn't add '" << m_datadir << "/" << dir << "' to PhysFS searchpath: " << physfsutil::get_last_error() << '\n';
   }
 #else
   if (!PHYSFS_mount(FileSystem::join(BUILD_CONFIG_DATA_DIR, dir).c_str(), dir.c_str(), 0))
   {
-    log_warning << "Couldn't add '" << BUILD_CONFIG_DATA_DIR << "/" << dir << "' to PhysFS searchpath: " << physfsutil::get_last_error() << std::endl;
+    log_warning << "Couldn't add '" << BUILD_CONFIG_DATA_DIR << "/" << dir << "' to PhysFS searchpath: " << physfsutil::get_last_error() << '\n';
   }
 #endif
 }
@@ -358,7 +358,7 @@ if (FileSystem::is_directory(olduserdir)) {
   catch (const std::filesystem::filesystem_error& err)
   {
     success = false;
-    log_warning << "Failed to move contents of config directory: " << err.what() << std::endl;
+    log_warning << "Failed to move contents of config directory: " << err.what() << '\n';
   }
   }
   if (success) {
@@ -373,7 +373,7 @@ if (FileSystem::is_directory(olduserdir)) {
     }
   }
   if (success) {
-    log_info << "Moved old config dir " << olduserdir << " to " << m_userdir << std::endl;
+    log_info << "Moved old config dir " << olduserdir << " to " << m_userdir << '\n';
   }
 }
 #endif
@@ -385,7 +385,7 @@ if (FileSystem::is_directory(olduserdir)) {
   if (!FileSystem::is_directory(m_userdir))
   {
     FileSystem::mkdir(m_userdir);
-    log_info << "Created SuperTux userdir: " << m_userdir << std::endl;
+    log_info << "Created SuperTux userdir: " << m_userdir << '\n';
   }
 
 #ifdef __EMSCRIPTEN__
@@ -407,19 +407,19 @@ if (FileSystem::is_directory(olduserdir)) {
 
   if (!PHYSFS_mount(m_userdir.c_str(), nullptr, 0))
   {
-    log_warning << "Couldn't add user directory '" << m_userdir << "' to PhysFS searchpath: " << physfsutil::get_last_error() << std::endl;
+    log_warning << "Couldn't add user directory '" << m_userdir << "' to PhysFS searchpath: " << physfsutil::get_last_error() << '\n';
   }
 }
 
 void PhysfsSubsystem::print_search_path()
 {
   const char* writedir = PHYSFS_getWriteDir();
-  log_info << "PhysfsWriteDir: " << (writedir ? writedir : "(null)") << std::endl;
-  log_info << "PhysfsSearchPath:" << std::endl;
+  log_info << "PhysfsWriteDir: " << (writedir ? writedir : "(null)") << '\n';
+  log_info << "PhysfsSearchPath:" << '\n';
   char** searchpath = PHYSFS_getSearchPath();
   for (char* const* i = searchpath; *i != nullptr; ++i)
   {
-    log_info << "  " << *i << std::endl;
+    log_info << "  " << *i << '\n';
   }
   PHYSFS_freeList(searchpath);
 }
@@ -544,7 +544,7 @@ Main::init_video()
   log_info << (g_config->use_fullscreen?"fullscreen ":"window ")
            << " Window: "     << g_config->window_size
            << " Fullscreen: " << g_config->fullscreen_size << "@" << g_config->fullscreen_refresh_rate
-           << " Area: "       << g_config->aspect_size << std::endl;
+           << " Area: "       << g_config->aspect_size << '\n';
 }
 
 void
@@ -553,17 +553,17 @@ Main::resave(const std::string& input_filename, const std::string& output_filena
   Editor::s_resaving_in_progress = true;
   std::ifstream in(input_filename);
   if (!in) {
-    log_fatal << input_filename << ": couldn't open file for reading" << std::endl;
+    log_fatal << input_filename << ": couldn't open file for reading" << '\n';
   } else {
-    log_info << "loading level: " << input_filename << std::endl;
+    log_info << "loading level: " << input_filename << '\n';
     auto level = LevelParser::from_stream(in, input_filename, StringUtil::has_suffix(input_filename, ".stwm"), true);
     in.close();
 
     std::ofstream out(output_filename);
     if (!out) {
-      log_fatal << output_filename << ": couldn't open file for writing" << std::endl;
+      log_fatal << output_filename << ": couldn't open file for writing" << '\n';
     } else {
-      log_info << "saving level: " << output_filename << std::endl;
+      log_info << "saving level: " << output_filename << '\n';
       level->save(out);
     }
   }
@@ -662,7 +662,7 @@ Main::launch_game(const CommandLineArguments& args)
       if (position != std::string::npos) {
         dir = dir.replace(position, fileProtocol.length(), "");
       }
-      log_debug << "Adding dir: " << dir << std::endl;
+      log_debug << "Adding dir: " << dir << '\n';
       PHYSFS_mount(dir.c_str(), dir.c_str(), true);
 
       if (args.resave && *args.resave)
@@ -681,7 +681,7 @@ Main::launch_game(const CommandLineArguments& args)
         }
         else
         {
-          log_warning << "Level " << start_level << " doesn't exist." << std::endl;
+          log_warning << "Level " << start_level << " doesn't exist." << '\n';
         }
       }
       else if (StringUtil::has_suffix(start_level, ".stwm"))
@@ -770,7 +770,7 @@ Main::run(int argc, char** argv)
   }
   catch(const std::runtime_error& err)
   {
-    std::cout << "Warning: " << err.what() << std::endl;
+    std::cout << "Warning: " << err.what() << '\n';
   }
 #endif
 
@@ -789,7 +789,7 @@ Main::run(int argc, char** argv)
     }
     catch(const std::exception& err)
     {
-      std::cout << "Error: " << err.what() << std::endl;
+      std::cout << "Error: " << err.what() << '\n';
       return EXIT_FAILURE;
     }
 
@@ -833,12 +833,12 @@ Main::run(int argc, char** argv)
   }
   catch(const std::exception& e)
   {
-    log_fatal << "Unexpected exception: " << e.what() << std::endl;
+    log_fatal << "Unexpected exception: " << e.what() << '\n';
     result = 1;
   }
   catch(...)
   {
-    log_fatal << "Unexpected exception" << std::endl;
+    log_fatal << "Unexpected exception" << '\n';
     result = 1;
   }
 #endif
@@ -873,14 +873,14 @@ Main::release_check()
   {
     if (!success)
     {
-      log_warning << "Error performing new release check: Failed to download \"supertux-versioninfo\" file: " << status->error_msg << std::endl;
+      log_warning << "Error performing new release check: Failed to download \"supertux-versioninfo\" file: " << status->error_msg << '\n';
       return;
     }
     auto doc = ReaderDocument::from_string(m_version_info, "ver_info.nfo");
     auto root = doc.get_root();
     if (root.get_name() != "supertux-versioninfo")
     {
-      log_warning << "File is not a \"supertux-versioninfo\" file." << std::endl;
+      log_warning << "File is not a \"supertux-versioninfo\" file." << '\n';
       return;
     }
     auto mapping = root.get_mapping();

@@ -73,7 +73,7 @@ ProfileNameMenu::menu_action(MenuItem& item)
     }
     catch (const std::exception& err)
     {
-      log_warning << "Error creating profile " << id << ": " << err.what() << std::endl;
+      log_warning << "Error creating profile " << id << ": " << err.what() << '\n';
       Dialog::show_message(_("An error occurred while creating the profile."));
       return;
     }

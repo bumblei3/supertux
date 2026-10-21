@@ -150,17 +150,17 @@ std::ostream& log_fatal_f(const char* file, int line)
 void log_info_callback(const std::string& str)
 {
   if (g_log_tinygettext)
-    log_info << "\r\n[TINYGETTEXT] " << str << std::endl;
+    log_info << "\r\n[TINYGETTEXT] " << str << '\n';
 }
 
 void log_warning_callback(const std::string& str)
 {
   if (g_log_tinygettext)
-    log_debug << "\r\n[TINYGETTEXT] " << str << std::endl;
+    log_debug << "\r\n[TINYGETTEXT] " << str << '\n';
 }
 
 void log_error_callback(const std::string& str)
 {
   if (g_log_tinygettext)
-    log_warning << "\r\n[TINYGETTEXT] " << str << std::endl;
+    log_warning << "\r\n[TINYGETTEXT] " << str << '\n';
 }

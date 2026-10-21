@@ -133,7 +133,7 @@ WeakBlock::collision_bullet(Bullet& bullet, const CollisionHit& hit)
       break;
 
     default:
-      log_debug << "unhandled state" << std::endl;
+      log_debug << "unhandled state" << '\n';
       break;
 	}
 
@@ -163,7 +163,7 @@ WeakBlock::collision(MovingObject& other, const CollisionHit& hit)
         break;
 
       default:
-        log_debug << "unhandled state" << std::endl;
+        log_debug << "unhandled state" << '\n';
         break;
   }
 

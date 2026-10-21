@@ -53,7 +53,7 @@ WavSoundFile::WavSoundFile(PHYSFS_file* file_) :
   if (PHYSFS_readBytes(m_file, magic, sizeof(magic)) < static_cast<std::make_signed<size_t>::type>(sizeof(magic)))
     throw SoundError("Couldn't read file magic (not a wave file)");
   if (strncmp(magic, "RIFF", 4) != 0) {
-    log_debug << "MAGIC: " << magic << std::endl;
+    log_debug << "MAGIC: " << magic << '\n';
     throw SoundError("file is not a RIFF wav file");
   }
 

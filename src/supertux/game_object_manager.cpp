@@ -110,7 +110,7 @@ GameObjectManager::process_resolve_requests()
     GameObject const* object = get_object_by_name<GameObject>(request.name);
     if (!object)
     {
-      log_warning << "GameObjectManager: Name resolve for '" << request.name << "' failed." << std::endl;
+      log_warning << "GameObjectManager: Name resolve for '" << request.name << "' failed." << '\n';
       request.callback({});
     }
     else
@@ -370,7 +370,7 @@ GameObjectManager::move_object(const UID& uid, GameObjectManager& other)
                          });
   if (it == m_gameobjects.end())
   {
-    log_warning << "Couldn't move object: Object with UID " << uid << " not found." << std::endl;
+    log_warning << "Couldn't move object: Object with UID " << uid << " not found." << '\n';
     return;
   }
   auto& obj = *it;
@@ -477,7 +477,7 @@ GameObjectManager::apply_object_changes(const GameObjectChangeSet& change_set, b
     catch (const std::exception& err)
     {
       log_warning << "Cannot process object state change for object with UID "
-                  << change.uid << ": " << err.what() << std::endl;
+                  << change.uid << ": " << err.what() << '\n';
     }
   }
 }
@@ -498,7 +498,7 @@ GameObjectManager::undo()
     }
     catch (const std::exception& err)
     {
-      log_warning << "Cannot process object change: " << err.what() << std::endl;
+      log_warning << "Cannot process object change: " << err.what() << '\n';
       it = change_set.changes.erase(it); // Drop invalid changes
     }
   }
@@ -529,7 +529,7 @@ GameObjectManager::redo()
     }
     catch (const std::exception& err)
     {
-      log_warning << "Cannot process object change: " << err.what() << std::endl;
+      log_warning << "Cannot process object change: " << err.what() << '\n';
       it = change_set.changes.erase(it); // Drop invalid changes
     }
   }

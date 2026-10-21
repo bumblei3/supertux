@@ -53,7 +53,7 @@ SDL_BlendMode blend2sdl(const Blend& blend)
   }
   else
   {
-    log_warning << "unknown blend mode combinations: blend=" << static_cast<int>(blend) << std::endl;
+    log_warning << "unknown blend mode combinations: blend=" << static_cast<int>(blend) << '\n';
     return SDL_BLENDMODE_BLEND;
   }
 }
@@ -616,7 +616,7 @@ SDLPainter::set_clip_rect(const Rect& rect)
   int const ret = SDL_SetRenderClipRect(m_sdl_renderer, &*m_cliprect);
   if (ret < 0)
   {
-    log_warning << "SDLPainter::set_clip_rect(): SDL_RenderSetClipRect() failed: " << SDL_GetError() << std::endl;
+    log_warning << "SDLPainter::set_clip_rect(): SDL_RenderSetClipRect() failed: " << SDL_GetError() << '\n';
     SDL_ClearError();
   }
 }
@@ -629,7 +629,7 @@ SDLPainter::clear_clip_rect()
   int const ret = SDL_SetRenderClipRect(m_sdl_renderer, nullptr);
   if (ret < 0)
   {
-    log_warning << "SDLPainter::clear_clip_rect(): SDL_SetRenderClipRect() failed: " << SDL_GetError() << std::endl;
+    log_warning << "SDLPainter::clear_clip_rect(): SDL_SetRenderClipRect() failed: " << SDL_GetError() << '\n';
     SDL_ClearError();
   }
 }
@@ -650,7 +650,7 @@ SDLPainter::get_pixel(const DrawingRequest& draw_req) const
   auto surface = SDL_RenderReadPixels(m_sdl_renderer, &srcrect);
   if (surface == nullptr)
   {
-    log_warning << "failed to read pixels: " << SDL_GetError() << std::endl;
+    log_warning << "failed to read pixels: " << SDL_GetError() << '\n';
     SDL_ClearError();
   }
 

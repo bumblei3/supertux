@@ -265,7 +265,7 @@ BadGuy::update(float dt_sec)
         badguy = badguy.substr(path_chars + 1, badguy.length() - path_chars);
         // log warning since badguys_killed can no longer reach total_badguys
         std::string current_level = "[" + Sector::get().get_level()->filename + "] ";
-        log_warning << current_level << "Counted badguy " << badguy << " starting at " << start_position << " has left the sector" <<std::endl;
+        log_warning << current_level << "Counted badguy " << badguy << " starting at " << start_position << " has left the sector" << '\n';
       }*/
       return;
     }
@@ -1430,7 +1430,7 @@ BadGuy::after_editor_set()
     else
     {
       log_warning << "Couldn't find editor sprite action for badguy direction='"
-                  << dir_to_string(m_start_dir) << "': " << get_class_name() << "." << std::endl;
+                  << dir_to_string(m_start_dir) << "': " << get_class_name() << "." << '\n';
     }
   }
 }

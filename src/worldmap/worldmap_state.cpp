@@ -61,7 +61,7 @@ WorldMapState::new_save(bool initial)
 void
 WorldMapState::load_state()
 {
-  log_debug << "loading worldmap state" << std::endl;
+  log_debug << "loading worldmap state" << '\n';
 
   Savegame& savegame = m_worldmap.get_savegame();
 
@@ -114,7 +114,7 @@ WorldMapState::load_state()
       }
       catch (const ssq::NotFoundException&)
       {
-        log_debug << "Could not find \"music\" in the worldmap sector state table." << std::endl;
+        log_debug << "Could not find \"music\" in the worldmap sector state table." << '\n';
       }
 
       /** Load objects. **/
@@ -125,7 +125,7 @@ WorldMapState::load_state()
     }
     catch (const std::exception& err)
     {
-      log_warning << "Not loading worldmap state: " << err.what() << std::endl;
+      log_warning << "Not loading worldmap state: " << err.what() << '\n';
       new_save(true);
     }
   }
@@ -166,7 +166,7 @@ WorldMapState::load_tux(const ssq::Table& table)
   int const tile_data = sector.tile_data_at(p);
   if (!(tile_data & (Tile::WORLDMAP_NORTH | Tile::WORLDMAP_SOUTH | Tile::WORLDMAP_WEST | Tile::WORLDMAP_EAST)))
   {
-    log_warning << "Player at illegal position " << p.x << ", " << p.y << " respawning." << std::endl;
+    log_warning << "Player at illegal position " << p.x << ", " << p.y << " respawning." << '\n';
     sector.move_to_spawnpoint(DEFAULT_SPAWNPOINT_NAME);
     m_position_was_reset = true;
     return;
@@ -353,7 +353,7 @@ WorldMapState::save_state(bool initial) const
   }
   catch (const std::exception& err)
   {
-    log_warning << "Failed to save worldmap state: " << err.what() << std::endl;
+    log_warning << "Failed to save worldmap state: " << err.what() << '\n';
   }
 
   m_worldmap.get_savegame().save(initial);

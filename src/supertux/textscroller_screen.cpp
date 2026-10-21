@@ -72,7 +72,7 @@ TextScrollerScreen::TextScrollerScreen(const std::string& filename) :
     }
   } catch (std::exception& e) {
     std::ostringstream msg;
-    msg << "Couldn't load file '" << filename << "': " << e.what() << std::endl;
+    msg << "Couldn't load file '" << filename << "': " << e.what() << '\n';
     throw std::runtime_error(msg.str());
   }
 

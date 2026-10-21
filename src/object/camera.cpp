@@ -149,7 +149,7 @@ Camera::Camera(const ReaderMapping& reader) :
   else
   {
     m_mode = Mode::NORMAL;
-    log_warning << "invalid camera mode '" << modename << "'found in worldfile." << std::endl;
+    log_warning << "invalid camera mode '" << modename << "'found in worldfile." << '\n';
   }
   m_defaultmode = m_mode;
 
@@ -292,12 +292,12 @@ Camera::start_earthquake(float strength, float delay)
   }
   if (strength <= 0.f)
   {
-    log_warning << "Invalid earthquake strength value provided. Setting to 3." << std::endl;
+    log_warning << "Invalid earthquake strength value provided. Setting to 3." << '\n';
     strength = 3.f;
   }
   if (delay <= 0.f)
   {
-    log_warning << "Invalid earthquake delay value provided. Setting to 0.05." << std::endl;
+    log_warning << "Invalid earthquake delay value provided. Setting to 0.05." << '\n';
     delay = 0.05f;
   }
 
@@ -817,7 +817,7 @@ Camera::set_mode(const std::string& mode)
   else if (mode == "free")
     m_mode = Mode::FREE;
   else
-    log_warning << "Camera mode '" << mode << "' unknown." << std::endl;
+    log_warning << "Camera mode '" << mode << "' unknown." << '\n';
 }
 
 void

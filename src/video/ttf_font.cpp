@@ -94,7 +94,7 @@ TTFFont::get_text_width(const std::string& text) const
       int h = 0;
       int const ret = TTF_GetStringSize(m_font, line.c_str(), line.length(), &w, &h);
       if (ret < 0) {
-        get_logging_instance(false) << "TTFFont::get_text_width(): " << SDL_GetError() << std::endl;
+        get_logging_instance(false) << "TTFFont::get_text_width(): " << SDL_GetError() << '\n';
         SDL_ClearError();
       }
       int const grow = std::max(get_border() * 2, get_shadow_size() * 2);

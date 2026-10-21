@@ -52,7 +52,7 @@ EditorDeleteLevelsetMenu::refresh()
     }
     if (!world->is_levelset() && !world->is_worldmap())
     {
-      log_warning << level_world << ": Unknown World type." << std::endl;
+      log_warning << level_world << ": Unknown World type." << '\n';
       continue;
     }
     auto title = world->get_title();

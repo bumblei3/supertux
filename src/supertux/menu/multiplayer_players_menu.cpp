@@ -87,7 +87,7 @@ MultiplayerPlayersMenu::MultiplayerPlayersMenu()
           }
           else
           {
-            log_warning << "Cannot disconnect player #" << num << " in a sector with " << Sector::current()->get_object_count<Player>() << std::endl;
+            log_warning << "Cannot disconnect player #" << num << " in a sector with " << Sector::current()->get_object_count<Player>() << '\n';
           }
 
           InputManager::current()->pop_user();

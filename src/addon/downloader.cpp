@@ -47,7 +47,7 @@ size_t my_curl_string_append(void* ptr, size_t size, size_t nmemb, void* userdat
   std::string& s = *static_cast<std::string*>(userdata);
   std::string const buf(static_cast<char*>(ptr), size * nmemb);
   s += buf;
-  log_debug << "read " << size * nmemb << " bytes of data..." << std::endl;
+  log_debug << "read " << size * nmemb << " bytes of data..." << '\n';
   return size * nmemb;
 }
 
@@ -56,7 +56,7 @@ size_t my_curl_physfs_write(void* ptr, size_t size, size_t nmemb, void* userdata
 {
   PHYSFS_file* f = static_cast<PHYSFS_file*>(userdata);
   PHYSFS_sint64 const written = PHYSFS_writeBytes(f, ptr, size * nmemb);
-  log_debug << "read " << size * nmemb << " bytes of data..." << std::endl;
+  log_debug << "read " << size * nmemb << " bytes of data..." << '\n';
   if (written < 0)
   {
     return 0;
@@ -173,7 +173,7 @@ TransferStatusList::on_transfer_complete(TransferStatusPtr this_status, bool suc
         catch (const std::exception& err)
         {
           success = false;
-          log_warning << "Exception in Downloader: TransferStatusList callback failed: " << err.what() << std::endl;
+          log_warning << "Exception in Downloader: TransferStatusList callback failed: " << err.what() << '\n';
           m_error_msg = err.what();
         }
       }
@@ -186,7 +186,7 @@ TransferStatusList::on_transfer_complete(TransferStatusPtr this_status, bool suc
     std::stringstream err;
     err << "Downloading \"" << this_status->file << "\" failed: " << this_status->error_msg;
     m_error_msg = err.str();
-    log_warning << "Exception in Downloader: TransferStatusList: " << m_error_msg << std::endl;
+    log_warning << "Exception in Downloader: TransferStatusList: " << m_error_msg << '\n';
 
     // Execute all callbacks.
     for (const auto& callback : m_callbacks)
@@ -490,7 +490,7 @@ Downloader::download(const std::string& url,
   if (g_config->disable_network)
     throw std::runtime_error("Networking is disabled");
 
-  log_info << "Downloading " << url << std::endl;
+  log_info << "Downloading " << url << '\n';
 
 #ifdef NETWORKING
   char error_buffer[CURL_ERROR_SIZE+1];
@@ -516,7 +516,7 @@ Downloader::download(const std::string& url,
     throw std::runtime_error(url + ": download failed: " + why);
   }
 #elif defined(__EMSCRIPTEN__)
-  log_warning << "Direct download not yet implemented for Emscripten." << std::endl;
+  log_warning << "Direct download not yet implemented for Emscripten." << '\n';
   // FUTURE MAINTAINERS: If this needs to be implemented, take a look at
   // emscripten_wget(), emscripten_async_wget(), emscripten_wget_data() and
   // emscripten_async_wget_data():
@@ -542,12 +542,12 @@ Downloader::download(const std::string& url, const std::string& filename)
     throw std::runtime_error("Networking is disabled");
 
 #ifdef NETWORKING
-  log_info << "download: " << url << " to " << filename << std::endl;
+  log_info << "download: " << url << " to " << filename << '\n';
   std::unique_ptr<PHYSFS_file, int(*)(PHYSFS_File*)> const fout(PHYSFS_openWrite(filename.c_str()),
                                                           PHYSFS_close);
   download(url, my_curl_physfs_write, fout.get());
 #elif defined(__EMSCRIPTEN__)
-  log_warning << "Direct download not yet implemented for Emscripten." << std::endl;
+  log_warning << "Direct download not yet implemented for Emscripten." << '\n';
   // FUTURE MAINTAINERS: If this needs to be implemented, take a look at
   // emscripten_wget(), emscripten_async_wget(), emscripten_wget_data() and
   // emscripten_async_wget_data():
@@ -561,7 +561,7 @@ Downloader::abort(TransferId id)
   auto it = m_transfers.find(id);
   if (it == m_transfers.end())
   {
-    log_warning << "transfer not found: " << id << std::endl;
+    log_warning << "transfer not found: " << id << '\n';
   }
   else
   {
@@ -580,7 +580,7 @@ Downloader::abort(TransferId id)
       }
       catch(const std::exception& err)
       {
-        log_warning << "Illegal exception in Downloader: " << err.what() << std::endl;
+        log_warning << "Illegal exception in Downloader: " << err.what() << '\n';
       }
     }
     if (status->parent_list)
@@ -606,7 +606,7 @@ Downloader::update()
         }
         catch(const std::exception& err)
         {
-          log_warning << "Illegal exception in Downloader: " << err.what() << std::endl;
+          log_warning << "Illegal exception in Downloader: " << err.what() << '\n';
         }
       }
       if (status->parent_list)
@@ -626,7 +626,7 @@ Downloader::update()
   int running_handles;
   while ((ret = curl_multi_perform(m_multi_handle, &running_handles)) == CURLM_CALL_MULTI_PERFORM)
   {
-    log_debug << "updating" << std::endl;
+    log_debug << "updating" << '\n';
   }
 
   // Check if any downloads got finished.
@@ -639,7 +639,7 @@ Downloader::update()
       case CURLMSG_DONE:
         {
           CURLcode const resultfromcurl = msg->data.result;
-          log_info << "Download completed with " << resultfromcurl << std::endl;
+          log_info << "Download completed with " << resultfromcurl << '\n';
           curl_multi_remove_handle(m_multi_handle, msg->easy_handle);
 
           auto it = std::find_if(m_transfers.begin(), m_transfers.end(),
@@ -663,7 +663,7 @@ Downloader::update()
               catch(const std::exception& err)
               {
                 success = false;
-                log_warning << "Exception in Downloader: " << err.what() << std::endl;
+                log_warning << "Exception in Downloader: " << err.what() << '\n';
                 status->error_msg = err.what();
               }
             }
@@ -672,7 +672,7 @@ Downloader::update()
           }
           else
           {
-            log_warning << "Error: " << curl_easy_strerror(resultfromcurl) << std::endl;
+            log_warning << "Error: " << curl_easy_strerror(resultfromcurl) << '\n';
             for (const auto& callback : status->callbacks)
             {
               try
@@ -681,7 +681,7 @@ Downloader::update()
               }
               catch(const std::exception& err)
               {
-                log_warning << "Illegal exception in Downloader: " << err.what() << std::endl;
+                log_warning << "Illegal exception in Downloader: " << err.what() << '\n';
               }
             }
             if (status->parent_list)
@@ -691,7 +691,7 @@ Downloader::update()
         break;
 
       default:
-        log_warning << "Unhandled cURL message: " << msg->msg << std::endl;
+        log_warning << "Unhandled cURL message: " << msg->msg << '\n';
         break;
     }
   }
@@ -712,14 +712,14 @@ Downloader::add_transfer(std::unique_ptr<Transfer> transfer)
 TransferStatusPtr
 Downloader::request_download(const std::string& url, const std::string& filename)
 {
-  log_info << "Requesting download for: " << url << std::endl;
+  log_info << "Requesting download for: " << url << '\n';
   return add_transfer(std::make_unique<FileTransfer>(*this, m_next_transfer_id++, url, filename));
 }
 
 TransferStatusPtr
 Downloader::request_string_download(const std::string& url, std::string& out_string)
 {
-  log_info << "Requesting download for: " << url << std::endl;
+  log_info << "Requesting download for: " << url << '\n';
   return add_transfer(std::make_unique<StringTransfer>(*this, m_next_transfer_id++, url, out_string));
 }
 
@@ -730,7 +730,7 @@ Downloader::onDownloadProgress(int id, int loaded, int total)
   auto it = m_transfers.find(id);
   if (it == m_transfers.end())
   {
-    log_warning << "Transfer not found: " << id << std::endl;
+    log_warning << "Transfer not found: " << id << '\n';
   }
   else
   {
@@ -744,7 +744,7 @@ Downloader::onDownloadFinished(int id, const char* data)
   auto it = m_transfers.find(id);
   if (it == m_transfers.end())
   {
-    log_warning << "Transfer not found: " << id << std::endl;
+    log_warning << "Transfer not found: " << id << '\n';
   }
   else
   {
@@ -768,7 +768,7 @@ Downloader::onDownloadFinished(int id, const char* data)
       }
       catch(const std::exception& err)
       {
-        log_warning << "Exception in Downloader: " << err.what() << std::endl;
+        log_warning << "Exception in Downloader: " << err.what() << '\n';
       }
     }
     if (status->parent_list)
@@ -782,7 +782,7 @@ Downloader::onDownloadError(int id)
   auto it = m_transfers.find(id);
   if (it == m_transfers.end())
   {
-    log_warning << "Transfer not found: " << id << std::endl;
+    log_warning << "Transfer not found: " << id << '\n';
   }
   else
   {
@@ -795,7 +795,7 @@ Downloader::onDownloadError(int id)
       }
       catch(const std::exception& err)
       {
-        log_warning << "Exception in Downloader: " << err.what() << std::endl;
+        log_warning << "Exception in Downloader: " << err.what() << '\n';
       }
     }
     if (status->parent_list)
@@ -809,7 +809,7 @@ Downloader::onDownloadAborted(int id)
   auto it = m_transfers.find(id);
   if (it == m_transfers.end())
   {
-    log_warning << "Transfer not found: " << id << std::endl;
+    log_warning << "Transfer not found: " << id << '\n';
   }
   else
   {
@@ -822,7 +822,7 @@ Downloader::onDownloadAborted(int id)
       }
       catch(const std::exception& err)
       {
-        log_warning << "Exception in Downloader: " << err.what() << std::endl;
+        log_warning << "Exception in Downloader: " << err.what() << '\n';
       }
     }
     if (status->parent_list)

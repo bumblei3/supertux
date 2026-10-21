@@ -70,7 +70,7 @@ SquirrelEnvironment::expose(ExposableClass& object, const std::string& name)
   }
   catch (const std::exception& err)
   {
-    log_warning << "Couldn't expose object of class '" << class_name << "': " << err.what() << std::endl;
+    log_warning << "Couldn't expose object of class '" << class_name << "': " << err.what() << '\n';
   }
 }
 
@@ -85,7 +85,7 @@ SquirrelEnvironment::unexpose(const std::string& name)
   }
   catch (const std::exception& err)
   {
-    log_warning << "Couldn't unregister object: " << err.what() << std::endl;
+    log_warning << "Couldn't unregister object: " << err.what() << '\n';
   }
 }
 
@@ -126,7 +126,7 @@ SquirrelEnvironment::run_script(std::istream& in, const std::string& sourcename)
   }
   catch (const std::exception& err)
   {
-    log_warning << err.what() << std::endl;
+    log_warning << err.what() << '\n';
   }
 }
 

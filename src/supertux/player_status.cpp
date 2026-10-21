@@ -115,7 +115,7 @@ PlayerStatus::get_bonus_name(BonusType bonustype)
     case BONUS_NONE:
       return "none";
     default:
-      log_warning << "Unknown bonus " << static_cast<int>(bonustype) << std::endl;
+      log_warning << "Unknown bonus " << static_cast<int>(bonustype) << '\n';
       return "none";
   }
 }
@@ -136,7 +136,7 @@ PlayerStatus::get_bonus_from_name(const std::string& name)
   } else if (name == "earthflower") {
     return BONUS_EARTH;
   } else {
-    log_warning << "Unknown bonus '" << name << "' in savefile"<< std::endl;
+    log_warning << "Unknown bonus '" << name << "' in savefile"<< '\n';
     return BONUS_NONE;
   }
 }
@@ -224,7 +224,7 @@ PlayerStatus::read(const ReaderMapping& mapping)
 
         if (id >= m_num_players)
         {
-          log_warning << "ID larger than amount of players when reading player state: " << id << std::endl;
+          log_warning << "ID larger than amount of players when reading player state: " << id << '\n';
 
           // Keep this in sync with reset()
           if (bonus.size() < static_cast<size_t>(id))
@@ -237,7 +237,7 @@ PlayerStatus::read(const ReaderMapping& mapping)
         {
           log_warning << "Refusing to parse player 1 when reading player state,"
                          "please don't put player 1 data in a (tux1 ...)"
-                         "wrapper for retrocompatibiility" << std::endl;
+                         "wrapper for retrocompatibiility" << '\n';
         }
 
         auto map = iter.as_mapping();
@@ -246,7 +246,7 @@ PlayerStatus::read(const ReaderMapping& mapping)
     }
     catch (const std::exception& e)
     {
-      log_warning << "Couldn't parse player from player status save: " << e.what() << std::endl;
+      log_warning << "Couldn't parse player from player status save: " << e.what() << '\n';
     }
   }
 

@@ -66,7 +66,7 @@ Integration::update_status_all(const IntegrationStatus& status)
   current_status = status;
 
   if (status.m_details.size() > 0)
-    log_info << "Setting status: " << *status.m_details.begin() << std::endl;
+    log_info << "Setting status: " << *status.m_details.begin() << '\n';
 
   for (Integration* sdk : sdks)
     sdk->update_status(status);

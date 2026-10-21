@@ -54,7 +54,7 @@ ConsoleBuffer::addLine(const std::string& s_)
   std::string s = s_;
 
   // Output line to stderr.
-  get_logging_instance(false) << s << std::endl;
+  get_logging_instance(false) << s << '\n';
 
   // Wrap long lines.
   std::string overflow;
@@ -158,7 +158,7 @@ Console::ready_vm()
   }
   catch (const std::exception& e)
   {
-    log_warning << "Couldn't load 'console.nut': " << e.what() << std::endl;
+    log_warning << "Couldn't load 'console.nut': " << e.what() << '\n';
   }
 }
 
@@ -182,7 +182,7 @@ Console::execute_script(const std::string& command)
 
   if (m_vm.getTop() < old_top)
   {
-    log_fatal << "Script destroyed Squirrel stack..." << std::endl;
+    log_fatal << "Script destroyed Squirrel stack..." << '\n';
   }
   else
   {

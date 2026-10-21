@@ -97,7 +97,7 @@ AddonMenu::rebuild_menu()
             log_debug << addon.get_id() << " is installed, but updated: '"
                       << addon.get_md5() << "' vs '" << repository_addon.get_md5() << "'  '"
                       << addon.get_version() << "' vs '" << repository_addon.get_version() << "'"
-                      << std::endl;
+                      << '\n';
             addon_update = true;
             if (addon.get_type() == Addon::LANGUAGEPACK) langpacks_installed = true;
             addon_updates_to_list.push_back(idx);
@@ -105,7 +105,7 @@ AddonMenu::rebuild_menu()
         }
         catch (std::exception& e)
         {
-          log_warning << "Installed addon not available in repository: " << e.what() << std::endl;
+          log_warning << "Installed addon not available in repository: " << e.what() << '\n';
         }
         if (!addon_update)
         {
@@ -206,7 +206,7 @@ AddonMenu::menu_action(MenuItem& item)
   }
   else
   {
-    log_warning << "Unknown menu item clicked: " << index << std::endl;
+    log_warning << "Unknown menu item clicked: " << index << '\n';
   }
 }
 
@@ -233,6 +233,6 @@ AddonMenu::check_for_updates()
   }
   catch (std::exception& e)
   {
-    log_warning << "Check for available Add-ons failed: " << e.what() << std::endl;
+    log_warning << "Check for available Add-ons failed: " << e.what() << '\n';
   }
 }

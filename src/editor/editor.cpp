@@ -795,7 +795,7 @@ void
 Editor::delete_current_sector()
 {
   if (m_level->m_sectors.size() <= 1) {
-    log_fatal << "Deleting the last sector is not allowed." << std::endl;
+    log_fatal << "Deleting the last sector is not allowed." << '\n';
   }
 
   for (auto i = m_level->m_sectors.begin(); i != m_level->m_sectors.end(); ++i) {
@@ -887,7 +887,7 @@ Editor::reload_level()
     // In case the error was caused by the last edited level, say, not
     // existing/being invalid, let's clear it
     g_config->editor_last_edited_level = "";
-    log_warning << "Error loading level '" << m_levelfile << "' in editor: " << err.what() << std::endl;
+    log_warning << "Error loading level '" << m_levelfile << "' in editor: " << err.what() << '\n';
     reset_level();
     return;
   }
@@ -1301,7 +1301,7 @@ Editor::event(const SDL_Event& ev)
   }
   catch(const std::exception& err)
   {
-    log_warning << "error while processing Editor::event(): " << err.what() << std::endl;
+    log_warning << "error while processing Editor::event(): " << err.what() << '\n';
   }
 }
 
@@ -1501,7 +1501,7 @@ Editor::pack_addon()
     }
     catch(const std::exception& e)
     {
-      log_warning << e.what() << std::endl;
+      log_warning << e.what() << '\n';
     }
   }
   version++;

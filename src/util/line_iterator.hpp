@@ -24,7 +24,7 @@
  *
  *  LineIterator it("Hello\nWorld");
  *  while(it.next())
- *    std::cout << it.get() << std::endl;
+ *    std::cout << it.get() << '\n';
  */
 class LineIterator final
 {

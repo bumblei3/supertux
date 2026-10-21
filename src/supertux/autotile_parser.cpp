@@ -44,16 +44,16 @@ AutotileParser::parse()
   if (m_offset && m_start + m_offset < 1)
   {
     m_start = -m_offset + 1;
-    log_warning << "The defined offset would assign non-positive IDs to autotiles, autotiles below " << -m_offset + 1 << " will be ignored." << std::endl;
+    log_warning << "The defined offset would assign non-positive IDs to autotiles, autotiles below " << -m_offset + 1 << " will be ignored." << '\n';
   }
   if (m_end < 0)
   {
-    log_warning << "Cannot import autotiles with negative IDs." << std::endl;
+    log_warning << "Cannot import autotiles with negative IDs." << '\n';
     return;
   }
   if (m_start < 0)
   {
-    log_warning << "Cannot import autotiles with negative IDs. Importing will start at ID 1." << std::endl;
+    log_warning << "Cannot import autotiles with negative IDs. Importing will start at ID 1." << '\n';
     m_start = 1;
   }
 
@@ -79,7 +79,7 @@ AutotileParser::parse()
     }
     else
     {
-      log_warning << "Unknown symbol '" << iter.get_key() << "' in autotile config file" << std::endl;
+      log_warning << "Unknown symbol '" << iter.get_key() << "' in autotile config file" << '\n';
     }
   }
 }
@@ -92,13 +92,13 @@ AutotileParser::parse_autotileset(const ReaderMapping& reader, bool corner)
   std::string name = "[unnamed]";
   if (!reader.get("name", name))
   {
-    log_warning << "Unnamed autotileset parsed" << std::endl;
+    log_warning << "Unnamed autotileset parsed" << '\n';
   }
 
   uint32_t default_id = 0;
   if (!reader.get("default", default_id))
   {
-    log_warning << "No default tile for autotileset " << name << std::endl;
+    log_warning << "No default tile for autotileset " << name << '\n';
   }
 
   if (default_id < static_cast<uint32_t>(m_start) || (m_end && default_id > static_cast<uint32_t>(m_end)))
@@ -117,7 +117,7 @@ AutotileParser::parse_autotileset(const ReaderMapping& reader, bool corner)
     }
     else if (iter.get_key() != "name" && iter.get_key() != "default")
     {
-      log_warning << "Unknown symbol '" << iter.get_key() << "' in autotile config file" << std::endl;
+      log_warning << "Unknown symbol '" << iter.get_key() << "' in autotile config file" << '\n';
     }
   }
 
@@ -160,7 +160,7 @@ AutotileParser::parse_autotile(const ReaderMapping& reader, bool corner)
   else
   {
     if (corner)
-      log_warning << "'solid' parameter not needed for corner-based tiles in autotileset config file." << std::endl;
+      log_warning << "'solid' parameter not needed for corner-based tiles in autotileset config file." << '\n';
   }
 
   auto iter = reader.get_iter();
@@ -187,7 +187,7 @@ AutotileParser::parse_autotile(const ReaderMapping& reader, bool corner)
       uint32_t alt_id = 0;
       if (!alt_reader.get("id", alt_id))
       {
-        log_warning << "No alt tile for autotileset" << std::endl;
+        log_warning << "No alt tile for autotileset" << '\n';
         continue;
       }
 
@@ -208,7 +208,7 @@ AutotileParser::parse_autotile(const ReaderMapping& reader, bool corner)
 
       if (period_x.size() != 2 || period_y.size() != 2)
       {
-        log_warning << "X/Y period for alt tile must contain exactly 2 values" << std::endl;
+        log_warning << "X/Y period for alt tile must contain exactly 2 values" << '\n';
         continue;
       }
 
@@ -220,7 +220,7 @@ AutotileParser::parse_autotile(const ReaderMapping& reader, bool corner)
     }
     else if (iter.get_key() != "id" && iter.get_key() != "solid")
     {
-      log_warning << "Unknown symbol '" << iter.get_key() << "' in autotile config file" << std::endl;
+      log_warning << "Unknown symbol '" << iter.get_key() << "' in autotile config file" << '\n';
     }
   }
 

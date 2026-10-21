@@ -80,7 +80,7 @@ SDLSurface::create_rgb(int width, int height)
 SDLSurfacePtr
 SDLSurface::from_file(const std::string& filename)
 {
-  log_debug << "loading image: " << filename << std::endl;
+  log_debug << "loading image: " << filename << '\n';
   auto stream = get_physfs_SDLRWops(filename);
   if (!stream)
   {
@@ -114,13 +114,13 @@ SDLSurface::save_png(const SDL_Surface& surface, const std::string& filename)
     ops = get_writable_physfs_SDLRWops(filename);
   } catch (std::exception& e) {
     log_warning << "Could not get SDLRWops for " << filename << ": " <<
-      e.what() << std::endl;
+      e.what() << '\n';
     return false;
   }
   int const ret = SDL_SavePNG_RW(tmp.get(), ops, 1);
   if (ret < 0)
   {
-    log_warning << "Saving " << filename << " failed: " << SDL_GetError() << std::endl;
+    log_warning << "Saving " << filename << " failed: " << SDL_GetError() << '\n';
     SDL_ClearError();
     return false;
   }

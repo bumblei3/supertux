@@ -68,7 +68,7 @@ Direction string_to_direction(const std::string& directory)
   else if (directory == "none")
     return Direction::NONE;
   else {
-    log_warning << "Unknown direction: \"" << directory << "\"" << std::endl;
+    log_warning << "Unknown direction: \"" << directory << "\"" << '\n';
     return Direction::NONE;
   }
 }

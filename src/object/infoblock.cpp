@@ -41,7 +41,7 @@ InfoBlock::InfoBlock(const ReaderMapping& mapping) :
 {
   if (!mapping.get("message", m_message) && !(Editor::is_active()))
   {
-    log_warning << "No message in InfoBlock" << std::endl;
+    log_warning << "No message in InfoBlock" << '\n';
   }
   std::vector<float> front_color;
   if (mapping.get("frontcolor", front_color))
@@ -216,7 +216,7 @@ InfoBlock::draw(DrawingContext& context)
   float y = y1;
   for (size_t i = 0; i < m_lines.size(); ++i) {
     if (y >= y1 + height) {
-      //log_warning << "Too many lines of text in InfoBlock" << std::endl;
+      //log_warning << "Too many lines of text in InfoBlock" << '\n';
       //dest_pct = 0;
       //shown_pct = 0;
       break;

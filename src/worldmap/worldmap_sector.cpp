@@ -343,11 +343,11 @@ WorldMapSector::update(float dt_sec)
       if (!level_) {
         // Respawn if player on a tile with no level and nowhere to go.
         if (!is_valid_path_at(tux_pos)) {
-          log_warning << "Player at illegal position " << tux_pos.x << ", " << tux_pos.y << " respawning." << std::endl;
+          log_warning << "Player at illegal position " << tux_pos.x << ", " << tux_pos.y << " respawning." << '\n';
           move_to_spawnpoint(DEFAULT_SPAWNPOINT_NAME);
           return;
         }
-        log_warning << "No level to enter at: " << tux_pos.x << ", " << tux_pos.y << std::endl;
+        log_warning << "No level to enter at: " << tux_pos.x << ", " << tux_pos.y << '\n';
         return;
       }
 
@@ -375,7 +375,7 @@ WorldMapSector::update(float dt_sec)
 
           m_parent.m_in_level = true;
         } catch(std::exception& e) {
-          log_fatal << "Couldn't load level: " << e.what() << std::endl;
+          log_fatal << "Couldn't load level: " << e.what() << '\n';
         }
       }
     }
@@ -538,7 +538,7 @@ WorldMapSector::finished_level(Level* gamelevel)
     try {
       run_script(level->get_extro_script(), "WorldMapSector:extro_script");
     } catch(std::exception& e) {
-      log_warning << "Couldn't run level-extro-script: " << e.what() << std::endl;
+      log_warning << "Couldn't run level-extro-script: " << e.what() << '\n';
     }
   }
 }
@@ -586,7 +586,7 @@ WorldMapSector::path_ok(const Direction& direction, const Vector& old_pos, Vecto
                 && new_tile_data & Tile::WORLDMAP_NORTH);
 
       case Direction::NONE:
-        log_warning << "path_ok() can't walk if direction is NONE" << std::endl;
+        log_warning << "path_ok() can't walk if direction is NONE" << '\n';
         assert(false);
     }
     return false;
@@ -625,7 +625,7 @@ WorldMapSector::move_to_spawnpoint(const std::string& spawnpoint, bool pan)
     return;
   }
 
-  log_warning << "Spawnpoint '" << spawnpoint << "' not found." << std::endl;
+  log_warning << "Spawnpoint '" << spawnpoint << "' not found." << '\n';
   if (spawnpoint != DEFAULT_SPAWNPOINT_NAME) {
     move_to_spawnpoint(DEFAULT_SPAWNPOINT_NAME);
   }

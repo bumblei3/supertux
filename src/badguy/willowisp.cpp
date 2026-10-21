@@ -388,7 +388,7 @@ WillOWisp::set_state(const std::string& new_state)
   else if (new_state == "vanish")
     vanish();
   else
-    log_warning << "Cannot set an unknown WillOWisp state: '" << new_state << "'." << std::endl;
+    log_warning << "Cannot set an unknown WillOWisp state: '" << new_state << "'." << '\n';
 }
 
 ObjectSettings

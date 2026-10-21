@@ -73,7 +73,7 @@ AddonPreviewMenu::rebuild_menu()
   }
   catch (std::exception& err)
   {
-    log_warning << "Installed addon not available in repository: " << err.what() << std::endl;
+    log_warning << "Installed addon not available in repository: " << err.what() << '\n';
     author = m_addon.get_author();
     type = addon_string_util::addon_type_to_translated_string(m_addon.get_type());
     license = m_addon.get_license();
@@ -113,7 +113,7 @@ AddonPreviewMenu::rebuild_menu()
       }
       catch (std::exception& err)
       {
-        log_warning << "Dependency not available in repository: " << err.what() << std::endl;
+        log_warning << "Dependency not available in repository: " << err.what() << '\n';
         text = fmt::format(fmt::runtime("\"{}\": {}"), id, _("Not available!"));
       }
       add_inactive(text, true);
@@ -260,7 +260,7 @@ AddonPreviewMenu::menu_action(MenuItem& item)
       break;
 
     default:
-      log_warning << "Unknown menu item clicked: " << item.get_id() << std::endl;
+      log_warning << "Unknown menu item clicked: " << item.get_id() << '\n';
       break;
   }
 }
@@ -271,7 +271,7 @@ AddonPreviewMenu::show_screenshots()
   if (m_screenshot_download_status &&
       m_screenshot_download_status->is_active()) // If a download is currently running.
   {
-    log_warning << "A download is currently active. Ignoring screenshot download request." << std::endl;
+    log_warning << "A download is currently active. Ignoring screenshot download request." << '\n';
     return;
   }
 
@@ -292,7 +292,7 @@ AddonPreviewMenu::show_screenshots()
   {
     m_screenshot_download_status = nullptr;
     log_info << "Fetching screenshots for add-on \"" << m_addon.get_id() << "\" "
-             << (success ? "finished successfully" : "failed") << "." << std::endl;
+             << (success ? "finished successfully" : "failed") << "." << '\n';
 
     // Reload the menu with screenshots.
     m_screenshot_download_success = success;
@@ -342,7 +342,7 @@ AddonPreviewMenu::uninstall_addon()
   }
   catch (std::exception& err)
   {
-    log_warning << "Error uninstalling add-on: " << err.what() << std::endl;
+    log_warning << "Error uninstalling add-on: " << err.what() << '\n';
     Dialog::show_message(fmt::format(fmt::runtime(_("Error uninstalling add-on:\n{}")), err.what()));
   }
   MenuManager::instance().pop_menu(true);

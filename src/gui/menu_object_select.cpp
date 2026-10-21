@@ -66,7 +66,7 @@ ObjectSelectMenu::add_object()
 {
   if (m_selected.empty())
   {
-    log_warning << "Cannot add object: No object selected." << std::endl;
+    log_warning << "Cannot add object: No object selected." << '\n';
     return;
   }
 

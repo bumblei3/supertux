@@ -25,7 +25,7 @@ Sequence string_to_sequence(const std::string& sequencename) {
   if (sequencename == "fireworks")
     return SEQ_FIREWORKS;
 
-  log_warning << "Unknown sequence: " << sequencename << std::endl;
+  log_warning << "Unknown sequence: " << sequencename << '\n';
   return SEQ_ENDSEQUENCE;
 }
 

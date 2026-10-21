@@ -156,7 +156,7 @@ ScreenManager::~ScreenManager()
 void
 ScreenManager::push_screen(std::unique_ptr<Screen> screen, std::unique_ptr<ScreenFade> screen_fade)
 {
-  log_debug << "ScreenManager::push_screen(): " << screen.get() << std::endl;
+  log_debug << "ScreenManager::push_screen(): " << screen.get() << '\n';
   assert(screen);
   set_screen_fade(std::move(screen_fade));
   m_actions.emplace_back(Action::PUSH_ACTION, std::move(screen), nullptr);
@@ -165,7 +165,7 @@ ScreenManager::push_screen(std::unique_ptr<Screen> screen, std::unique_ptr<Scree
 void
 ScreenManager::push_screen(std::function<Screen*()> callback, std::unique_ptr<ScreenFade> screen_fade)
 {
-  log_debug << "ScreenManager::push_screen(): (lambda) " << &callback << std::endl;
+  log_debug << "ScreenManager::push_screen(): (lambda) " << &callback << '\n';
   assert(callback);
   set_screen_fade(std::move(screen_fade));
   m_actions.emplace_back(Action::PUSH_ACTION, nullptr, std::move(callback));
@@ -174,7 +174,7 @@ ScreenManager::push_screen(std::function<Screen*()> callback, std::unique_ptr<Sc
 void
 ScreenManager::pop_screen(std::unique_ptr<ScreenFade> screen_fade)
 {
-  log_debug << "ScreenManager::pop_screen(): stack_size: " << m_screen_stack.size() << std::endl;
+  log_debug << "ScreenManager::pop_screen(): stack_size: " << m_screen_stack.size() << '\n';
   set_screen_fade(std::move(screen_fade));
   m_actions.emplace_back(Action::POP_ACTION);
 }
@@ -514,7 +514,7 @@ ScreenManager::process_events()
           {
             SoundManager::current()->play("sounds/excellent.wav");
           }
-          log_info << "developer mode: " << g_config->developer_mode << std::endl;
+          log_info << "developer mode: " << g_config->developer_mode << '\n';
         }
         break;
 
@@ -597,7 +597,7 @@ ScreenManager::handle_screen_switch()
       {
         if (m_screen_stack.empty())
         {
-          log_debug << "ScreenManager::handle_screen_switch(): screen stack is empty, quitting." << std::endl;
+          log_debug << "ScreenManager::handle_screen_switch(): screen stack is empty, quitting." << '\n';
           break;
         }
 

@@ -2000,7 +2000,7 @@ Player::set_bonus(BonusType type, bool animate, bool pocket)
     {
       if (!adjust_height(BIG_TUX_HEIGHT))
       {
-        log_debug << "Can't adjust Tux height" << std::endl;
+        log_debug << "Can't adjust Tux height" << '\n';
         return false;
       }
     }
@@ -2023,7 +2023,7 @@ Player::set_bonus(BonusType type, bool animate, bool pocket)
 
   if (type == BONUS_NONE) {
     if (!adjust_height(SMALL_TUX_HEIGHT)) {
-      log_debug << "Can't adjust Tux height" << std::endl;
+      log_debug << "Can't adjust Tux height" << '\n';
       return false;
     }
     if (m_does_buttjump) m_does_buttjump = false;
@@ -2780,12 +2780,12 @@ Player::set_ghost_mode(bool enable)
     m_ghost_mode = true;
     set_group(COLGROUP_DISABLED);
     m_physic.enable_gravity(false);
-    log_debug << "You feel lightheaded. Use movement controls to float around, press ACTION to scare badguys." << std::endl;
+    log_debug << "You feel lightheaded. Use movement controls to float around, press ACTION to scare badguys." << '\n';
   } else {
     m_ghost_mode = false;
     set_group(COLGROUP_MOVING);
     m_physic.enable_gravity(true);
-    log_debug << "You feel solid again." << std::endl;
+    log_debug << "You feel solid again." << '\n';
   }
 }
 
@@ -2836,7 +2836,7 @@ void
 Player::handle_input_climbing()
 {
   if (!m_climbing) {
-    log_warning << "handle_input_climbing called with climbing set to 0. Input handling skipped" << std::endl;
+    log_warning << "handle_input_climbing called with climbing set to 0. Input handling skipped" << '\n';
     return;
   }
 
@@ -3114,7 +3114,7 @@ Player::multiplayer_respawn()
 {
   if (!m_target)
   {
-    log_warning << "Can't respawn multiplayer player, no target" << std::endl;
+    log_warning << "Can't respawn multiplayer player, no target" << '\n';
     return;
   }
 
@@ -3122,7 +3122,7 @@ Player::multiplayer_respawn()
 
   if (!target)
   {
-    log_warning << "Can't respawn multiplayer player, target missing" << std::endl;
+    log_warning << "Can't respawn multiplayer player, target missing" << '\n';
     return;
   }
 

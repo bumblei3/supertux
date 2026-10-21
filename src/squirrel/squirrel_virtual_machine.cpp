@@ -49,7 +49,7 @@ static void printFunc(HSQUIRRELVM, const char* fmt, ...)
   const char* ptr = strtok(buf, separator);
   while (ptr != nullptr)
   {
-    ConsoleBuffer::output << "[SCRIPTING] " << ptr << std::endl;
+    ConsoleBuffer::output << "[SCRIPTING] " << ptr << '\n';
     ptr = strtok(nullptr, separator);
   }
   va_end(arglist);
@@ -75,10 +75,10 @@ SquirrelVirtualMachine::SquirrelVirtualMachine(bool enable_debugger) :
       throw ssq::Exception(m_vm.getHandle(), "Couldn't initialize squirrel debugger");
 
     sq_enabledebuginfo(m_vm.getHandle(), SQTrue);
-    log_info << "Waiting for debug client..." << std::endl;
+    log_info << "Waiting for debug client..." << '\n';
     if (SQ_FAILED(sq_rdbg_waitforconnections(debugger)))
       throw ssq::Exception(m_vm.getHandle(), "Waiting for debug clients failed");
-    log_info << "debug client connected." << std::endl;
+    log_info << "debug client connected." << '\n';
 #endif
   }
 
@@ -100,7 +100,7 @@ SquirrelVirtualMachine::SquirrelVirtualMachine(bool enable_debugger) :
   }
   catch (const std::exception& err)
   {
-    log_warning << "Couldn't load 'default.nut': " << err.what() << std::endl;
+    log_warning << "Couldn't load 'default.nut': " << err.what() << '\n';
   }
 }
 

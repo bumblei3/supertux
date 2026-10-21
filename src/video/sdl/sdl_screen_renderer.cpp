@@ -34,27 +34,27 @@ SDLScreenRenderer::SDLScreenRenderer(SDLVideoSystem& video_system, SDL_Renderer*
   auto renderer_name = SDL_GetRendererName(m_renderer);
   if (renderer_name == nullptr)
   {
-    log_warning << "Couldn't get RendererInfo: " << SDL_GetError() << std::endl;
+    log_warning << "Couldn't get RendererInfo: " << SDL_GetError() << '\n';
     SDL_ClearError();
   }
   else
   {
-    log_info << "SDL_Renderer: " << renderer_name << std::endl;
-    log_info << "SDL_RendererFlags: " << std::endl;
+    log_info << "SDL_Renderer: " << renderer_name << '\n';
+    log_info << "SDL_RendererFlags: " << '\n';
     
     // TODO: Query information !!!
   
-    // if (info.flags & SDL_RENDERER_SOFTWARE) { log_info << "  SDL_RENDERER_SOFTWARE" << std::endl; }
-    // if (info.flags & SDL_RENDERER_ACCELERATED) { log_info << "  SDL_RENDERER_ACCELERATED" << std::endl; }
-    // if (info.flags & SDL_RENDERER_PRESENTVSYNC) { log_info << "  SDL_RENDERER_PRESENTVSYNC" << std::endl; }
-    // if (info.flags & SDL_RENDERER_TARGETTEXTURE) { log_info << "  SDL_RENDERER_TARGETTEXTURE" << std::endl; }
-    // log_info << "Texture Formats: " << std::endl;
+    // if (info.flags & SDL_RENDERER_SOFTWARE) { log_info << "  SDL_RENDERER_SOFTWARE" << '\n'; }
+    // if (info.flags & SDL_RENDERER_ACCELERATED) { log_info << "  SDL_RENDERER_ACCELERATED" << '\n'; }
+    // if (info.flags & SDL_RENDERER_PRESENTVSYNC) { log_info << "  SDL_RENDERER_PRESENTVSYNC" << '\n'; }
+    // if (info.flags & SDL_RENDERER_TARGETTEXTURE) { log_info << "  SDL_RENDERER_TARGETTEXTURE" << '\n'; }
+    // log_info << "Texture Formats: " << '\n';
     // for (size_t i = 0; i < info.num_texture_formats; ++i)
     // {
-    //   log_info << "  " << SDL_GetPixelFormatName(info.texture_formats[i]) << std::endl;
+    //   log_info << "  " << SDL_GetPixelFormatName(info.texture_formats[i]) << '\n';
     // }
-    // log_info << "Max Texture Width: " << info.max_texture_width << std::endl;
-    // log_info << "Max Texture Height: " << info.max_texture_height << std::endl;
+    // log_info << "Max Texture Width: " << info.max_texture_width << '\n';
+    // log_info << "Max Texture Height: " << info.max_texture_height << '\n';
   }
 }
 

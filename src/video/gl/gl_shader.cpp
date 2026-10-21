@@ -82,7 +82,7 @@ GLShader::compile()
   if (!compile_status)
   {
     std::ostringstream out;
-    out << "Shader compile failed: " << get_shader_info_log() << std::endl;
+    out << "Shader compile failed: " << get_shader_info_log() << '\n';
     throw std::runtime_error(out.str());
   }
 

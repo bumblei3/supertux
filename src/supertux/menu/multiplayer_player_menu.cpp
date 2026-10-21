@@ -63,7 +63,7 @@ MultiplayerPlayerMenu::MultiplayerPlayerMenu(int player_id)
         if (!GameSession::current() || GameSession::current()->get_savegame().is_title_screen())
         {
           log_warning << "Attempt to force player to despawn while not in session"
-                      << std::endl;
+                      << '\n';
           return;
         }
 
@@ -71,7 +71,7 @@ MultiplayerPlayerMenu::MultiplayerPlayerMenu(int player_id)
         {
           log_warning << "Could not find player with ID " << player_id
                       << " (number " << (player_id + 1) << "in sector"
-                      << std::endl;
+                      << '\n';
         }
       });
 
@@ -81,7 +81,7 @@ MultiplayerPlayerMenu::MultiplayerPlayerMenu(int player_id)
         if (!GameSession::current() || GameSession::current()->get_savegame().is_title_screen())
         {
           log_warning << "Attempt to force player to respawn while not in session"
-                      << std::endl;
+                      << '\n';
           return;
         }
 
@@ -96,7 +96,7 @@ MultiplayerPlayerMenu::MultiplayerPlayerMenu(int player_id)
 
         log_warning << "Could not find player with ID " << player_id
                     << " (number " << (player_id + 1) << "in sector"
-                    << std::endl;
+                    << '\n';
       });
     }
     else
@@ -107,7 +107,7 @@ MultiplayerPlayerMenu::MultiplayerPlayerMenu(int player_id)
         if (!GameSession::current() || GameSession::current()->get_savegame().is_title_screen())
         {
           log_warning << "Attempt to force player to spawn while not in session"
-                      << std::endl;
+                      << '\n';
           return;
         }
 

@@ -48,12 +48,12 @@ VideoSystem::create(VideoSystem::Enum video_system)
 #ifdef __EMSCRIPTEN__
       try
       {
-        log_warning << "WebGL detected, using GLVideoSystem-20" << std::endl;
+        log_warning << "WebGL detected, using GLVideoSystem-20" << '\n';
         return std::make_unique<GLVideoSystem>(false, false);
       }
       catch(std::exception& err2)
       {
-        log_warning << "Error creating GLVideoSystem-20, using SDL fallback: "  << err2.what() << std::endl;
+        log_warning << "Error creating GLVideoSystem-20, using SDL fallback: "  << err2.what() << '\n';
         return std::make_unique<SDLVideoSystem>();
       }
 #else
@@ -63,7 +63,7 @@ VideoSystem::create(VideoSystem::Enum video_system)
       }
       catch(std::exception& err2)
       {
-        log_warning << "Error creating GLVideoSystem, using SDL fallback: "  << err2.what() << std::endl;
+        log_warning << "Error creating GLVideoSystem, using SDL fallback: "  << err2.what() << '\n';
         return std::make_unique<SDLVideoSystem>();
       }
 #endif
@@ -77,7 +77,7 @@ VideoSystem::create(VideoSystem::Enum video_system)
     case VIDEO_OPENGL_AUTO:
     case VIDEO_OPENGL33CORE:
     case VIDEO_OPENGL20:
-      log_warning << "OpenGL requested, but missing using SDL fallback" << std::endl;
+      log_warning << "OpenGL requested, but missing using SDL fallback" << '\n';
       return std::make_unique<SDLVideoSystem>();
 #endif
 
@@ -85,7 +85,7 @@ VideoSystem::create(VideoSystem::Enum video_system)
       return std::make_unique<NullVideoSystem>();
 
     default:
-      log_fatal << "invalid video system in config" << std::endl;
+      log_fatal << "invalid video system in config" << '\n';
       assert(false);
       return {};
   }
@@ -142,7 +142,7 @@ VideoSystem::get_video_string(VideoSystem::Enum video)
     case VIDEO_NULL:
       return "null";
     default:
-      log_fatal << "invalid video system in config" << std::endl;
+      log_fatal << "invalid video system in config" << '\n';
       assert(false);
       return "sdl";
   }
@@ -167,14 +167,14 @@ VideoSystem::do_take_screenshot()
 {
   SDLSurfacePtr surface = make_screenshot();
   if (!surface) {
-    log_warning << "Creating the screenshot has failed" << std::endl;
+    log_warning << "Creating the screenshot has failed" << '\n';
     return;
   }
 
   const std::string screenshots_dir = "/screenshots";
   if (!PHYSFS_exists(screenshots_dir.c_str())) {
     if (!PHYSFS_mkdir(screenshots_dir.c_str())) {
-      log_warning << "Creating '" << screenshots_dir << "' failed" << std::endl;
+      log_warning << "Creating '" << screenshots_dir << "' failed" << '\n';
       return;
     }
   }
@@ -200,12 +200,12 @@ VideoSystem::do_take_screenshot()
   auto filename = find_filename();
   if (!filename)
   {
-    log_info << "Failed to find filename to save screenshot" << std::endl;
+    log_info << "Failed to find filename to save screenshot" << '\n';
   }
   else
   {
     if (SDLSurface::save_png(*surface, *filename)) {
-      log_info << "Wrote screenshot to \"" << *filename << "\"" << std::endl;
+      log_info << "Wrote screenshot to \"" << *filename << "\"" << '\n';
     }
   }
 }

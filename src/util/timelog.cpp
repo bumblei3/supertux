@@ -35,7 +35,7 @@ Timelog::log(const char* component)
   if (m_last_component != nullptr) {
     log_info << "Component '" << m_last_component <<  "' finished after "
              << (current_ticks - m_last_ticks) / 1000.0 << " seconds"
-             << std::endl;
+             << '\n';
   }
 
   m_last_ticks = current_ticks;

@@ -207,7 +207,7 @@ EditorToolbarWidget::EditorToolbarWidget(Editor& editor) :
   //     m_level->save(output_writer);
   //     auto level_content = level_ostream.str();
   //     MenuManager::instance().push_menu(std::make_unique<ScriptMenu>(&level_content));
-  //     log_warning << level_content << std::endl;
+  //     log_warning << level_content << '\n';
   //   });
   // m_widgets.insert(m_widgets.begin() + 10, std::move(code_widget));
 }

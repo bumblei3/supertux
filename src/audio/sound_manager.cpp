@@ -63,7 +63,7 @@ SoundManager::SoundManager() :
       alcCloseDevice(m_device);
       m_device = nullptr;
     }
-    log_warning << "Couldn't initialize audio device: " << e.what() << std::endl;
+    log_warning << "Couldn't initialize audio device: " << e.what() << '\n';
     print_openal_version();
   }
 }
@@ -131,12 +131,12 @@ SoundManager::intern_create_sound_source(const std::string& filename)
 
     if (file->m_size < 100000) {
       log_debug << "Adding \"" << filename <<
-        "\" into the buffer, file size: " << file->m_size << std::endl;
+        "\" into the buffer, file size: " << file->m_size << '\n';
       buffer = load_file_into_buffer(*file);
       m_buffers.insert(std::make_pair(filename, buffer));
     } else {
       log_debug << "Playing \"" << filename <<
-        "\" as StreamSoundSource, file size: " << file->m_size << std::endl;
+        "\" as StreamSoundSource, file size: " << file->m_size << '\n';
       auto stream_source = std::make_unique<StreamSoundSource>();
       stream_source->set_sound_file(std::move(file));
       stream_source->set_volume(static_cast<float>(m_sound_volume) / 100.0f);
@@ -157,7 +157,7 @@ SoundManager::create_sound_source(const std::string& filename)
   try {
     return intern_create_sound_source(filename);
   } catch(std::exception &e) {
-    log_warning << "Couldn't create audio source: " << e.what() << std::endl;
+    log_warning << "Couldn't create audio source: " << e.what() << '\n';
     return create_dummy_sound_source();
   }
 }
@@ -181,7 +181,7 @@ SoundManager::preload(const std::string& filename)
     ALuint const buffer = load_file_into_buffer(*file);
     m_buffers.insert(std::make_pair(filename, buffer));
   } catch(std::exception& e) {
-    log_warning << "Error while preloading sound file: " << e.what() << std::endl;
+    log_warning << "Error while preloading sound file: " << e.what() << '\n';
   }
 }
 
@@ -208,7 +208,7 @@ SoundManager::play(const std::string& filename, const Vector& pos,
     source->play();
     m_sources.push_back(std::move(source));
   } catch(std::exception& e) {
-    log_warning << "Couldn't play sound " << filename << ": " << e.what() << std::endl;
+    log_warning << "Couldn't play sound " << filename << ": " << e.what() << '\n';
   }
 }
 
@@ -329,7 +329,7 @@ SoundManager::play_music(const std::string& filename, float fadetime)
 
     m_music_source = std::move(newmusic);
   } catch(std::exception& e) {
-    log_warning << "Couldn't play music file '" << filename << "': " << e.what() << std::endl;
+    log_warning << "Couldn't play music file '" << filename << "': " << e.what() << '\n';
     // When this happens, the previous music continued playing. Stop it, just in case.
     stop_music();
   }
@@ -502,10 +502,10 @@ SoundManager::get_sample_format(const SoundFile& file)
 void
 SoundManager::print_openal_version()
 {
-  log_info << "OpenAL Vendor: " << alGetString(AL_VENDOR) << std::endl;
-  log_info << "OpenAL Version: " << alGetString(AL_VERSION) << std::endl;
-  log_info << "OpenAL Renderer: " << alGetString(AL_RENDERER) << std::endl;
-  log_info << "OpenAl Extensions: " << alGetString(AL_EXTENSIONS) << std::endl;
+  log_info << "OpenAL Vendor: " << alGetString(AL_VENDOR) << '\n';
+  log_info << "OpenAL Version: " << alGetString(AL_VERSION) << '\n';
+  log_info << "OpenAL Renderer: " << alGetString(AL_RENDERER) << '\n';
+  log_info << "OpenAl Extensions: " << alGetString(AL_EXTENSIONS) << '\n';
 }
 
 void

@@ -58,7 +58,7 @@ SquirrelScheduler::update(float time)
           sq_getstring(scheduled_vm, -1, &lasterr);
           msg << lasterr;
         }
-        log_warning << msg.str() << std::endl;
+        log_warning << msg.str() << '\n';
         sq_pop(scheduled_vm, 1);
       }
     }

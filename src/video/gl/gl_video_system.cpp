@@ -178,7 +178,7 @@ GLVideoSystem::create_gl_window()
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,  5);
 
 #if defined(USE_OPENGLES2)
-  log_info << "Requesting OpenGLES2 context" << std::endl;
+  log_info << "Requesting OpenGLES2 context" << '\n';
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -186,21 +186,21 @@ GLVideoSystem::create_gl_window()
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 #elif defined(USE_OPENGLES1)
-  log_info << "Requesting OpenGLES1 context" << std::endl;
+  log_info << "Requesting OpenGLES1 context" << '\n';
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 #else
   if (m_use_opengl33core)
   {
-    log_info << "Requesting OpenGL 3.3 Core context" << std::endl;
+    log_info << "Requesting OpenGL 3.3 Core context" << '\n';
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   }
   else
   {
-    log_info << "Requesting OpenGL 2.0 context" << std::endl;
+    log_info << "Requesting OpenGL 2.0 context" << '\n';
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0); // This only goes to 0.
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
@@ -259,12 +259,12 @@ GLVideoSystem::create_gl_context()
         std::cout << " -> " << call.returnValue->asString();
       }
 
-      std::cout << std::endl;
+      std::cout << '\n';
     });
 #  endif
   static auto extensions = glbinding::ContextInfo::extensions();
-  log_info << "Using glbinding" << std::endl;
-  log_info << "ARB_texture_non_power_of_two: " << static_cast<int>(extensions.find(GLextension::GL_ARB_texture_non_power_of_two) != extensions.end()) << std::endl;
+  log_info << "Using glbinding" << '\n';
+  log_info << "ARB_texture_non_power_of_two: " << static_cast<int>(extensions.find(GLextension::GL_ARB_texture_non_power_of_two) != extensions.end()) << '\n';
 #else // Glew
   GLenum const err = glewInit();
 #  ifdef GLEW_ERROR_NO_GLX_DISPLAY
@@ -277,7 +277,7 @@ GLVideoSystem::create_gl_context()
   // just crash.
   if (GLEW_ERROR_NO_GLX_DISPLAY == err)
   {
-    log_info << "GLEW couldn't open GLX display" << std::endl;
+    log_info << "GLEW couldn't open GLX display" << '\n';
   }
   else
 #  endif
@@ -291,10 +291,10 @@ GLVideoSystem::create_gl_context()
   // Older GLEW throws 'invalid enum' error in OpenGL3.3Core, thus we eat up the error code here.
   glGetError();
 
-  // log_info << "OpenGL 3.3: " << GLEW_VERSION_3_3 << std::endl;
-  log_info << "OpenGL: " << glGetString(GL_VERSION) << std::endl;
-  log_info << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
-  log_info << "GLEW_ARB_texture_non_power_of_two: " << static_cast<int>(GLEW_ARB_texture_non_power_of_two) << std::endl;
+  // log_info << "OpenGL 3.3: " << GLEW_VERSION_3_3 << '\n';
+  log_info << "OpenGL: " << glGetString(GL_VERSION) << '\n';
+  log_info << "Using GLEW " << glewGetString(GLEW_VERSION) << '\n';
+  log_info << "GLEW_ARB_texture_non_power_of_two: " << static_cast<int>(GLEW_ARB_texture_non_power_of_two) << '\n';
 #endif
 
   assert_gl();
@@ -378,22 +378,22 @@ GLVideoSystem::set_vsync(int mode)
 {
   if (SDL_GL_SetSwapInterval(mode) == false)
   {
-    log_warning << "Setting vsync mode to " << mode << " failed: " << SDL_GetError() << std::endl;
+    log_warning << "Setting vsync mode to " << mode << " failed: " << SDL_GetError() << '\n';
     SDL_ClearError();
 
     if(mode != 1)
     {
       mode = 1;
-      log_warning << "Trying to set vsync mode to 1" << std::endl;
+      log_warning << "Trying to set vsync mode to 1" << '\n';
       if (SDL_GL_SetSwapInterval(1) == false)
       {
-        log_warning << "Setting vsync mode failed: " << SDL_GetError() << ". Trying to set vsync mode to 0" << std::endl;
+        log_warning << "Setting vsync mode failed: " << SDL_GetError() << ". Trying to set vsync mode to 0" << '\n';
         SDL_ClearError();
 
         if(mode != 0)
         {
           mode = 0;
-          log_warning << "Trying to set vsync mode to 0" << std::endl;
+          log_warning << "Trying to set vsync mode to 0" << '\n';
           SDL_GL_SetSwapInterval(0);
         }
       }
@@ -402,7 +402,7 @@ GLVideoSystem::set_vsync(int mode)
   }
   else
   {
-    log_info << "Setting vsync mode to " << mode << std::endl;
+    log_info << "Setting vsync mode to " << mode << '\n';
   }
 }
 

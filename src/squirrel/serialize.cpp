@@ -34,7 +34,7 @@ void load_squirrel_table(ssq::Table& table, const ReaderMapping& mapping)
     // Ignore key value pairs with invalid length
     if (pair.size() < 2)
     {
-      log_debug << "Found key/value pair with invalid length. Ignoring." << std::endl;
+      log_debug << "Found key/value pair with invalid length. Ignoring." << '\n';
       continue;
     }
 
@@ -44,7 +44,7 @@ void load_squirrel_table(ssq::Table& table, const ReaderMapping& mapping)
     // ignore empty / null values
     if (value.is_nil())
     {
-      log_debug << "Found null value for key " << key << ". Ignoring." << std::endl;
+      log_debug << "Found null value for key " << key << ". Ignoring." << '\n';
       continue;
     }
 
@@ -70,7 +70,7 @@ void load_squirrel_table(ssq::Table& table, const ReaderMapping& mapping)
         table.set(key, value.as_bool());
         break;
       case sexp::Value::Type::SYMBOL:
-        log_warning << "Unexpected symbol in file: " << value.as_string() << std::endl;
+        log_warning << "Unexpected symbol in file: " << value.as_string() << '\n';
         table.set(key, nullptr);
         break;
       default:
@@ -109,7 +109,7 @@ void save_squirrel_table(const ssq::Table& table, Writer& writer)
         break; // Ignore
 
       default:
-        log_warning << "Can't serialize key '" << key << "' in Squirrel table." << std::endl;
+        log_warning << "Can't serialize key '" << key << "' in Squirrel table." << '\n';
         break;
     }
   }

@@ -62,7 +62,7 @@ Notification::Notification(const std::string& id, float idle_close_time,
 {
   if (is_disabled(id)) // The notification exists in the config as disabled.
   {
-    log_debug << "Requested launch of disabled notification with ID \"" << m_id << "\". Closing." << std::endl;
+    log_debug << "Requested launch of disabled notification with ID \"" << m_id << "\". Closing." << '\n';
     m_quit = true;
     return;
   }

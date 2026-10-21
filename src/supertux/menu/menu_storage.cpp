@@ -205,7 +205,7 @@ MenuStorage::create(MenuId menu_id)
       return std::unique_ptr<Menu>();
 
     default:
-      log_warning << "unknown MenuId provided" << std::endl;
+      log_warning << "unknown MenuId provided" << '\n';
       assert(false);
       return std::unique_ptr<Menu>();
   }

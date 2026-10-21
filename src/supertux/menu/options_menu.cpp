@@ -425,7 +425,7 @@ OptionsMenu::add_resolutions()
   SDL_DisplayID const prim_display = SDL_GetPrimaryDisplay();
   if (prim_display == 0)
   {
-    log_warning << "Couldn't get primary display: " << SDL_GetError() << std::endl;
+    log_warning << "Couldn't get primary display: " << SDL_GetError() << '\n';
     SDL_ClearError();
     return; // at this point, we just give up.
   }
@@ -434,7 +434,7 @@ OptionsMenu::add_resolutions()
 
   if (display_modes == nullptr)
   {
-    log_warning << "failed to get fullscreen display modes: " << SDL_GetError() << std::endl;
+    log_warning << "failed to get fullscreen display modes: " << SDL_GetError() << '\n';
     SDL_ClearError();
     display_mode_count = 0;
   }
@@ -510,7 +510,7 @@ OptionsMenu::add_vsync()
       m_vsyncs.next = 0;
       break;
     default:
-      log_warning << "Unknown swap mode: " << mode << std::endl;
+      log_warning << "Unknown swap mode: " << mode << '\n';
       m_vsyncs.next = 0;
   }
 
@@ -690,7 +690,7 @@ OptionsMenu::menu_action(MenuItem& item)
         }
         else
         {
-          log_fatal << "Invalid aspect ratio " << m_aspect_ratios.list[m_aspect_ratios.next] << " specified" << std::endl;
+          log_fatal << "Invalid aspect ratio " << m_aspect_ratios.list[m_aspect_ratios.next] << " specified" << '\n';
           assert(false);
         }
       }
@@ -722,7 +722,7 @@ OptionsMenu::menu_action(MenuItem& item)
         if (sscanf(m_window_resolutions.list[m_window_resolutions.next].c_str(), "%dx%d",
                    &width, &height) != 2)
         {
-          log_fatal << "can't parse " << m_window_resolutions.list[m_window_resolutions.next] << std::endl;
+          log_fatal << "can't parse " << m_window_resolutions.list[m_window_resolutions.next] << '\n';
         }
         else
         {

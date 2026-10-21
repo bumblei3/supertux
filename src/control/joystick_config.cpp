@@ -83,20 +83,20 @@ JoystickConfig::reversemap_joyhat(Control c) const
 void
 JoystickConfig::print_joystick_mappings() const
 {
-  std::cout << _("Joystick Mappings") << std::endl;
-  std::cout << "-----------------" << std::endl;
+  std::cout << _("Joystick Mappings") << '\n';
+  std::cout << "-----------------" << '\n';
   for (const auto& i : m_joy_axis_map) {
-    std::cout << "Axis: " << i.first.second << " -> " << i.second << std::endl;
+    std::cout << "Axis: " << i.first.second << " -> " << i.second << '\n';
   }
 
   for (const auto& i : m_joy_button_map) {
-    std::cout << "Button: " << i.first.second << " -> " << i.second << std::endl;
+    std::cout << "Button: " << i.first.second << " -> " << i.second << '\n';
   }
 
   for (const auto& i : m_joy_hat_map) {
-    std::cout << "Hat: " << i.first.second << " -> " << i.second << std::endl;
+    std::cout << "Hat: " << i.first.second << " -> " << i.second << '\n';
   }
-  std::cout << std::endl;
+  std::cout << '\n';
 }
 
 void
@@ -177,7 +177,7 @@ JoystickConfig::read(const ReaderMapping& joystick_mapping)
       const std::optional<Control> maybe_control = Control_from_string(control_text);
       if (!maybe_control)
       {
-        log_info << "Invalid control '" << control_text << "' in buttonmap" << std::endl;
+        log_info << "Invalid control '" << control_text << "' in buttonmap" << '\n';
       }
       else
       {
@@ -201,7 +201,7 @@ JoystickConfig::read(const ReaderMapping& joystick_mapping)
               hat != SDL_HAT_DOWN &&
               hat != SDL_HAT_LEFT &&
               hat != SDL_HAT_RIGHT) {
-            log_info << "Invalid axis '" << axis << "' in axismap" << std::endl;
+            log_info << "Invalid axis '" << axis << "' in axismap" << '\n';
           }
           else
           {

@@ -58,7 +58,7 @@ Sint64 funcSeek(void *userdata, Sint64 offset, SDL_IOWhence whence)
       break;
   }
   if (res == 0) {
-    log_warning << "Error seeking in file: " << physfsutil::get_last_error() << std::endl;
+    log_warning << "Error seeking in file: " << physfsutil::get_last_error() << '\n';
     return -1;
   }
   int i = static_cast<int>(PHYSFS_tell(file));

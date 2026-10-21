@@ -116,7 +116,7 @@ BicyclePlatform::BicyclePlatform(const ReaderMapping& reader) :
   {
     d_sector->request_name_resolve(path_ref, [this](UID uid){
         if (!uid) {
-          log_fatal << "no path-ref entry for BicyclePlatform" << std::endl;
+          log_fatal << "no path-ref entry for BicyclePlatform" << '\n';
         } else {
           m_walker.reset(new PathWalker(uid, true));
         }

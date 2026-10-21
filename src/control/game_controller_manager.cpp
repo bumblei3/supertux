@@ -56,7 +56,7 @@ GameControllerManager::process_button_event(const SDL_GamepadButtonEvent& ev)
     player_id = it->second;
   }
 
-  //log_info << "button event: " << static_cast<int>(ev.button) << " " << static_cast<int>(ev.down) << std::endl;
+  //log_info << "button event: " << static_cast<int>(ev.button) << " " << static_cast<int>(ev.down) << '\n';
   Controller& controller = m_parent->get_controller(player_id);
   auto set_control = [this, &controller](Control control, Uint8 value)
   {
@@ -147,7 +147,7 @@ GameControllerManager::process_axis_event(const SDL_GamepadAxisEvent& ev)
 
   // FIXME: Buttons and axis are fighting for control ownership, need jump slightly if we encounter a suitable totem.
 
-  //log_info << "axis event: " << static_cast<int>(ev.axis) << " " << ev.value << std::endl;
+  //log_info << "axis event: " << static_cast<int>(ev.axis) << " " << ev.value << '\n';
   Controller& controller = m_parent->get_controller(player_id);
   auto set_control = [this, &controller](Control control, bool value)
   {
@@ -213,7 +213,7 @@ GameControllerManager::on_controller_added(int joystick_index)
 
   if (!SDL_IsGamepad(joystick_index))
   {
-    log_warning << "joystick is not a game controller, ignoring: " << joystick_index << std::endl;
+    log_warning << "joystick is not a game controller, ignoring: " << joystick_index << '\n';
   }
   else
   {
@@ -221,7 +221,7 @@ GameControllerManager::on_controller_added(int joystick_index)
     if (!game_controller)
     {
       log_warning << "failed to open game_controller: " << joystick_index
-                  << ": " << SDL_GetError() << std::endl;
+                  << ": " << SDL_GetError() << '\n';
       SDL_ClearError();
     }
     else
@@ -280,7 +280,7 @@ GameControllerManager::on_controller_removed(int instance_id)
   {
     log_debug << "Controller was unplugged but was not initially detected: "
               << SDL_GetJoystickName(SDL_GetJoystickFromID(instance_id))
-              << std::endl;
+              << '\n';
   }
 }
 

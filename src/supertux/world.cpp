@@ -66,7 +66,7 @@ World::from_directory(const std::string& directory)
   }
   catch (const std::exception& err)
   {
-    log_warning << "Failed to load " << info_filename << ":" << err.what() << std::endl;
+    log_warning << "Failed to load " << info_filename << ":" << err.what() << '\n';
 
     world->m_hide_from_contribs = true;
   }
@@ -164,7 +164,7 @@ World::save(bool retry)
     writer.write("tuxdolls-required", m_tuxdolls_required);
 
     writer.end_list("supertux-level-subset");
-    log_warning << "Levelset info saved as " << filepath << "." << std::endl;
+    log_warning << "Levelset info saved as " << filepath << "." << '\n';
   }
   catch(std::exception& e)
   {
@@ -173,7 +173,7 @@ World::save(bool retry)
       msg << "Problem when saving levelset info '" << filepath << "': " << e.what();
       throw std::runtime_error(msg.str());
     } else {
-      log_warning << "Failed to save the levelset info, retrying..." << std::endl;
+      log_warning << "Failed to save the levelset info, retrying..." << '\n';
       { // create the levelset directory again
         std::string const dirname = FileSystem::dirname(filepath);
         if (!PHYSFS_mkdir(dirname.c_str()))

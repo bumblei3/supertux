@@ -50,7 +50,7 @@ Bullet::Bullet(const Vector& pos, const Vector& xm, Direction dir, BonusType typ
       break;
 
     default:
-      log_warning << "Bullet::Bullet called with unknown BonusType" << std::endl;
+      log_warning << "Bullet::Bullet called with unknown BonusType" << '\n';
       life_count = 10.0f;
       sprite = SpriteManager::current()->create("images/objects/bullets/firebullet.sprite");
       break;

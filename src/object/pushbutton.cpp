@@ -41,7 +41,7 @@ PushButton::PushButton(const ReaderMapping& mapping) :
 
   if (!mapping.get("script", m_script) && !Editor::is_active())
   {
-    log_warning << "No script set for pushbutton." << std::endl;
+    log_warning << "No script set for pushbutton." << '\n';
   }
 
   bool old_upside_down;

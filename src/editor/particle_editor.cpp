@@ -596,14 +596,14 @@ ParticleEditor::save(const std::string& filepath_, bool retry)
     save(writer);
     m_filename = filepath;
     m_saved_version = m_undo_stack.back();
-    log_warning << "Particle config saved as " << filepath << "." << std::endl;
+    log_warning << "Particle config saved as " << filepath << "." << '\n';
   } catch(std::exception& e) {
     if (retry) {
       std::stringstream msg;
       msg << "Problem when saving particle config '" << filepath << "': " << e.what();
       throw std::runtime_error(msg.str());
     } else {
-      log_warning << "Failed to save the particle configuration, retrying..." << std::endl;
+      log_warning << "Failed to save the particle configuration, retrying..." << '\n';
       { // create the level directory again
         std::string const dirname = FileSystem::dirname(filepath);
         if (!PHYSFS_mkdir(dirname.c_str()))

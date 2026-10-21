@@ -37,7 +37,7 @@ auto on_select = [](const std::string& path, PathObject& target, const std::stri
         MenuManager::instance().pop_menu();
       } else {
         log_warning << "Could not copy path, misses " << (from ? "" : "'from'")
-                    << (into ? "" : "'into'") << std::endl;
+                    << (into ? "" : "'into'") << '\n';
         Dialog::show_message(_("An error occurred and the game could\nnot clone the path. Please contact\nthe developers for support."));
       }
     });

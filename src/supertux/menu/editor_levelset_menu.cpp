@@ -39,7 +39,7 @@ EditorLevelsetMenu::~EditorLevelsetMenu()
   }
   catch(std::exception& e)
   {
-    log_warning << "Could not save world: " << e.what() << std::endl;
+    log_warning << "Could not save world: " << e.what() << '\n';
   }
 }
 

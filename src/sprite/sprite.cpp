@@ -101,7 +101,7 @@ Sprite::set_action(const std::string& name, int loops)
   if (!newaction) {
     // HACK: Lots of things trigger this message therefore turning it into a warning
     // would make it quite annoying
-    log_debug << "Action '" << name << "' not found." << std::endl;
+    log_debug << "Action '" << name << "' not found." << '\n';
     return;
   }
 

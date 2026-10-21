@@ -196,7 +196,7 @@ ProfileMenu::menu_action(MenuItem& item)
   }
   else
   {
-    log_warning << "Unknown menu item with id \"" << id << "\" pressed." << std::endl;
+    log_warning << "Unknown menu item with id \"" << id << "\" pressed." << '\n';
   }
 }
 

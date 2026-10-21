@@ -50,7 +50,7 @@ Profile::Profile(int id) :
   }
   catch (const std::exception& err)
   {
-    log_info << "Failed to load profile info from '" << info_file << "': " << err.what() << std::endl;
+    log_info << "Failed to load profile info from '" << info_file << "': " << err.what() << '\n';
     save();
   }
 }

@@ -70,7 +70,7 @@ EditorLevelMenu::~EditorLevelMenu()
     catch(std::exception& e)
     {
       // Lisp Type error might occur.
-      log_warning << e.what() << std::endl;
+      log_warning << e.what() << '\n';
     }
   }
 }

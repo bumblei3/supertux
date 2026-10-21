@@ -84,14 +84,14 @@ WorldSelect::WorldSelect(const std::string& current_world_filename) :
         ReaderDocument const doc = ReaderDocument::from_file(world);
         if (!doc.get_root().get_mapping().get("name", wm.name))
         {
-          log_warning << "No name for worldmap " << world << std::endl;
+          log_warning << "No name for worldmap " << world << '\n';
           continue;
         }
 
         std::string icon_path = "";
         if (!doc.get_root().get_mapping().get(unlocked ? "icon" : "icon-locked", icon_path))
         {
-          log_warning << "No icon (" << (unlocked ? "unlocked" : "locked") << ") for worldmap " << world << std::endl;
+          log_warning << "No icon (" << (unlocked ? "unlocked" : "locked") << ") for worldmap " << world << '\n';
           continue;
         }
 
@@ -99,7 +99,7 @@ WorldSelect::WorldSelect(const std::string& current_world_filename) :
         if (!wm.icon)
         {
           log_warning << "Icon not found for worldmap " << world << ": "
-                      << icon_path << std::endl;
+                      << icon_path << '\n';
           continue;
         }
 
@@ -122,13 +122,13 @@ WorldSelect::WorldSelect(const std::string& current_world_filename) :
       }
       catch(const std::exception& e)
       {
-        log_info << "Exception thrown while generating world state: " << e.what() << std::endl;
+        log_info << "Exception thrown while generating world state: " << e.what() << '\n';
       }
     }
   }
   catch (const std::exception& err)
   {
-    log_warning << "Couldn't load world select data: " << err.what() << std::endl;
+    log_warning << "Couldn't load world select data: " << err.what() << '\n';
   }
 
   m_selected_world = m_current_world;
@@ -136,7 +136,7 @@ WorldSelect::WorldSelect(const std::string& current_world_filename) :
 
   if (m_worlds.empty())
   {
-    log_warning << "No maps on world select" << std::endl;
+    log_warning << "No maps on world select" << '\n';
   }
 }
 

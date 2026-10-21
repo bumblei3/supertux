@@ -64,7 +64,7 @@ CommandLineArguments::print_datadir() const
   sp = PHYSFS_getSearchPath();
   if (sp)
     for (size_t sp_index = 0; sp[sp_index]; sp_index++)
-      std::cout << sp[sp_index] << std::endl;
+      std::cout << sp[sp_index] << '\n';
   PHYSFS_freeList(sp);
 }
 
@@ -77,12 +77,12 @@ CommandLineArguments::print_acknowledgements() const
     std::string line;
     while (std::getline(in, line))
     {
-      std::cout << line << std::endl;
+      std::cout << line << '\n';
     }
   }
   else
   {
-    std::cout << "Could not open acknowledgements file" << std::endl;
+    std::cout << "Could not open acknowledgements file" << '\n';
   }
 }
 
@@ -144,7 +144,7 @@ CommandLineArguments::print_help(const char* arg0) const
 void
 CommandLineArguments::print_version() const
 {
-  std::cout << PACKAGE_NAME << " " << PACKAGE_VERSION << std::endl;
+  std::cout << PACKAGE_NAME << " " << PACKAGE_VERSION << '\n';
 }
 
 void

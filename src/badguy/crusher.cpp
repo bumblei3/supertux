@@ -1152,7 +1152,7 @@ Crusher::update(float dt_sec)
       break;
 
     default:
-      log_warning << "Crusher is in an invalid state." << std::endl;
+      log_warning << "Crusher is in an invalid state." << '\n';
       break;
   }
 

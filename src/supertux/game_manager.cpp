@@ -90,7 +90,7 @@ GameManager::start_level(Level* level,
   }
   catch(const std::exception& e)
   {
-    log_warning << "Couldn't start level: " << e.what() << std::endl;
+    log_warning << "Couldn't start level: " << e.what() << '\n';
   }
 }
 
@@ -122,7 +122,7 @@ try
 }
 catch (const std::exception& e)
 {
-  log_warning << "Couldn't start worldmap: " << e.what() << std::endl;
+  log_warning << "Couldn't start worldmap: " << e.what() << '\n';
   return nullptr;
 }
 

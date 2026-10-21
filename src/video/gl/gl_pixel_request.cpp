@@ -69,13 +69,13 @@ GLPixelRequest::is_ready() const
   if (ret == GL_CONDITION_SATISFIED ||
       ret == GL_ALREADY_SIGNALED)
   {
-    //std::cout << "fence ready: " << static_cast<int>(ret) << " " << GL_ALREADY_SIGNALED << std::endl;
+    //std::cout << "fence ready: " << static_cast<int>(ret) << " " << GL_ALREADY_SIGNALED << '\n';
     return true;
   }
   else if (ret == GL_TIMEOUT_EXPIRED)
 
   {
-    //std::cout << "timeout: " << static_cast<int>(ret) << std::endl;
+    //std::cout << "timeout: " << static_cast<int>(ret) << '\n';
     return false;
   }
   else if (ret == GL_WAIT_FAILED)
@@ -84,7 +84,7 @@ GLPixelRequest::is_ready() const
   }
   else
   {
-    log_warning << "unknown glClientWaitSync() return value: " << static_cast<int>(ret) << std::endl;
+    log_warning << "unknown glClientWaitSync() return value: " << static_cast<int>(ret) << '\n';
     return true;
   }
 

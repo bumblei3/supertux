@@ -98,7 +98,7 @@ Dispenser::add_object(std::unique_ptr<GameObject> object)
   if (!GameObjectFactory::instance().has_params(object->get_class_name(), ObjectFactory::RegisteredObjectParam::OBJ_PARAM_DISPENSABLE) ||
       !moving_object) // Object is not MovingObject, or is not dispensable.
   {
-    log_warning << object->get_class_name() << " is not dispensable. Removing from dispenser object list." << std::endl;
+    log_warning << object->get_class_name() << " is not dispensable. Removing from dispenser object list." << '\n';
     return;
   }
 
@@ -297,7 +297,7 @@ Dispenser::launch_object()
     }
     catch(const std::exception& e)
     {
-      log_warning << "Error dispensing object: " << e.what() << std::endl;
+      log_warning << "Error dispensing object: " << e.what() << '\n';
       return;
     }
   }

@@ -45,7 +45,7 @@ Writer::Writer(std::ostream& newout) :
 Writer::~Writer()
 {
   if (lists.size() > 0) {
-    log_warning << m_filename << ": Not all sections closed in Writer" << std::endl;
+    log_warning << m_filename << ": Not all sections closed in Writer" << '\n';
   }
   if (out_owned)
     delete out;
@@ -76,11 +76,11 @@ void
 Writer::end_list(const std::string& listname)
 {
   if (lists.size() == 0) {
-    log_warning << m_filename << ": Trying to close list '" << listname << "', which is not open" << std::endl;
+    log_warning << m_filename << ": Trying to close list '" << listname << "', which is not open" << '\n';
     return;
   }
   if (lists.back() != listname) {
-    log_warning << m_filename << ": trying to close list '" << listname << "' while list '" << lists.back() << "' is open" << std::endl;
+    log_warning << m_filename << ": trying to close list '" << listname << "' while list '" << lists.back() << "' is open" << '\n';
     return;
   }
   lists.pop_back();

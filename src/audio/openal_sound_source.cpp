@@ -57,7 +57,7 @@ OpenALSoundSource::stop(bool unload_buffer)
   catch(const std::exception& e)
   {
     // Internal OpenAL error. Don't you crash on me, baby!
-    log_warning << e.what() << std::endl;
+    log_warning << e.what() << '\n';
   }
 }
 
@@ -71,7 +71,7 @@ OpenALSoundSource::pause()
   }
   catch(const std::exception& e)
   {
-    log_warning << e.what() << std::endl;
+    log_warning << e.what() << '\n';
   }
 }
 
@@ -87,7 +87,7 @@ OpenALSoundSource::play()
   catch(const std::exception& e)
   {
     // We probably have too many sources playing simultaneously.
-    log_warning << e.what() << std::endl;
+    log_warning << e.what() << '\n';
   }
 }
 

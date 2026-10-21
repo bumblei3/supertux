@@ -120,7 +120,7 @@ DiscordIntegration::init()
   handlers.joinRequest = handleDiscordJoinRequest;
   Discord_Initialize("733576109744062537", &handlers, 1, nullptr);
 
-  log_info << "[Discord] Started" << std::endl;
+  log_info << "[Discord] Started" << '\n';
 
   m_enabled = true;
 }
@@ -144,7 +144,7 @@ DiscordIntegration::close()
   Discord_ClearPresence();
   Discord_Shutdown();
 
-  log_info << "[Discord] Closed" << std::endl;
+  log_info << "[Discord] Closed" << '\n';
 
   m_enabled = false;
 }

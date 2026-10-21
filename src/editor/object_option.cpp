@@ -748,7 +748,7 @@ ObjectSelectObjectOption::parse(const ReaderMapping& reader)
       catch (const std::exception& err)
       {
         log_warning << "Error adding object select option object '" << iter.get_key()
-                    << "': " << err.what() << std::endl;
+                    << "': " << err.what() << '\n';
       }
     }
   }

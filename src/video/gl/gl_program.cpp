@@ -58,7 +58,7 @@ GLProgram::GLProgram() :
   if (!get_link_status())
   {
     std::ostringstream out;
-    out << "link failure:\n" << get_info_log() << std::endl;
+    out << "link failure:\n" << get_info_log() << '\n';
     throw std::runtime_error(out.str());
   }
 
@@ -108,7 +108,7 @@ GLProgram::validate()
   if (!get_validate_status())
   {
     std::ostringstream out;
-    out << "validate failure:\n" << get_info_log() << std::endl;
+    out << "validate failure:\n" << get_info_log() << '\n';
     throw std::runtime_error(out.str());
   }
 
@@ -121,7 +121,7 @@ GLProgram::check_valid(GLint loc, const char* name)
   if (loc == -1)
   {
     std::ostringstream out;
-    out << "Getting uniform or attribute location for \"" << name << "\" failed" << std::endl;
+    out << "Getting uniform or attribute location for \"" << name << "\" failed" << '\n';
     throw std::runtime_error(out.str());
   }
   return loc;

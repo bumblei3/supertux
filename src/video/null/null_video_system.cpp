@@ -76,13 +76,13 @@ NullVideoSystem::apply_config()
 void
 NullVideoSystem::flip()
 {
-  log_info << "NullVideoSystem::flip()" << std::endl;
+  log_info << "NullVideoSystem::flip()" << '\n';
 }
 
 void
 NullVideoSystem::on_resize(int w, int h)
 {
-  log_info << "NullVideoSystem::on_resize(" << w << ", " << h << ")" << std::endl;
+  log_info << "NullVideoSystem::on_resize(" << w << ", " << h << ")" << '\n';
   m_window_size = Size(w, h);
 }
 
@@ -101,7 +101,7 @@ NullVideoSystem::get_window_size() const
 void
 NullVideoSystem::set_vsync(int mode)
 {
-  log_info << "VideoSystem::set_vsync(" << mode << ")" << std::endl;
+  log_info << "VideoSystem::set_vsync(" << mode << ")" << '\n';
   m_vsync_mode = mode;
 }
 
@@ -114,13 +114,13 @@ NullVideoSystem::get_vsync() const
 void
 NullVideoSystem::set_title(const std::string& title)
 {
-  log_info << "VideoSystem::set_icon(\"" << title << "\")" << std::endl;
+  log_info << "VideoSystem::set_icon(\"" << title << "\")" << '\n';
 }
 
 void
 NullVideoSystem::set_icon(const SDL_Surface& icon)
 {
-  log_info << "VideoSystem::set_icon()" << std::endl;
+  log_info << "VideoSystem::set_icon()" << '\n';
 }
 
 SDLSurfacePtr

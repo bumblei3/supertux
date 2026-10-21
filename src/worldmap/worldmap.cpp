@@ -362,7 +362,7 @@ WorldMap::set_sector(const std::string& name, const std::string& spawnpoint,
 
   if (!m_sector) // The sector was not found, so no sector is assigned.
   {
-    log_warning << "Sector '" << name << "' not found. Setting first sector." << std::endl;
+    log_warning << "Sector '" << name << "' not found. Setting first sector." << '\n';
     m_sector = get_sector(0); // In that case, assign the first sector.
   }
 

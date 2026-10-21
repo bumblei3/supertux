@@ -111,7 +111,7 @@ BonusBlock::BonusBlock(const ReaderMapping& mapping) :
         if (!object_specs.empty())
         {
           if (object_specs.size() > 1)
-            log_warning << "Only one custom object allowed inside bonus blocks, ignoring the rest." << std::endl;
+            log_warning << "Only one custom object allowed inside bonus blocks, ignoring the rest." << '\n';
 
           const auto& spec = object_specs.at(0);
           auto game_object = GameObjectFactory::instance().create(spec.get_name(), spec.get_mapping());
@@ -119,16 +119,16 @@ BonusBlock::BonusBlock(const ReaderMapping& mapping) :
           if (dynamic_cast<MovingObject*>(game_object.get()))
             set_object(std::move(game_object));
           else
-            log_warning << "Only `MovingObject`s are allowed inside bonus blocks." << std::endl;
+            log_warning << "Only `MovingObject`s are allowed inside bonus blocks." << '\n';
         }
         else
         {
-          log_warning << "Custom object not set." << std::endl;
+          log_warning << "Custom object not set." << '\n';
         }
       }
       else
       {
-        log_warning << "Custom object not set." << std::endl;
+        log_warning << "Custom object not set." << '\n';
       }
     }
   }
@@ -250,7 +250,7 @@ BonusBlock::get_content_by_data(int tile_data) const
     case 16: return Content::RETROGROW;
     case 17: return Content::RETROSTAR;
     default:
-      log_warning << "Invalid box contents" << std::endl;
+      log_warning << "Invalid box contents" << '\n';
       return Content::COIN;
   }
 }
@@ -745,7 +745,7 @@ BonusBlock::get_content_from_string(const std::string& contentstring) const
     return Content::EXPLODE;
   else
   {
-    log_warning << "Invalid bonus block contents '" << contentstring << "'" << std::endl;
+    log_warning << "Invalid bonus block contents '" << contentstring << "'" << '\n';
     return Content::COIN;
   }
 }

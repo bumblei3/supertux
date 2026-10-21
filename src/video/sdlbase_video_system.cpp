@@ -39,7 +39,7 @@ SDLBaseVideoSystem::SDLBaseVideoSystem() :
   SDL_DisplayID prim_display = SDL_GetPrimaryDisplay();
   if (prim_display == 0)
   {
-    log_warning << "Couldn't get primary display: " << SDL_GetError() << std::endl;
+    log_warning << "Couldn't get primary display: " << SDL_GetError() << '\n';
     SDL_ClearError();
     return; // at this point, we just give up.
   }
@@ -47,7 +47,7 @@ SDLBaseVideoSystem::SDLBaseVideoSystem() :
   auto mode = SDL_GetDesktopDisplayMode(prim_display);
   if (mode == nullptr)
   {
-    log_warning << "Couldn't get desktop display mode: " << SDL_GetError() << std::endl;
+    log_warning << "Couldn't get desktop display mode: " << SDL_GetError() << '\n';
     SDL_ClearError();
     return;
   }
@@ -149,7 +149,7 @@ SDLBaseVideoSystem::apply_video_mode()
   if (displayidx < 0)
   {
     log_warning << "Unable to get display index of window: "
-                << SDL_GetError() << std::endl;
+                << SDL_GetError() << '\n';
     SDL_ClearError();
     return;
   }
@@ -159,7 +159,7 @@ SDLBaseVideoSystem::apply_video_mode()
   {
     log_warning << "Unable to get information for display number "
                 << displayidx << ": "
-                << SDL_GetError() << std::endl;
+                << SDL_GetError() << '\n';
     SDL_ClearError();
     return;
   }
@@ -196,12 +196,12 @@ SDLBaseVideoSystem::apply_video_mode()
       if (SDL_SetWindowFullscreen(m_sdl_window.get(), true) == false)
       {
         log_warning << "failed to switch to desktop fullscreen mode: "
-                    << SDL_GetError() << std::endl;
+                    << SDL_GetError() << '\n';
         SDL_ClearError();
       }
       else
       {
-        log_info << "switched to desktop fullscreen mode" << std::endl;
+        log_info << "switched to desktop fullscreen mode" << '\n';
       }
     }
     else
@@ -219,7 +219,7 @@ SDLBaseVideoSystem::apply_video_mode()
       {
         log_warning << "failed to set fullscreen mode: "
                     << mode.w << "x" << mode.h << "@" << mode.refresh_rate << ": "
-                    << SDL_GetError() << std::endl;
+                    << SDL_GetError() << '\n';
         SDL_ClearError();
       }
       else
@@ -228,13 +228,13 @@ SDLBaseVideoSystem::apply_video_mode()
         {
           log_warning << "failed to switch to fullscreen mode: "
                       << mode.w << "x" << mode.h << "@" << mode.refresh_rate << ": "
-                      << SDL_GetError() << std::endl;
+                      << SDL_GetError() << '\n';
           SDL_ClearError();
         }
         else
         {
           log_info << "switched to fullscreen mode: "
-                   << mode.w << "x" << mode.h << "@" << mode.refresh_rate << std::endl;
+                   << mode.w << "x" << mode.h << "@" << mode.refresh_rate << '\n';
         }
       }
     }

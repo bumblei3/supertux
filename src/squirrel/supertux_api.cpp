@@ -58,7 +58,7 @@ namespace Globals {
  */
 static void display(const ssq::Object& object)
 {
-  ConsoleBuffer::output << squirrel_to_string(object) << std::endl;
+  ConsoleBuffer::output << squirrel_to_string(object) << '\n';
 }
 /**
  * @scripting
@@ -97,13 +97,13 @@ static void start_cutscene()
   auto session = GameSession::current();
   if (session == nullptr)
   {
-    log_info << "No game session" << std::endl;
+    log_info << "No game session" << '\n';
     return;
   }
 
   if (session->get_current_level().m_is_in_cutscene)
   {
-    log_warning << "start_cutscene(): starting a new cutscene above another one, ending preceding cutscene (use end_cutscene() in scripts!)" << std::endl;
+    log_warning << "start_cutscene(): starting a new cutscene above another one, ending preceding cutscene (use end_cutscene() in scripts!)" << '\n';
 
     // Remove all sounds that started playing while skipping.
     if (session->get_current_level().m_skip_cutscene)
@@ -122,13 +122,13 @@ static void end_cutscene()
   auto session = GameSession::current();
   if (session == nullptr)
   {
-    log_info << "No game session." << std::endl;
+    log_info << "No game session." << '\n';
     return;
   }
 
   if (!session->get_current_level().m_is_in_cutscene)
   {
-    log_warning << "end_cutscene(): no cutscene to end, resetting status anyways." << std::endl;
+    log_warning << "end_cutscene(): no cutscene to end, resetting status anyways." << '\n';
   }
 
   // Remove all sounds that started playing while skipping.
@@ -147,7 +147,7 @@ static bool check_cutscene()
   auto session = GameSession::current();
   if (session == nullptr)
   {
-    log_info << "No game session" << std::endl;
+    log_info << "No game session" << '\n';
     return false;
   }
 
@@ -380,7 +380,7 @@ static void set_game_speed(float speed)
     // Always put a minimum speed above 0 - if the user enabled transitions,
     // executing transitions would take an unreaonably long time if we allow
     // game speeds like 0.00001.
-    log_warning << "Cannot set game speed to less than 0.05" << std::endl;
+    log_warning << "Cannot set game speed to less than 0.05" << '\n';
     throw std::runtime_error("Cannot set game speed to less than 0.05");
   }
 
@@ -532,7 +532,7 @@ static void restart()
   auto session = GameSession::current();
   if (session == nullptr)
   {
-    log_info << "No game session." << std::endl;
+    log_info << "No game session." << '\n';
     return;
   }
   session->reset_button = true;
@@ -585,7 +585,7 @@ static void set_title_frame(const std::string& image)
   auto title_screen = TitleScreen::current();
   if (!title_screen)
   {
-    log_info << "No title screen loaded." << std::endl;
+    log_info << "No title screen loaded." << '\n';
     return;
   }
   title_screen->set_frame(image);
@@ -649,7 +649,7 @@ static void spawn(const std::string& sector, const std::string& spawnpoint, cons
   else if (transition == "circle")
     fade_type = ScreenFade::FadeType::CIRCLE;
   else
-    log_warning << "Invalid transition type '" << transition << "'." << std::endl;
+    log_warning << "Invalid transition type '" << transition << "'." << '\n';
 
   GameSession::current()->respawn_with_fade(sector, spawnpoint, fade_type, {0.0f, 0.0f}, true);
 }

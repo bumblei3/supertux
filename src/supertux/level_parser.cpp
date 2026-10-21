@@ -49,7 +49,7 @@ LevelParser::get_level_name(const std::string& filename)
   catch(const std::exception& e)
   {
     log_warning << "Problem getting name of '" << filename << "': "
-                << e.what() << std::endl;
+                << e.what() << '\n';
     return "";
   }
 }
@@ -158,7 +158,7 @@ LevelParser::load(const ReaderDocument& doc)
   level.get("version", version);
   if (version == 1)
   {
-    log_info << "[" << doc.get_filename() << "] level uses old format: version 1" << std::endl;
+    log_info << "[" << doc.get_filename() << "] level uses old format: version 1" << '\n';
     load_old_format(level);
   }
   else if (version == 2 || version == 3)
@@ -200,12 +200,12 @@ LevelParser::load(const ReaderDocument& doc)
       log_warning << "[" <<  doc.get_filename() << "] The level author \"" << m_level.m_author
                   << "\" did not specify a license for this level \""
                   << m_level.m_name << "\". You might not be allowed to share it."
-                  << std::endl;
+                  << '\n';
     }
   }
   else
   {
-    log_warning << "[" << doc.get_filename() << "] level format version " << version << " is not supported" << std::endl;
+    log_warning << "[" << doc.get_filename() << "] level format version " << version << " is not supported" << '\n';
   }
 
   m_level.initialize();

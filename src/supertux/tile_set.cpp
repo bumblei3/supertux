@@ -76,7 +76,7 @@ TileSet::add_tile(int id, std::unique_ptr<Tile> tile)
   }
 
   if (m_tiles[id]) {
-    log_warning << "Tile with ID " << id << " redefined" << std::endl;
+    log_warning << "Tile with ID " << id << " redefined" << '\n';
   } else {
     m_tiles[id] = std::move(tile);
   }
@@ -86,7 +86,7 @@ const Tile&
 TileSet::get(const uint32_t id) const
 {
   if (id >= m_tiles.size()) {
-//    log_warning << "Invalid tile: " << id << std::endl;
+//    log_warning << "Invalid tile: " << id << '\n';
     return *m_tiles[0];
   } else {
     assert(id < m_tiles.size());
@@ -94,7 +94,7 @@ TileSet::get(const uint32_t id) const
     if (tile) {
       return *tile;
     } else {
-//      log_warning << "Invalid tile: " << id << std::endl;
+//      log_warning << "Invalid tile: " << id << '\n';
       return *m_tiles[0];
     }
   }
@@ -180,7 +180,7 @@ TileSet::remove_deprecated_tiles()
       if (get(tile).is_deprecated())
       {
         log_warning << "Deprecated tile " << tile << " in tilegroup \""
-                    << tilegroup.name << "\", replacing with 0." << std::endl;
+                    << tilegroup.name << "\", replacing with 0." << '\n';
         tile = 0;
       }
     }
@@ -198,7 +198,7 @@ TileSet::print_debug_info()
 {
   if (false)
   { // enable this if you want to see a list of free tiles
-    log_info << "Last Tile ID is " << m_tiles.size()-1 << std::endl;
+    log_info << "Last Tile ID is " << m_tiles.size()-1 << '\n';
     int last = -1;
     for (int i = 0; i < int(m_tiles.size()); ++i)
     {
@@ -208,7 +208,7 @@ TileSet::print_debug_info()
       }
       else if (m_tiles[i] && last != -1)
       {
-        log_info << "Free Tile IDs (" << i - last << "): " << last << " - " << i-1 << std::endl;
+        log_info << "Free Tile IDs (" << i - last << "): " << last << " - " << i-1 << '\n';
         last = -1;
       }
     }

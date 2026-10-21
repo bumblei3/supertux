@@ -53,7 +53,7 @@ JoystickManager::~JoystickManager()
 void
 JoystickManager::on_joystick_added(int joystick_index)
 {
-  log_debug << "on_joystick_added(): " << joystick_index << std::endl;
+  log_debug << "on_joystick_added(): " << joystick_index << '\n';
 
   if (!parent->can_add_user())
     return;
@@ -62,7 +62,7 @@ JoystickManager::on_joystick_added(int joystick_index)
   if (!joystick)
   {
     log_warning << "failed to open joystick: " << joystick_index
-                << ": " << SDL_GetError() << std::endl;
+                << ": " << SDL_GetError() << '\n';
     SDL_ClearError();
   }
   else
@@ -109,7 +109,7 @@ JoystickManager::on_joystick_added(int joystick_index)
 void
 JoystickManager::on_joystick_removed(int instance_id)
 {
-  log_debug << "on_joystick_removed: " << static_cast<int>(instance_id) << std::endl;
+  log_debug << "on_joystick_removed: " << static_cast<int>(instance_id) << '\n';
 
   auto it = std::find_if(joysticks.begin(), joysticks.end(), [instance_id] (decltype(joysticks)::const_reference pair) {
     return SDL_GetJoystickID(pair.first) == instance_id;
@@ -134,7 +134,7 @@ JoystickManager::on_joystick_removed(int instance_id)
   {
     log_debug << "Joystick was unplugged but was not initially detected: "
               << SDL_GetJoystickName(SDL_GetJoystickFromID(instance_id))
-              << std::endl;
+              << '\n';
   }
 }
 
@@ -222,7 +222,7 @@ JoystickManager::process_axis_event(const SDL_JoyAxisEvent& jaxis)
     auto right = m_joystick_config.m_joy_axis_map.find(std::make_pair(jaxis.which, axis));
 
     if (left == m_joystick_config.m_joy_axis_map.end()) {
-      // std::cout << "Unmapped joyaxis " << (int)jaxis.axis << " moved" << std::endl;
+      // std::cout << "Unmapped joyaxis " << (int)jaxis.axis << " moved" << '\n';
     } else {
       if (jaxis.value < -m_joystick_config.m_dead_zone)
         set_joy_controls(jaxis.which, left->second,  true);
@@ -231,7 +231,7 @@ JoystickManager::process_axis_event(const SDL_JoyAxisEvent& jaxis)
     }
 
     if (right == m_joystick_config.m_joy_axis_map.end()) {
-      // std::cout << "Unmapped joyaxis " << (int)jaxis.axis << " moved" << std::endl;
+      // std::cout << "Unmapped joyaxis " << (int)jaxis.axis << " moved" << '\n';
     } else {
       if (jaxis.value > m_joystick_config.m_dead_zone)
         set_joy_controls(jaxis.which, right->second, true);
@@ -258,7 +258,7 @@ JoystickManager::process_button_event(const SDL_JoyButtonEvent& jbutton)
   {
     auto i = m_joystick_config.m_joy_button_map.find(std::make_pair(jbutton.which, jbutton.button));
     if (i == m_joystick_config.m_joy_button_map.end()) {
-      log_debug << "Unmapped joybutton " << static_cast<int>(jbutton.button) << " pressed" << std::endl;
+      log_debug << "Unmapped joybutton " << static_cast<int>(jbutton.button) << " pressed" << '\n';
     } else {
       set_joy_controls(jbutton.which, i->second, (jbutton.down == true));
     }

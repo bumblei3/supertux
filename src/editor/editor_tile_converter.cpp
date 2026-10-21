@@ -63,7 +63,7 @@ EditorTileConverter::load_definitions(const std::string& filepath)
   }
   catch (std::exception& err)
   {
-    log_warning << "Cannot read converter data from '" << filepath << "': " << err.what() << std::endl;
+    log_warning << "Cannot read converter data from '" << filepath << "': " << err.what() << '\n';
   }
 }
 
@@ -198,7 +198,7 @@ EditorTileConverter::convert_tiles_by_file(const std::string& file)
   }
   catch (std::exception& err)
   {
-    log_warning << "Couldn't parse conversion file '" << file << "': " << err.what() << std::endl;
+    log_warning << "Couldn't parse conversion file '" << file << "': " << err.what() << '\n';
     return;
   }
 

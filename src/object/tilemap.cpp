@@ -130,7 +130,7 @@ TileMap::TileMap(const TileSet *tileset_, const ReaderMapping& reader) :
 
   if (!Editor::is_active()) {
     if (m_real_solid && ((m_speed_x != 1) || (m_speed_y != 1))) {
-      log_warning << "Speed of solid tilemap is not 1. fixing" << std::endl;
+      log_warning << "Speed of solid tilemap is not 1. fixing" << '\n';
       m_speed_x = 1;
       m_speed_y = 1;
     }
@@ -202,7 +202,7 @@ TileMap::parse_tiles(const ReaderMapping& reader)
 
   if (empty)
   {
-    log_info << "Tilemap '" << get_name() << "', z-pos '" << m_z_pos << "' is empty." << std::endl;
+    log_info << "Tilemap '" << get_name() << "', z-pos '" << m_z_pos << "' is empty." << '\n';
   }
 
   m_new_size_x = m_width;
@@ -731,7 +731,7 @@ TileMap::get_tile_id(int x, int y) const
   if (y >= m_height) y = m_height - 1;
 
   if (x < 0 || x >= m_width || y < 0 || y >= m_height) {
-    //log_warning << "tile outside tilemap requested" << std::endl;
+    //log_warning << "tile outside tilemap requested" << '\n';
     return 0;
   }
 

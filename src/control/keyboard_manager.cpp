@@ -53,7 +53,7 @@ KeyboardManager::process_key_event(const SDL_KeyboardEvent& event)
   else if (key_mapping == m_keyboard_config.m_keymap.end())
   {
     // default action: update controls
-    //log_debug << "Key " << event.key.SDL_Keycode.sym << " is unbound" << std::endl;
+    //log_debug << "Key " << event.key.SDL_Keycode.sym << " is unbound" << '\n';
   }
   else
   {

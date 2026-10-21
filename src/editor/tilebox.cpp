@@ -318,7 +318,7 @@ EditorTilebox::update_hovered_tile()
         obj_name = GameObjectFactory::instance().get_display_name(obj_class);
       }
       catch (const std::exception& err) {
-        log_warning << "Unable to get display name of object '" << obj_class << "': " << err.what() << std::endl;
+        log_warning << "Unable to get display name of object '" << obj_class << "': " << err.what() << '\n';
       }
       m_object_tip->set_info(obj_name);
     }

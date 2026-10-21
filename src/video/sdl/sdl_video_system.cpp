@@ -65,7 +65,7 @@ SDLVideoSystem::get_name() const
 void
 SDLVideoSystem::create_window()
 {
-  log_info << "Creating SDLVideoSystem" << std::endl;
+  log_info << "Creating SDLVideoSystem" << '\n';
 
   create_sdl_window(0);
 
@@ -138,7 +138,7 @@ SDLVideoSystem::new_texture(const SDL_Surface& image, const Sampler& sampler)
 void
 SDLVideoSystem::set_vsync(int mode)
 {
-  log_warning << "Setting vsync not supported by SDL renderer" << std::endl;
+  log_warning << "Setting vsync not supported by SDL renderer" << '\n';
 }
 
 int
@@ -162,7 +162,7 @@ SDLVideoSystem::make_screenshot()
   int height;
   if (!SDL_GetCurrentRenderOutputSize(m_renderer->get_sdl_renderer(), &width, &height))
   {
-    log_warning << "SDL_GetRenderOutputSize failed: " << SDL_GetError() << std::endl;
+    log_warning << "SDL_GetRenderOutputSize failed: " << SDL_GetError() << '\n';
     SDL_ClearError();
     return {};
   }
@@ -171,7 +171,7 @@ SDLVideoSystem::make_screenshot()
     auto surface = SDL_RenderReadPixels(m_renderer->get_sdl_renderer(), nullptr);
     if (surface == nullptr)
     {
-      log_warning << "SDL_RenderReadPixels failed: " << SDL_GetError() << std::endl;
+      log_warning << "SDL_RenderReadPixels failed: " << SDL_GetError() << '\n';
       SDL_ClearError();
       return {};
     }

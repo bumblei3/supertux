@@ -463,7 +463,7 @@ ObjectSettings::parse(const ReaderMapping& reader)
     catch (const std::exception& err)
     {
       log_warning << "Error processing data for option '" << option->get_key()
-                  << "': " << err.what() << std::endl;
+                  << "': " << err.what() << '\n';
     }
   }
 }
@@ -497,7 +497,7 @@ ObjectSettings::parse_state(const ReaderMapping& reader)
     catch (const std::exception& err)
     {
       log_warning << "Error processing state data for option '" << option->get_key()
-                  << "': " << err.what() << std::endl;
+                  << "': " << err.what() << '\n';
     }
   }
 }

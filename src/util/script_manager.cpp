@@ -118,8 +118,8 @@ ScriptManager::register_script(UID uid, const std::string& key, std::string* scr
 {
   std::string const full_filename = abspath_filename_from_key(uid, key);
 
-  log_debug << "Registering script \"" << filename_from_key(uid, key) << "\"" << std::endl;
-  log_debug << "Full path \"" << full_filename << "\"" << std::endl;
+  log_debug << "Registering script \"" << filename_from_key(uid, key) << "\"" << '\n';
+  log_debug << "Full path \"" << full_filename << "\"" << '\n';
 
   // TODO: Check if it's different. Causes some editors to nag.
   // Write current script contents

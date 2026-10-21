@@ -82,7 +82,7 @@ AddonBrowseMenu::rebuild_menu()
       if (installed_addon.get_md5() == addon.get_md5() ||
           installed_addon.get_version() > addon.get_version())
       {
-        log_debug << "ignoring already installed add-on " << installed_addon.get_id() << std::endl;
+        log_debug << "ignoring already installed add-on " << installed_addon.get_id() << '\n';
       }
     }
     catch(const std::exception&)
@@ -196,7 +196,7 @@ AddonBrowseMenu::check_online()
   }
   catch (std::exception& e)
   {
-    log_warning << "Check for available Add-ons failed: " << e.what() << std::endl;
+    log_warning << "Check for available Add-ons failed: " << e.what() << '\n';
   }
 }
 
@@ -228,6 +228,6 @@ AddonBrowseMenu::menu_action(MenuItem& item)
   }
   else
   {
-    log_warning << "Unknown menu item clicked: " << index << std::endl;
+    log_warning << "Unknown menu item clicked: " << index << '\n';
   }
 }

@@ -231,7 +231,7 @@ GameObject::parse_type(const ReaderMapping& reader)
     catch (...)
     {
       if (Editor::is_active())
-        log_warning << "Unknown type of " << get_class_name() << ": '" << type << "', using default." << std::endl;
+        log_warning << "Unknown type of " << get_class_name() << ": '" << type << "', using default." << '\n';
     }
   }
 

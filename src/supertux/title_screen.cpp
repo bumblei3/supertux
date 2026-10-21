@@ -140,7 +140,7 @@ TitleScreen::refresh_level()
       }
       catch (const std::exception& err)
       {
-        log_warning << "Error loading custom title screen level '" << title_level << "': " << err.what() << std::endl;
+        log_warning << "Error loading custom title screen level '" << title_level << "': " << err.what() << '\n';
 
         if (!m_titlesession || m_titlesession->get_level_file() != DEFAULT_TITLE_LEVEL)
         {

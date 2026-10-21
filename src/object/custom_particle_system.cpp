@@ -138,7 +138,7 @@ CustomParticleSystem::CustomParticleSystem(const ReaderMapping& reader) :
       if (!mapping.get("surface", tex))
       {
         log_warning << "Texture without surface data ('surface') in " <<
-                 mapping.get_doc().get_filename() << ", skipping" << std::endl;
+                 mapping.get_doc().get_filename() << ", skipping" << '\n';
         continue;
       }
 
@@ -146,25 +146,25 @@ CustomParticleSystem::CustomParticleSystem(const ReaderMapping& reader) :
       if (!mapping.get("color_r", color_r))
       {
         log_warning << "Texture without red color field ('color_r') in " <<
-                 mapping.get_doc().get_filename() << ", skipping" << std::endl;
+                 mapping.get_doc().get_filename() << ", skipping" << '\n';
         continue;
       }
       if (!mapping.get("color_g", color_g))
       {
         log_warning << "Texture without green color field ('color_g') in " <<
-                 mapping.get_doc().get_filename() << ", skipping" << std::endl;
+                 mapping.get_doc().get_filename() << ", skipping" << '\n';
         continue;
       }
       if (!mapping.get("color_b", color_b))
       {
         log_warning << "Texture without blue color field ('color_b') in " <<
-                 mapping.get_doc().get_filename() << ", skipping" << std::endl;
+                 mapping.get_doc().get_filename() << ", skipping" << '\n';
         continue;
       }
       if (!mapping.get("color_a", color_a))
       {
         log_warning << "Texture without alpha channel field ('color_a') in " <<
-                 mapping.get_doc().get_filename() << ", skipping" << std::endl;
+                 mapping.get_doc().get_filename() << ", skipping" << '\n';
         continue;
       }
 
@@ -172,7 +172,7 @@ CustomParticleSystem::CustomParticleSystem(const ReaderMapping& reader) :
       if (!mapping.get("likeliness", likeliness))
       {
         log_warning << "Texture without likeliness field in " <<
-                 mapping.get_doc().get_filename() << ", skipping" << std::endl;
+                 mapping.get_doc().get_filename() << ", skipping" << '\n';
         continue;
       }
 
@@ -180,13 +180,13 @@ CustomParticleSystem::CustomParticleSystem(const ReaderMapping& reader) :
       if (!mapping.get("scale_x", scale_x))
       {
         log_warning << "Texture without horizontal scale ('scale_x') field in " <<
-                 mapping.get_doc().get_filename() << ", skipping" << std::endl;
+                 mapping.get_doc().get_filename() << ", skipping" << '\n';
         continue;
       }
       if (!mapping.get("scale_y", scale_y))
       {
         log_warning << "Texture without vertical scale ('scale_y') field in " <<
-                 mapping.get_doc().get_filename() << ", skipping" << std::endl;
+                 mapping.get_doc().get_filename() << ", skipping" << '\n';
         continue;
       }
 
@@ -1246,7 +1246,7 @@ CustomParticleSystem::spawn_particles(int amount, bool instantly)
   if (!instantly)
   {
     // TODO: Implement delayed spawn mode for scripting.
-    log_warning << "Delayed spawn mode is not yet implemented for scripting." << std::endl;
+    log_warning << "Delayed spawn mode is not yet implemented for scripting." << '\n';
     return;
   }
 
@@ -1284,7 +1284,7 @@ CustomParticleSystem::set_birth_mode(const std::string& mode)
   else if (mode == "Shrink")
     m_particle_birth_mode = FadeMode::Shrink;
   else
-    log_warning << "Invalid option " + mode + "; valid options are: None, Fade, Shrink." << std::endl;
+    log_warning << "Invalid option " + mode + "; valid options are: None, Fade, Shrink." << '\n';
 }
 
 std::string
@@ -1313,7 +1313,7 @@ CustomParticleSystem::set_death_mode(const std::string& mode)
   else if (mode == "Shrink")
     m_particle_death_mode = FadeMode::Shrink;
   else
-    log_warning << "Invalid option " + mode + "; valid options are: None, Fade, Shrink." << std::endl;
+    log_warning << "Invalid option " + mode + "; valid options are: None, Fade, Shrink." << '\n';
 }
 
 std::string
@@ -1342,7 +1342,7 @@ CustomParticleSystem::set_rotation_mode(const std::string& mode)
   else if (mode == "Wiggling")
     m_particle_rotation_mode = RotationMode::Wiggling;
   else
-    log_warning << "Invalid option " + mode + "; valid options are: Fixed, Facing, Wiggling." << std::endl;
+    log_warning << "Invalid option " + mode + "; valid options are: Fixed, Facing, Wiggling." << '\n';
 }
 
 std::string
@@ -1383,7 +1383,7 @@ CustomParticleSystem::set_collision_mode(const std::string& mode)
   else if (mode == "Destroy")
     m_particle_collision_mode = CollisionMode::Destroy;
   else
-    log_warning << "Invalid option " + mode + "; valid options are: Ignore, Stick, StickForever, BounceHeavy, BounceLight, Destroy." << std::endl;
+    log_warning << "Invalid option " + mode + "; valid options are: Ignore, Stick, StickForever, BounceHeavy, BounceLight, Destroy." << '\n';
 }
 
 std::string
@@ -1412,7 +1412,7 @@ CustomParticleSystem::set_offscreen_mode(const std::string& mode)
   else if (mode == "Always")
     m_particle_offscreen_mode = OffscreenMode::Always;
   else
-    log_warning << "Invalid option " + mode + "; valid options are: Never, OnlyOnExit, Always." << std::endl;
+    log_warning << "Invalid option " + mode + "; valid options are: Never, OnlyOnExit, Always." << '\n';
 }
 
 // =============================================================================

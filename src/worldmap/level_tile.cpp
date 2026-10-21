@@ -65,7 +65,7 @@ LevelTile::LevelTile(const ReaderMapping& mapping) :
   if (!PHYSFS_exists(FileSystem::join(m_basedir, m_level_filename).c_str()))
   {
     log_warning << "level file '" << m_level_filename
-                << "' does not exist and will not be added to the worldmap" << std::endl;
+                << "' does not exist and will not be added to the worldmap" << '\n';
     return;
   }
 
@@ -118,13 +118,13 @@ LevelTile::load_level_information()
     catch (const std::exception& err)
     {
       std::stringstream out;
-      out << "Cannot read level info: " << err.what() << std::endl;
+      out << "Cannot read level info: " << err.what() << '\n';
       throw std::runtime_error(out.str());
     }
   }
   catch (const std::exception& err)
   {
-    log_warning << "Problem when reading level information: " << err.what() << std::endl;
+    log_warning << "Problem when reading level information: " << err.what() << '\n';
     return;
   }
 }

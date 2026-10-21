@@ -48,16 +48,16 @@ TileSetParser::parse(bool imported)
   if (m_offset && m_start + m_offset < 1)
   {
     m_start = -m_offset + 1;
-    log_warning << "The defined offset would assign non-positive IDs to tiles, tiles below " << -m_offset + 1 << " will be ignored." << std::endl;
+    log_warning << "The defined offset would assign non-positive IDs to tiles, tiles below " << -m_offset + 1 << " will be ignored." << '\n';
   }
   if (m_end < 0)
   {
-    log_warning << "Cannot import tiles with negative IDs." << std::endl;
+    log_warning << "Cannot import tiles with negative IDs." << '\n';
     return;
   }
   if (m_start < 0)
   {
-    log_warning << "Cannot import tiles with negative IDs. Importing will start at ID 1." << std::endl;
+    log_warning << "Cannot import tiles with negative IDs. Importing will start at ID 1." << '\n';
     m_start = 1;
   }
 
@@ -120,7 +120,7 @@ TileSetParser::parse(bool imported)
       std::string autotile_filename;
       if (!reader.get("source", autotile_filename))
       {
-        log_warning << "No source path for autotiles in file '" << m_filename << "'" << std::endl;
+        log_warning << "No source path for autotiles in file '" << m_filename << "'" << '\n';
         continue;
       }
 
@@ -138,12 +138,12 @@ TileSetParser::parse(bool imported)
       std::string import_filename;
       if (!reader.get("file", import_filename))
       {
-        log_warning << "No source path for imported tileset in file '" << m_filename << "'" << std::endl;
+        log_warning << "No source path for imported tileset in file '" << m_filename << "'" << '\n';
         continue;
       }
       if (import_filename == m_filename)
       {
-        log_warning << "Tried to recursively import tileset '" << m_filename << "'" << std::endl;
+        log_warning << "Tried to recursively import tileset '" << m_filename << "'" << '\n';
         continue;
       }
 
@@ -164,7 +164,7 @@ TileSetParser::parse(bool imported)
       }
       if (import_end < import_start)
       {
-        if (!imported) log_warning << "The defined range has a negative size, no tiles will be imported." << std::endl;
+        if (!imported) log_warning << "The defined range has a negative size, no tiles will be imported." << '\n';
         continue;
       }
 
@@ -187,7 +187,7 @@ TileSetParser::parse(bool imported)
           {
             if (tiles.size() < 2)
             {
-              log_warning << "Less than 2 tile IDs given for thunderstorm changing tiles." << std::endl;
+              log_warning << "Less than 2 tile IDs given for thunderstorm changing tiles." << '\n';
               continue;
             }
             if (tiles.size() % 2 != 0) tiles.pop_back(); // If the number of tiles isn't even, remove last tile.
@@ -203,13 +203,13 @@ TileSetParser::parse(bool imported)
         }
         else
         {
-          log_warning << "Unknown symbol '" << additional_iter.get_key() << "' in \"additional\" section of tileset file" << std::endl;
+          log_warning << "Unknown symbol '" << additional_iter.get_key() << "' in \"additional\" section of tileset file" << '\n';
         }
       }
     }
     else
     {
-      log_warning << "Unknown symbol '" << iter.get_key() << "' in tileset file" << std::endl;
+      log_warning << "Unknown symbol '" << iter.get_key() << "' in tileset file" << '\n';
     }
   }
   /* Check for and remove any deprecated tiles from tilegroups */
@@ -493,7 +493,7 @@ std::vector<SurfacePtr>
       auto const& arr = sx.as_array();
       if (arr.size() != 6)
       {
-        log_warning << "(region X Y WIDTH HEIGHT) tag malformed: " << sx << std::endl;
+        log_warning << "(region X Y WIDTH HEIGHT) tag malformed: " << sx << '\n';
       }
       else
       {
@@ -520,7 +520,7 @@ std::vector<SurfacePtr>
     }
     else
     {
-      log_warning << "Expected string or list in images tag" << std::endl;
+      log_warning << "Expected string or list in images tag" << '\n';
     }
   }
 

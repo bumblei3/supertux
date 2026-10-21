@@ -136,17 +136,17 @@ InputManager::process_event(const SDL_Event& event)
       break;
 
     case SDL_EVENT_GAMEPAD_ADDED:
-      log_debug << "SDL_EVENT_GAMEPAD_ADDED" << std::endl;
+      log_debug << "SDL_EVENT_GAMEPAD_ADDED" << '\n';
       game_controller_manager->on_controller_added(event.gdevice.which);
       break;
 
     case SDL_EVENT_GAMEPAD_REMOVED:
-      log_debug << "SDL_EVENT_GAMEPAD_REMOVED" << std::endl;
+      log_debug << "SDL_EVENT_GAMEPAD_REMOVED" << '\n';
       game_controller_manager->on_controller_removed(event.gdevice.which);
       break;
 
     case SDL_EVENT_GAMEPAD_REMAPPED:
-      log_debug << "SDL_EVENT_GAMEPAD_REMAPPED" << std::endl;
+      log_debug << "SDL_EVENT_GAMEPAD_REMAPPED" << '\n';
       break;
 
     default:

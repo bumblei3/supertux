@@ -468,7 +468,7 @@ ControlTextbox::copy() const
 
   if (ret)
   {
-    log_warning << "Couldn't copy text to clipboard: " << SDL_GetError() << std::endl;
+    log_warning << "Couldn't copy text to clipboard: " << SDL_GetError() << '\n';
     SDL_ClearError();
   }
 
@@ -487,7 +487,7 @@ ControlTextbox::paste()
     put_text(std::string(txt));
   else
   {
-    log_warning << "Couldn't paste text from clipboard: " << SDL_GetError() << std::endl;
+    log_warning << "Couldn't paste text from clipboard: " << SDL_GetError() << '\n';
     SDL_ClearError();
   }
 

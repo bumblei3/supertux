@@ -215,7 +215,7 @@ Config::load()
       }
       else
       {
-        log_warning << "Unknown token in config file: " << notification_node.get_name() << std::endl;
+        log_warning << "Unknown token in config file: " << notification_node.get_name() << '\n';
       }
     }
   }
@@ -275,7 +275,7 @@ Config::load()
     editor_mapping->get("undo_stack_size", editor_undo_stack_size);
     if (editor_undo_stack_size < 1)
     {
-      log_warning << "Undo stack size could not be lower than 1. Setting to lowest possible value (1)." << std::endl;
+      log_warning << "Undo stack size could not be lower than 1. Setting to lowest possible value (1)." << '\n';
       editor_undo_stack_size = 1;
     }
     editor_mapping->get("show_deprecated_tiles", editor_show_deprecated_tiles);
@@ -411,7 +411,7 @@ Config::load()
       }
       else
       {
-        log_warning << "Unknown token in config file: " << addon_node.get_name() << std::endl;
+        log_warning << "Unknown token in config file: " << addon_node.get_name() << '\n';
       }
     }
   }

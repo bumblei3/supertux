@@ -57,7 +57,7 @@ EditorSectorsMenu::create_sector()
   auto new_sector = SectorParser::from_nothing(*level);
 
   if (!new_sector) {
-    log_warning << "Failed to create a new sector." << std::endl;
+    log_warning << "Failed to create a new sector." << '\n';
     return;
   }
 

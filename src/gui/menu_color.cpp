@@ -68,7 +68,7 @@ ColorMenu::copy_to_clipboard(const std::string& color_str)
 {
   if (SDL_SetClipboardText(color_str.c_str()) != 0)
   {
-    log_warning << "Failed to set SDL clipboard text: " << SDL_GetError() << std::endl;
+    log_warning << "Failed to set SDL clipboard text: " << SDL_GetError() << '\n';
     SDL_ClearError();
   }
 
@@ -117,7 +117,7 @@ ColorMenu::menu_action(MenuItem& item)
         menu_paste_item.set_text_color(*clipboard_color);
       }
       else
-        log_warning << "Invalid color format: " << text << ". Supported formats: rgb(r,g,b) and #rrggbb" << std::endl;
+        log_warning << "Invalid color format: " << text << ". Supported formats: rgb(r,g,b) and #rrggbb" << '\n';
     }
   }
 }

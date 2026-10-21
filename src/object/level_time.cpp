@@ -42,7 +42,7 @@ LevelTime::LevelTime(const ReaderMapping& reader) :
 {
   reader.get("time", time_left, 0.0f);
   if (time_left <= 0 && !Editor::is_active()) {
-    log_warning << "No or invalid leveltime specified." << std::endl;
+    log_warning << "No or invalid leveltime specified." << '\n';
     remove_me();
   }
 }

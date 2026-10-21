@@ -89,13 +89,13 @@ ContribMenu::ContribMenu() :
         }
         else
         {
-          log_warning << "Unknown World type." << std::endl;
+          log_warning << "Unknown World type." << '\n';
         }
       }
     }
     catch(std::exception& e)
     {
-      log_info << "Couldn't parse levelset info for '" << *it << "': " << e.what() << std::endl;
+      log_info << "Couldn't parse levelset info for '" << *it << "': " << e.what() << '\n';
     }
   }
   add_entry(0,_("Official Contrib Levels"));

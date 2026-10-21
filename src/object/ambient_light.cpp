@@ -48,7 +48,7 @@ AmbientLight::AmbientLight(const ReaderMapping& mapping) :
   if (mapping.get("color", color_vec))
   {
     if (color_vec.size() < 3) {
-      log_warning << "'ambient-light' requires three float arguments" << std::endl;
+      log_warning << "'ambient-light' requires three float arguments" << '\n';
     } else {
       m_ambient_light = Color(color_vec);
     }

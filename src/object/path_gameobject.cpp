@@ -41,7 +41,7 @@ PathStyle PathStyle_from_string(const std::string& text)
   } else if (text == "solid") {
     return PathStyle::SOLID;
   } else {
-    log_warning << "unknown PathStyle: " << text << std::endl;
+    log_warning << "unknown PathStyle: " << text << '\n';
     return PathStyle::NONE;
   }
 }
@@ -180,13 +180,13 @@ PathGameObject::get_settings()
 void
 PathGameObject::editor_select()
 {
-  log_fatal << "PathGameObject::selected" << std::endl;
+  log_fatal << "PathGameObject::selected" << '\n';
 }
 
 void
 PathGameObject::editor_deselect()
 {
-  log_fatal << "PathGameObject::deselected" << std::endl;
+  log_fatal << "PathGameObject::deselected" << '\n';
 }
 
 void

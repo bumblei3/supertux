@@ -87,7 +87,7 @@ EditorLevelsetSelectMenu::initialize()
       }
       if (!world->is_levelset() && !world->is_worldmap())
       {
-        log_warning << level_world << ": Unknown World type." << std::endl;
+        log_warning << level_world << ": Unknown World type." << '\n';
         continue;
       }
       auto title = world->get_title();
@@ -108,7 +108,7 @@ EditorLevelsetSelectMenu::initialize()
     catch(std::exception& e)
     {
       log_info << "Couldn't parse levelset info for '" << level_world << "': "
-               << e.what() << std::endl;
+               << e.what() << '\n';
     }
   }
 

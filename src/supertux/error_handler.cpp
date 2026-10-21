@@ -357,7 +357,7 @@ ErrorHandler::error_dialog_crash(const std::string& stacktrace)
     msg += "\nUnable to obtain details.";
   }
 
-  std::cerr << msg << "\n" << stacktrace << std::endl;
+  std::cerr << msg << "\n" << stacktrace << '\n';
 
   SDL_MessageBoxButtonData btns[3] = {
     {
@@ -456,7 +456,7 @@ ErrorHandler::error_dialog_exception(const std::string& exception)
 
   std::string const msg = stream.str();
 
-  std::cerr << msg << std::endl;
+  std::cerr << msg << '\n';
 
   SDL_MessageBoxButtonData btns[] = {
 #ifdef WIN32

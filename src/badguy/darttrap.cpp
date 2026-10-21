@@ -48,7 +48,7 @@ DartTrap::DartTrap(const ReaderMapping& reader) :
 
   m_can_glint = false;
   SoundManager::current()->preload("sounds/dartfire.wav");
-  if (m_start_dir == Direction::AUTO) { log_warning << "Setting a DartTrap's direction to AUTO is not a good idea" << std::endl; }
+  if (m_start_dir == Direction::AUTO) { log_warning << "Setting a DartTrap's direction to AUTO is not a good idea" << '\n'; }
   m_state = IDLE;
 
   if (!Editor::is_active()) {

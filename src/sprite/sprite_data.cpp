@@ -108,7 +108,7 @@ SpriteData::load()
     catch (const std::exception& err)
     {
       log_warning << "Parse error when trying to load sprite '" << m_filename
-                  << "': " << err.what() << std::endl;
+                  << "': " << err.what() << '\n';
 
       // Load initial dummy texture
       if (actions.empty())
@@ -156,7 +156,7 @@ SpriteData::parse(const ReaderMapping& mapping)
     if (iter.get_key() == "action")
       parse_action(iter.as_mapping());
     else
-      log_warning << "Unknown sprite field: " << iter.get_key() << std::endl;
+      log_warning << "Unknown sprite field: " << iter.get_key() << '\n';
   }
 
   if (actions.empty())
@@ -214,7 +214,7 @@ SpriteData::parse_action(const ReaderMapping& mapping)
   {
     if (action->loop_frame < 1)
     {
-      log_warning << "'loop-frame' of action '" << action->name << "' in sprite '" << m_filename << "' set to a value below 1." << std::endl;
+      log_warning << "'loop-frame' of action '" << action->name << "' in sprite '" << m_filename << "' set to a value below 1." << '\n';
       action->loop_frame = 1;
     }
   }
@@ -359,7 +359,7 @@ SpriteData::parse_action(const ReaderMapping& mapping)
       {
         if (iter.get_key() != "region")
         {
-          log_warning << "Unknown field '" << iter.get_key() << "' under 'regions'." << std::endl;
+          log_warning << "Unknown field '" << iter.get_key() << "' under 'regions'." << '\n';
           continue;
         }
 
@@ -367,7 +367,7 @@ SpriteData::parse_action(const ReaderMapping& mapping)
         const auto& arr = sx.as_array();
         if (arr.size() != 6)
         {
-          log_warning << "(region IMAGE_FILE X Y WIDTH HEIGHT) tag malformed: " << sx << std::endl;
+          log_warning << "(region IMAGE_FILE X Y WIDTH HEIGHT) tag malformed: " << sx << '\n';
           continue;
         }
 
@@ -445,7 +445,7 @@ SpriteData::parse_action(const ReaderMapping& mapping)
   const int frames = static_cast<int>(action->surfaces.size());
   if (action->loop_frame > frames && frames > 0)
   {
-    log_warning << "'loop-frame' of action '" << action->name << "' in sprite '" << m_filename << "' not-in-range of total frames." << std::endl;
+    log_warning << "'loop-frame' of action '" << action->name << "' in sprite '" << m_filename << "' not-in-range of total frames." << '\n';
     action->loop_frame = 1;
   }
 }

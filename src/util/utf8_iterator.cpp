@@ -98,7 +98,7 @@ UTF8Iterator::UTF8Iterator(const std::string& text_) :
   } catch (std::exception&) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-align"
-    log_debug << "Malformed utf-8 sequence beginning with " << *(reinterpret_cast<const uint32_t*>(text.c_str() + pos)) << " found " << std::endl;
+    log_debug << "Malformed utf-8 sequence beginning with " << *(reinterpret_cast<const uint32_t*>(text.c_str() + pos)) << " found " << '\n';
 #pragma GCC diagnostic pop
     chr = 0;
   }
@@ -117,7 +117,7 @@ UTF8Iterator::operator++() {
     } catch (std::exception&) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-align"
-      log_debug << "Malformed utf-8 sequence beginning with " << *(reinterpret_cast<const uint32_t*>(text.c_str() + pos)) << " found " << std::endl;
+      log_debug << "Malformed utf-8 sequence beginning with " << *(reinterpret_cast<const uint32_t*>(text.c_str() + pos)) << " found " << '\n';
 #pragma GCC diagnostic pop
       chr = 0;
       ++pos;
