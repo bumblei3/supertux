@@ -242,3 +242,24 @@ TEST(CollisionMathTest, slope_directions)
   }
   SUCCEED();
 }
+
+
+TEST(CollisionMathTest, line_parallel_vertical_coincident_check)
+{
+  // Coincident vertical lines: exercises the a1==a2 swap branch.
+  const Vector a(5.0f, 0.0f), b(5.0f, 10.0f);
+  const Vector c(5.0f, 2.0f), d(5.0f, 8.0f);
+  EXPECT_TRUE(line_intersects_line(a, b, c, d));
+}
+
+
+TEST(CollisionMathTest, rect_rect_constraints_right_dominant)
+{
+  Constraints c;
+  // r2 to the left of r1: horizontal penetration dominates, iright <= ileft
+  // -> constrain_left branch.
+  Rectf r1(3.0f, 0.0f, 7.0f, 4.0f);
+  Rectf r2(0.0f, 0.0f, 4.0f, 4.0f);
+  set_rectangle_rectangle_constraints(&c, r1, r2);
+  SUCCEED();
+}
