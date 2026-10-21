@@ -142,3 +142,110 @@ TEST_F(TileSetParserTest, tilegroup_offset_applied_to_valid_tiles)
   ASSERT_FALSE(tileset.get_tilegroups().empty());
   EXPECT_EQ(115, tileset.get_tilegroups()[0].tiles[0]);
 }
+
+TEST_F(TileSetParserTest, tiles_no_ids_throws)
+{
+  const std::string path = write_temp(
+    "(supertux-tiles\n"
+    "  (tiles\n"
+    "    (width 2)\n"
+    "    (height 2)\n"
+    "  )\n"
+    ")\n");
+  TileSet tileset(path);
+  TileSetParser parser(tileset, path);
+  EXPECT_THROW(parser.parse(), std::runtime_error);
+}
+
+TEST_F(TileSetParserTest, tiles_zero_width_throws)
+{
+  const std::string path = write_temp(
+    "(supertux-tiles\n"
+    "  (tiles\n"
+    "    (ids 1 2 3 4)\n"
+    "    (width 0)\n"
+    "    (height 2)\n"
+    "  )\n"
+    ")\n");
+  TileSet tileset(path);
+  TileSetParser parser(tileset, path);
+  EXPECT_THROW(parser.parse(), std::runtime_error);
+}
+
+TEST_F(TileSetParserTest, tiles_zero_height_throws)
+{
+  const std::string path = write_temp(
+    "(supertux-tiles\n"
+    "  (tiles\n"
+    "    (ids 1 2 3 4)\n"
+    "    (width 2)\n"
+    "    (height 0)\n"
+    "  )\n"
+    ")\n");
+  TileSet tileset(path);
+  TileSetParser parser(tileset, path);
+  EXPECT_THROW(parser.parse(), std::runtime_error);
+}
+
+TEST_F(TileSetParserTest, tiles_negative_fps_throws)
+{
+  const std::string path = write_temp(
+    "(supertux-tiles\n"
+    "  (tiles\n"
+    "    (ids 1 2 3 4)\n"
+    "    (width 2)\n"
+    "    (height 2)\n"
+    "    (fps -1)\n"
+    "  )\n"
+    ")\n");
+  TileSet tileset(path);
+  TileSetParser parser(tileset, path);
+  EXPECT_THROW(parser.parse(), std::runtime_error);
+}
+
+TEST_F(TileSetParserTest, tiles_id_count_mismatch_throws)
+{
+  const std::string path = write_temp(
+    "(supertux-tiles\n"
+    "  (tiles\n"
+    "    (ids 1 2 3 4)\n"
+    "    (width 3)\n"
+    "    (height 2)\n"
+    "  )\n"
+    ")\n");
+  TileSet tileset(path);
+  TileSetParser parser(tileset, path);
+  EXPECT_THROW(parser.parse(), std::runtime_error);
+}
+
+TEST_F(TileSetParserTest, tiles_attributes_count_mismatch_throws)
+{
+  const std::string path = write_temp(
+    "(supertux-tiles\n"
+    "  (tiles\n"
+    "    (ids 1 2)\n"
+    "    (attributes 1 2 3)\n"
+    "    (width 1)\n"
+    "    (height 2)\n"
+    "  )\n"
+    ")\n");
+  TileSet tileset(path);
+  TileSetParser parser(tileset, path);
+  EXPECT_THROW(parser.parse(), std::runtime_error);
+}
+
+TEST_F(TileSetParserTest, tiles_datas_count_mismatch_throws)
+{
+  const std::string path = write_temp(
+    "(supertux-tiles\n"
+    "  (tiles\n"
+    "    (ids 1 2)\n"
+    "    (datas 1 2 3)\n"
+    "    (width 1)\n"
+    "    (height 2)\n"
+    "  )\n"
+    ")\n");
+  TileSet tileset(path);
+  TileSetParser parser(tileset, path);
+  EXPECT_THROW(parser.parse(), std::runtime_error);
+}

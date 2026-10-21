@@ -47,7 +47,7 @@ DEFAULT_THRESHOLDS = {
     "src/supertux/autotile.cpp": 70.0,
     "src/supertux/autotile_parser.cpp": 55.0,
     "src/supertux/tile.cpp": 48.0,
-    "src/supertux/tile_set_parser.cpp": 22.0,
+    "src/supertux/tile_set_parser.cpp": 40.0,
     "src/util/uid.cpp": 95.0,
     "src/util/unique_name.cpp": 95.0,
     "src/util/reader_object.cpp": 95.0,
